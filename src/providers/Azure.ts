@@ -10,6 +10,7 @@ export default {
   },
   chat: {
     apiSchema: ['base', 'key', 'deploymentId', 'model'],
+    modelAttributes: ['version'],
     docs: {
       deploymentId: 'The deployment name you chose when you deployed the model',
       temperature:

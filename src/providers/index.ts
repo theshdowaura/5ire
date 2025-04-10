@@ -1,4 +1,4 @@
-import { merge } from 'lodash';
+import useAuthStore from 'stores/useAuthStore';
 import { ProviderType, IChatModel, IServiceProvider } from './types';
 import Azure from './Azure';
 import Baidu from './Baidu';
@@ -14,7 +14,6 @@ import Doubao from './Doubao';
 import Grok from './Grok';
 import DeepSeek from './DeepSeek';
 import Mistral from './Mistral';
-import useAuthStore from 'stores/useAuthStore';
 
 export const providers: { [key: string]: IServiceProvider } = {
   OpenAI,
@@ -43,6 +42,7 @@ export function getProviders(arg?: { withDisabled: boolean }): {
   const { session } = useAuthStore.getState();
   return Object.values(providers).reduce(
     (acc: { [key: string]: IServiceProvider }, cur: IServiceProvider) => {
+      cur.isBuiltin = true;
       if (!arg?.withDisabled && cur.disabled) return acc;
       if (!!session || !cur.isPremium) {
         acc[cur.name] = cur;
@@ -74,10 +74,10 @@ export function getChatModel(
   modelName: string,
   defaultModel: IChatModel = getDefaultChatModel(providerName),
 ): IChatModel {
-  const _providers = getProviders();
-  let provider = _providers[providerName];
+  const $providers = getProviders();
+  let provider = $providers[providerName];
   if (!provider) {
-    provider = Object.values(_providers)[0];
+    provider = Object.values($providers)[0];
   }
   let model = provider.chat.models[modelName];
   if (!model) {

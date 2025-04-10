@@ -1,10 +1,10 @@
 import { List, ListItem } from '@fluentui/react-components';
 import { ChevronRightRegular } from '@fluentui/react-icons';
-import { IServiceProvider } from 'providers/types';
 import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import useProviderStore from 'stores/useProviderStore';
 import ModelList from './ModelList';
+import ProviderForm from './ProviderForm';
 
 export default function Providers() {
   const { t } = useTranslation();
@@ -61,7 +61,12 @@ export default function Providers() {
             </List>
           </div>
           <div className="col-span-3">
-            <ModelList provider={selectedProvider as IServiceProvider} />
+            {selectedProvider && (
+              <div>
+                <ProviderForm provider={selectedProvider} />
+                <ModelList provider={selectedProvider} />
+              </div>
+            )}
           </div>
         </div>
       </div>

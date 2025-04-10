@@ -47,6 +47,7 @@ export interface IChatModel {
 
 export interface IChatConfig {
   apiSchema: string[];
+  modelAttributes?: string[];
   /**
    *  Positive values penalize new tokens based on whether they appear
    *  in the text so far, increasing the model's likelihood to talk about new topics.
@@ -98,6 +99,7 @@ export interface IServiceProvider {
   description?: string;
   disabled?: boolean;
   isPremium?: boolean;
+  isBuiltin?: boolean;
   apiBase: string;
   apiKey?: string;
   currency: 'USD' | 'CNY';

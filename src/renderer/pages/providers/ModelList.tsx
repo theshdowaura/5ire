@@ -77,7 +77,7 @@ export default function ModelList({
             key={model.name}
             aria-label={model.name}
             onAction={() => {
-              console.log('Selected model:', model);
+              // Handle model selection here
             }}
             className="block hover:bg-stone-100 dark:hover:bg-stone-700"
           >
@@ -90,12 +90,12 @@ export default function ModelList({
                 <span className="-mt-0.5">{model.label || model.name}</span>
                 {model.vision && (
                   <div className="text-xs text-purple-800 px-2 ground bg-purple-100 rounded-lg">
-                    {t('Common.Vision')}
+                    {t('Provider.Model.Vision')}
                   </div>
                 )}
                 {model.toolEnabled && (
                   <div className="text-xs text-orange-800 px-2 ground bg-orange-100 rounded-lg">
-                    {t('Common.Tools')}
+                    {t('Provider.Model.Tools')}
                   </div>
                 )}
               </div>
