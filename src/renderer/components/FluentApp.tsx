@@ -10,6 +10,7 @@ import {
   createDarkTheme,
 } from '@fluentui/react-components';
 import { useTranslation } from 'react-i18next';
+import Providers from 'renderer/pages/providers';
 import { captureException } from '../logging';
 import useSettingsStore from '../../stores/useSettingsStore';
 import useAppearanceStore from '../../stores/useAppearanceStore';
@@ -51,10 +52,12 @@ const fire: BrandVariants = {
   160: '#D7D7D7',
 };
 
+// eslint-disable-next-line prefer-destructuring
 const lightTheme: Theme = {
   ...createLightTheme(fire),
 };
 
+// eslint-disable-next-line prefer-destructuring
 const darkTheme: Theme = {
   ...createDarkTheme(fire),
 };
@@ -104,7 +107,7 @@ export default function FluentApp() {
     } else {
       i18n.changeLanguage(language);
     }
-  }, [themeSettings, setTheme]);
+  }, [themeSettings, setTheme, language, i18n]);
 
   return (
     <FluentProvider
@@ -136,6 +139,7 @@ export default function FluentApp() {
               <Route path="/prompts" element={<Prompts />} />
               <Route path="/prompts/form/:id?" element={<PromptForm />} />
               <Route path="/settings" element={<Settings />} />
+              <Route path="/providers" element={<Providers />} />
             </Routes>
             <div
               id="portal"

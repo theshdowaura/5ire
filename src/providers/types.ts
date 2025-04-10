@@ -24,7 +24,6 @@ export interface INumberRange {
   };
 }
 
-
 export interface IChatModelVision {
   enabled: boolean;
   allowUrl?: boolean;
@@ -44,7 +43,6 @@ export interface IChatModel {
   jsonModelEnabled?: boolean;
   toolEnabled?: boolean;
   vision?: IChatModelVision;
-  endpoint?: string;
 }
 
 export interface IChatConfig {

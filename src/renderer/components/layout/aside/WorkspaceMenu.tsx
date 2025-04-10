@@ -20,6 +20,7 @@ import {
   ReceiptSparkles24Regular,
   Settings24Regular,
   SignOut24Regular,
+  LayerDiagonalSparkle24Regular,
 } from '@fluentui/react-icons';
 import { useTranslation } from 'react-i18next';
 import useAppearanceStore from 'stores/useAppearanceStore';
@@ -151,7 +152,15 @@ export default function WorkspaceMenu({ collapsed }: { collapsed: boolean }) {
           <MenuList>
             <MenuDivider className="border-base" />
             <MenuItem
-              title="mod+k"
+              title="mod+,"
+              icon={<LayerDiagonalSparkle24Regular />}
+              onClick={() => {
+                navigate('/providers');
+              }}
+            >
+              {t('Common.Providers')}
+            </MenuItem>
+            <MenuItem
               icon={<Settings24Regular />}
               onClick={() => {
                 navigate('/settings');
