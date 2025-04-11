@@ -81,6 +81,24 @@ export default function ChatFolder({
     };
   }, [folder.isNew]);
 
+  const icon = useCallback(
+    (fld: IChatFolder) => {
+      if (openFolders.includes(fld.id)) {
+        return fld.id === selectedFolder?.id ? (
+          <FolderOpenFilled />
+        ) : (
+          <FolderOpenRegular />
+        );
+      }
+      return fld.id === selectedFolder?.id ? (
+        <FolderFilled />
+      ) : (
+        <FolderRegular />
+      );
+    },
+    [openFolders, selectedFolder],
+  );
+
   return (
     <div ref={setNodeRef}>
       <AccordionItem value={folder.id} disabled={editable}>
@@ -88,7 +106,7 @@ export default function ChatFolder({
           <AccordionHeader
             style={{ height: 28 }}
             className={collapsed ? 'collapsed' : 'px-1 flex-grow'}
-            onDoubleClick={(e: any) => {
+            onDoubleClick={() => {
               if (!collapsed) {
                 setEditable(true);
                 setTimeout(() => {
@@ -100,19 +118,7 @@ export default function ChatFolder({
                 });
               }
             }}
-            expandIcon={
-              openFolders.includes(folder.id) ? (
-                folder.id === selectedFolder?.id ? (
-                  <FolderOpenFilled />
-                ) : (
-                  <FolderOpenRegular />
-                )
-              ) : folder.id === selectedFolder?.id ? (
-                <FolderFilled />
-              ) : (
-                <FolderRegular />
-              )
-            }
+            expandIcon={icon(folder)}
           >
             {editable ? (
               <Input
@@ -129,17 +135,17 @@ export default function ChatFolder({
                 }}
                 onBlur={saveName}
               />
-            ) : collapsed ? (
-              ''
             ) : (
-              folder.name
+              collapsed || folder.name
             )}
           </AccordionHeader>
           {!collapsed && (
             <Menu>
               <MenuTrigger disableButtonEnhancement>
                 <MenuButton
-                  icon={<MoreVerticalIcon />}
+                  icon={
+                    <MoreVerticalIcon className="text-gray-400 dark:text-gray-500" />
+                  }
                   appearance="transparent"
                   size="small"
                 />
@@ -168,8 +174,8 @@ export default function ChatFolder({
               className={`pt-0.5 ${collapsed ? 'ml-0' : 'border-l border-base ml-3'}`}
               style={{ paddingLeft: collapsed ? 0 : 4 }}
             >
-              {chats.map((chat) => (
-                <ChatItem key={chat.id} chat={chat} collapsed={collapsed} />
+              {chats.map((c) => (
+                <ChatItem key={c.id} chat={c} collapsed={collapsed} />
               ))}
             </div>
           )}
