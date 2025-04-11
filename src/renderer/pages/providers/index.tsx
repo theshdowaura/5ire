@@ -1,5 +1,5 @@
 import { Button, List, ListItem } from '@fluentui/react-components';
-import { ChevronRightRegular } from '@fluentui/react-icons';
+import { AddCircleFilled, AddCircleRegular, bundleIcon, ChevronRightRegular } from '@fluentui/react-icons';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import useProviderStore from 'stores/useProviderStore';
@@ -10,6 +10,8 @@ const DEFAULT_HEIGHT = 400;
 const HEADER_HEIGHT = 100;
 const LIST_ITEM_HEIGHT = 50;
 const PROVIDER_FORM_HEIGHT = 189;
+
+const AddIcon = bundleIcon(AddCircleFilled, AddCircleRegular);
 
 export default function Providers() {
   const { t } = useTranslation();
@@ -90,9 +92,9 @@ export default function Providers() {
               );
             })}
           </List>
-          <div className="absolute p-4 bottom-0 left-0 right-0 z-10">
-            <Button size="small" className="w-full">
-              {t('Common.Add')}
+          <div className="absolute p-2 bottom-0 left-0 right-0 z-10 border-t border-base">
+            <Button size="small" appearance='subtle' className="w-full" icon={<AddIcon />}>
+              {t('Provider.OpenAICompatible')}
             </Button>
           </div>
         </div>
@@ -100,15 +102,7 @@ export default function Providers() {
           {selectedProvider && (
             <div>
               <ProviderForm provider={selectedProvider} />
-              <div
-                style={{
-                  height:
-                    contentHeight - (HEADER_HEIGHT + PROVIDER_FORM_HEIGHT),
-                }}
-                className="overflow-y-auto"
-              >
-                <ModelList provider={selectedProvider} />
-              </div>
+              <ModelList provider={selectedProvider} height={contentHeight - (HEADER_HEIGHT + PROVIDER_FORM_HEIGHT)} />
             </div>
           )}
         </div>

@@ -270,5 +270,7 @@
   "Common.APIVersion": "版本",
   "Provider.Model.Vision": "图片识别",
   "Common.Tools": "工具",
-  "Provider.Model.Tools": "工具"
+  "Provider.Model.Tools": "工具",
+  "Provider.OpenAICompatible": "OpenAI 兼容",
+  "Common.NoModels": "未找到模型"
 }

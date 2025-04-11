@@ -1,4 +1,4 @@
-import { Field, Input, Select } from '@fluentui/react-components';
+import { Checkbox, Field, Input, Select } from '@fluentui/react-components';
 import { IServiceProvider } from 'providers/types';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -26,7 +26,7 @@ export default function ProviderForm({
   }, [provider]);
 
   return (
-    <div className="w-full bg-stone-50 dark:bg-stone-800 p-4 border-b border-base">
+    <div className="provider-form w-full bg-stone-50 dark:bg-stone-800 p-4 border-b border-base">
       <div className="flex justify-around items-center gap-1">
         <Field
           label={t('Common.Name')}
@@ -37,13 +37,16 @@ export default function ProviderForm({
         </Field>
         <Field
           label={t('Common.Currency')}
-          className="flex-shrink-0 min-w-[139px]"
+          className="flex-shrink-0 min-w-[90px]"
           size="small"
         >
           <Select value={currency}>
             <option>USD</option>
             <option>CNY</option>
           </Select>
+        </Field>
+        <Field label={t('Common.Default')} size="small">
+          <Checkbox className=''/>
         </Field>
       </div>
       <div className="mt-2">

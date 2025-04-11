@@ -22,8 +22,10 @@ const AddIcon = bundleIcon(AddCircleFilled, AddCircleRegular);
 
 export default function ModelList({
   provider,
+  height = 400,
 }: {
   provider: IServiceProvider;
+  height?: number;
 }) {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
@@ -85,13 +87,6 @@ export default function ModelList({
       </div>
     );
   }
-  if (models.length === 0) {
-    return (
-      <div className="flex justify-center items-center h-full">
-        <p>{t('Common.NoModels')}</p>
-      </div>
-    );
-  }
 
   return (
     <div>
@@ -118,44 +113,54 @@ export default function ModelList({
           </Button>
         </div>
       </div>
-      <List navigationMode="items">
-        {filteredModels.map((model) => {
-          return (
-            <ListItem
-              key={model.name}
-              aria-label={model.name}
-              onAction={() => {
-                // Handle model selection here
-              }}
-              className="block hover:bg-stone-100 dark:hover:bg-stone-700"
-            >
-              <div className="px-4 py-2 border-b border-gray-100 dark:border-stone-800 w-full">
-                <div className="font-medium flex justify-start gap-1 items-center">
-                  <ToolStatusIndicator
-                    model={model.name}
-                    provider={provider.name}
-                  />
-                  <span className="-mt-0.5">{model.label || model.name}</span>
-                  {model.vision && (
-                    <div className="text-xs text-purple-800 px-2 ground bg-purple-100 rounded-lg">
-                      {t('Provider.Model.Vision')}
+      <div className='overflow-y-auto' style={{ height: height - 35 }}>
+        {models.length === 0 ? (
+          <div className="flex flex-col justify-center items-center h-96">
+            <p className="tips">{t('Common.NoModels')}</p>
+          </div>
+        ) : (
+          <List navigationMode="items">
+            {filteredModels.map((model) => {
+              return (
+                <ListItem
+                  key={model.name}
+                  aria-label={model.name}
+                  onAction={() => {
+                    // Handle model selection here
+                  }}
+                  className="block hover:bg-stone-100 dark:hover:bg-stone-700"
+                >
+                  <div className="px-4 py-2 border-b border-gray-100 dark:border-stone-800 w-full">
+                    <div className="font-medium flex justify-start gap-1 items-center mb-1">
+                      <ToolStatusIndicator
+                        model={model.name}
+                        provider={provider.name}
+                      />
+                      <span className="-mt-0.5 text-base">
+                        {model.label || model.name}
+                      </span>
+                      {model.vision && (
+                        <div className="text-xs text-purple-800 dark:text-purple-400 px-1 ground bg-purple-100 dark:bg-purple-900 rounded-lg">
+                          {t('Provider.Model.Vision')}
+                        </div>
+                      )}
+                      {model.toolEnabled && (
+                        <div className="text-xs text-orange-800 dark:text-orange-500 px-1 ground bg-orange-100 dark:bg-yellow-900 rounded-lg">
+                          {t('Provider.Model.Tools')}
+                        </div>
+                      )}
                     </div>
-                  )}
-                  {model.toolEnabled && (
-                    <div className="text-xs text-orange-800 px-2 ground bg-orange-100 rounded-lg">
-                      {t('Provider.Model.Tools')}
-                    </div>
-                  )}
-                </div>
-                {model.label !== model.name && (
-                  <p className="tips text-xs">{model.name}</p>
-                )}
-                <p className="tips text-xs  mt-1">{model.description}</p>
-              </div>
-            </ListItem>
-          );
-        })}
-      </List>
+                    {model.label !== model.name && (
+                      <p className="tips text-xs">{model.name}</p>
+                    )}
+                    <p className="tips text-xs">{model.description}</p>
+                  </div>
+                </ListItem>
+              );
+            })}
+          </List>
+        )}
+      </div>
     </div>
   );
 }

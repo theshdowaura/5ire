@@ -277,5 +277,7 @@
   "Common.APIVersion": "API Version",
   "Provider.Model.Vision": "vision",
   "Common.Tools": "Tools",
-  "Provider.Model.Tools": "tools"
+  "Provider.Model.Tools": "tools",
+  "Provider.OpenAICompatible": "OpenAI Compatible",
+  "Common.NoModels": "Model not found."
 }
