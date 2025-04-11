@@ -16,8 +16,9 @@ import { IChatModel, IServiceProvider } from 'providers/types';
 import { useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import Spinner from 'renderer/components/Spinner';
-import ToolStatusIndicator from 'renderer/components/ToolStatusIndicator';
+import TooltipIcon from 'renderer/components/TooltipIcon';
 import ModelFormDrawer from './ModelFormDrawer';
+import ToolTag from './ToolTag';
 
 const AddIcon = bundleIcon(AddCircleFilled, AddCircleRegular);
 
@@ -142,30 +143,40 @@ export default function ModelList({
                   }}
                   className="block hover:bg-stone-100 dark:hover:bg-stone-700"
                 >
-                  <div className="px-4 py-2 border-b border-gray-100 dark:border-stone-800 w-full">
-                    <div className="font-medium flex justify-start gap-1 items-center mb-1">
-                      <ToolStatusIndicator
-                        model={model.name}
-                        provider={provider.name}
-                      />
-                      <span className="-mt-0.5 text-base">
-                        {model.label || model.name}
-                      </span>
-                      {model.vision && (
-                        <div className="text-xs text-purple-800 dark:text-purple-400 px-1 ground bg-purple-100 dark:bg-purple-900 rounded-lg">
-                          {t('Tags.Vision')}
-                        </div>
-                      )}
-                      {model.toolEnabled && (
-                        <div className="text-xs text-orange-800 dark:text-orange-500 px-1 ground bg-orange-100 dark:bg-yellow-900 rounded-lg">
-                          {t('Tags.Tools')}
-                        </div>
-                      )}
+                  <div className="px-4 pt-3 pb-2 border-b border-gray-100 dark:border-stone-800 w-full">
+                    <div className="font-medium flex justify-between gap-1 items-center mb-1">
+                      <div>
+                        <span className="-mt-0.5 text-sm" title={model.name}>
+                          {model.label || model.name}
+                        </span>
+                        {model.description && (
+                          <TooltipIcon
+                            positioning="after"
+                            tip={
+                              <div>
+                                <p className="font-bold mb-1 text-base">
+                                  {model.name}
+                                </p>
+                                <p>{model.description}</p>
+                              </div>
+                            }
+                          />
+                        )}
+                      </div>
+                      <div className="flex justify-end gap-1">
+                        {model.vision && (
+                          <div className="text-xs text-amber-900 dark:text-amber-500 px-1.5 ground bg-amber-100 dark:bg-amber-900 rounded-lg dark:opacity-80">
+                            {t('Tags.Vision')}
+                          </div>
+                        )}
+                        {model.toolEnabled && (
+                          <ToolTag
+                            provider={provider.name}
+                            model={model.name}
+                          />
+                        )}
+                      </div>
                     </div>
-                    {model.label !== model.name && (
-                      <p className="tips text-xs">{model.name}</p>
-                    )}
-                    <p className="tips text-xs">{model.description}</p>
                   </div>
                 </ListItem>
               );
