@@ -54,14 +54,15 @@ export default function ProviderList({ height = 400 }: { height: number }) {
             className="block hover:bg-stone-100 dark:hover:bg-stone-700 group"
           >
             <div
-              className={`flex justify-between items-center pl-4 py-2 border-b border-gray-100 dark:border-stone-800 w-full ${selectedProvider?.name === providerName ? 'bg-stone-100 dark:bg-stone-700' : ''}`}
+              className={`flex justify-between items-center border-b border-gray-100 dark:border-stone-800 w-full ${selectedProvider?.name === providerName ? 'bg-stone-100 dark:bg-stone-700' : ''}`}
             >
-              <div
+              <button
+                type="button"
                 onClick={() => selectProvider(providerName)}
-                className="flex-grow"
+                className="flex-grow pl-4 py-2 text-left"
               >
                 {providerName}
-              </div>
+              </button>
               <div className="flex justify-center items-center">
                 {selectedProvider?.name === providerName && (
                   <ChevronRightRegular />
