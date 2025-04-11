@@ -104,7 +104,6 @@ export default function Editor({
         item.getAsString(function (clipText) {
           let txt = clipText.replace(/&[a-z]+;/gi, ' ');
           txt = txt.replace(/<\/(p|div|br|h[1-6])>/gi, '\n');
-          txt = txt.replace(/(<([^>]+)>)/gi, '');
           txt = txt.replace(/\n+/g, '\n\n').trim();
           text += txt;
           insertText(text);
