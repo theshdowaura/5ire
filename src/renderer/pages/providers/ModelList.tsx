@@ -113,13 +113,13 @@ export default function ModelList({
           </Button>
         </div>
       </div>
-      <div className='overflow-y-auto' style={{ height: height - 35 }}>
+      <div className="overflow-y-auto" style={{ height: height - 35 }}>
         {models.length === 0 ? (
           <div className="flex flex-col justify-center items-center h-96">
             <p className="tips">{t('Common.NoModels')}</p>
           </div>
         ) : (
-          <List navigationMode="items">
+          <List>
             {filteredModels.map((model) => {
               return (
                 <ListItem
