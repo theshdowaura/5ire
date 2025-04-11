@@ -37,7 +37,7 @@
   "Prompt.Form.Tooltip.ApplicableModels": "如果此提示适用于所有模型，请将其留空。",
   "Common.Back": "返回",
   "Common.MaxNumOfContextMessages": "上下文历史消息数量",
-  "Common.APIEndpoint": "API Endpoint",
+  "Common.APIEndpoint": "Endpoint",
   "Common.Appearance": "外观",
   "Common.Apps": "应用",
   "Common.Bookmarks": "书签",
