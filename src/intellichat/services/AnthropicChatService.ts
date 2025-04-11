@@ -10,7 +10,13 @@ import {
   IOpenAITool,
 } from 'intellichat/types';
 import { isBlank } from 'utils/validators';
-import { getBase64, splitByImg, stripHtmlTags, urlJoin } from 'utils/util';
+import {
+  getBase64,
+  removeAdditionalProperties,
+  splitByImg,
+  stripHtmlTags,
+  urlJoin,
+} from 'utils/util';
 import AnthropicReader from 'intellichat/readers/AnthropicReader';
 import { ITool } from 'intellichat/readers/IChatReader';
 import INextChatService from './INextCharService';
@@ -75,7 +81,8 @@ export default class AnthropicChatService
       description: tool.description,
       input_schema: {
         type: tool.inputSchema.type,
-        properties: tool.inputSchema.properties || {},
+        properties:
+          removeAdditionalProperties(tool.inputSchema.properties) || {},
         required: tool.inputSchema.required || [],
       },
     };
@@ -127,7 +134,7 @@ export default class AnthropicChatService
 
   protected async makeMessages(
     messages: IChatRequestMessage[],
-    msgId?:string
+    msgId?: string,
   ): Promise<IChatRequestMessage[]> {
     const result = this.context
       .getCtxMessages(msgId)
@@ -176,7 +183,7 @@ export default class AnthropicChatService
 
   protected async makePayload(
     messages: IChatRequestMessage[],
-    msgId?:string
+    msgId?: string,
   ): Promise<IChatRequestPayload> {
     const payload: IChatRequestPayload = {
       model: this.getModelName(),
@@ -216,7 +223,7 @@ export default class AnthropicChatService
 
   protected async makeRequest(
     messages: IChatRequestMessage[],
-    msgId?:string
+    msgId?: string,
   ): Promise<Response> {
     const payload = await this.makePayload(messages, msgId);
     debug('About to make a request, payload:\r\n', payload);
