@@ -35,7 +35,7 @@ export default function ToolStatusIndicator(
     return (
       <div
         className={`flex text-center justify-center items-center rounded-full border ${originalSupport ? ' border-green-400 dark:border-green-800' : 'border-gray-300 dark:border-neutral-600'}`}
-        style={{ width: 14, height: 14, borderStyle: 'dashed' }}
+        style={{ width: 14, height: 14, borderStyle: 'solid' }}
       >
         {actualSupport ? (
           <div

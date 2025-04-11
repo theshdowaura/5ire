@@ -93,7 +93,7 @@ export default function ModelList({
 
   return (
     <div>
-      <div className="flex justify-start items-center gap-2 pl-4 border-b  border-base ">
+      <div className="flex justify-start items-center gap-2 pl-4 border-b border-base">
         <Combobox
           size="small"
           clearable
