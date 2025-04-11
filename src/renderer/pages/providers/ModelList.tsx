@@ -17,6 +17,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import Spinner from 'renderer/components/Spinner';
 import ToolStatusIndicator from 'renderer/components/ToolStatusIndicator';
+import ModelFormDrawer from './ModelFormDrawer';
 
 const AddIcon = bundleIcon(AddCircleFilled, AddCircleRegular);
 
@@ -29,6 +30,8 @@ export default function ModelList({
 }) {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
+  const [formOpen, setFormOpen] = useState<boolean>(false);
+  const [selectedModel, setSelectedModel] = useState<IChatModel | null>(null);
   const [loading, setLoading] = useState(false);
   const [models, setModels] = useState<Partial<IChatModel>[]>([]);
 
@@ -108,7 +111,15 @@ export default function ModelList({
           ))}
         </Combobox>
         <div className="border-l border-base py-1 px-2 flex justify-center items-center min-w-[80px]">
-          <Button size="small" appearance="subtle" icon={<AddIcon />}>
+          <Button
+            size="small"
+            appearance="subtle"
+            icon={<AddIcon />}
+            onClick={() => {
+              setSelectedModel(null);
+              setFormOpen(true);
+            }}
+          >
             Model
           </Button>
         </div>
@@ -126,7 +137,8 @@ export default function ModelList({
                   key={model.name}
                   aria-label={model.name}
                   onAction={() => {
-                    // Handle model selection here
+                    setSelectedModel(model as IChatModel);
+                    setFormOpen(true);
                   }}
                   className="block hover:bg-stone-100 dark:hover:bg-stone-700"
                 >
@@ -141,12 +153,12 @@ export default function ModelList({
                       </span>
                       {model.vision && (
                         <div className="text-xs text-purple-800 dark:text-purple-400 px-1 ground bg-purple-100 dark:bg-purple-900 rounded-lg">
-                          {t('Provider.Model.Vision')}
+                          {t('Tags.Vision')}
                         </div>
                       )}
                       {model.toolEnabled && (
                         <div className="text-xs text-orange-800 dark:text-orange-500 px-1 ground bg-orange-100 dark:bg-yellow-900 rounded-lg">
-                          {t('Provider.Model.Tools')}
+                          {t('Tags.Tools')}
                         </div>
                       )}
                     </div>
@@ -161,6 +173,11 @@ export default function ModelList({
           </List>
         )}
       </div>
+      <ModelFormDrawer
+        open={formOpen}
+        setOpen={setFormOpen}
+        model={selectedModel}
+      />
     </div>
   );
 }

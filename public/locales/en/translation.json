@@ -275,9 +275,19 @@
   "Common.DisplayName": "Display Name",
   "Common.Currency": "Currency",
   "Common.APIVersion": "API Version",
-  "Provider.Model.Vision": "vision",
+  "Provider.Model.Vision": "Vision",
   "Common.Tools": "Tools",
-  "Provider.Model.Tools": "tools",
+  "Provider.Model.Tools": "Tools",
   "Provider.OpenAICompatible": "OpenAI Compatible",
-  "Common.NoModels": "Model not found."
+  "Common.NoModels": "Model not found.",
+  "Provider.Model.Name": "Name",
+  "Provider.Model.DisplayName": "Display Name",
+  "Provider.Model.ContextWindow": "Context Window",
+  "Common.InputPrice": "Input Price",
+  "Common.OutputPrice": "Output Price",
+  "Tags.Vision": "vision",
+  "Tags.Tools": "tools",
+  "Common.Enabled": "Enabled",
+  "Provider.Model.Edit": "Edit Model",
+  "Provider.Model.New": "New Model"
 }

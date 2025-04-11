@@ -268,9 +268,17 @@
   "Common.DisplayName": "显示名称",
   "Common.Currency": "计费货币",
   "Common.APIVersion": "版本",
-  "Provider.Model.Vision": "图片识别",
+  "Provider.Model.Vision": "视觉",
   "Common.Tools": "工具",
   "Provider.Model.Tools": "工具",
   "Provider.OpenAICompatible": "OpenAI 兼容",
-  "Common.NoModels": "未找到模型"
+  "Common.NoModels": "未找到模型",
+  "Provider.Model.Name": "名称",
+  "Provider.Model.ContextWindow": "上下文长度",
+  "Common.InputPrice": "输入价格",
+  "Tags.Vision": "视觉",
+  "Tags.Tools": "工具",
+  "Common.Enabled": "启用",
+  "Provider.Model.Edit": "编辑模型",
+  "Provider.Model.New": "添加模型"
 }
