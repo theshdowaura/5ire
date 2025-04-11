@@ -99,7 +99,7 @@ export interface IServiceProvider {
   description?: string;
   disabled?: boolean;
   isPremium?: boolean;
-  isBuiltin?: boolean;
+  isBuiltIn?: boolean;
   apiBase: string;
   apiKey?: string;
   currency: 'USD' | 'CNY';

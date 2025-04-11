@@ -1,10 +1,15 @@
-import { Button, List, ListItem } from '@fluentui/react-components';
-import { AddCircleFilled, AddCircleRegular, bundleIcon, ChevronRightRegular } from '@fluentui/react-icons';
+import { Button } from '@fluentui/react-components';
+import {
+  AddCircleFilled,
+  AddCircleRegular,
+  bundleIcon,
+} from '@fluentui/react-icons';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import useProviderStore from 'stores/useProviderStore';
 import ModelList from './ModelList';
 import ProviderForm from './ProviderForm';
+import ProviderList from './ProviderList';
+import useProviderStore from 'stores/useProviderStore';
 
 const DEFAULT_HEIGHT = 400;
 const HEADER_HEIGHT = 100;
@@ -16,22 +21,7 @@ const AddIcon = bundleIcon(AddCircleFilled, AddCircleRegular);
 export default function Providers() {
   const { t } = useTranslation();
   const selectedProvider = useProviderStore((state) => state.provider);
-  const providers = useProviderStore((state) => state.providers);
-  const { selectProvider } = useProviderStore();
   const [contentHeight, setContentHeight] = useState(DEFAULT_HEIGHT);
-
-  const providerNames = useMemo(
-    () =>
-      Object.keys(providers).sort((a: string, b: string) => a.localeCompare(b)),
-    [providers],
-  );
-
-  useEffect(() => {
-    if (!selectedProvider) {
-      // If no provider is selected, select the first one
-      selectProvider(providerNames[0]);
-    }
-  }, [selectedProvider, providerNames, selectProvider]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -64,36 +54,16 @@ export default function Providers() {
           className="border-r border-base relative "
           style={{ height: contentHeight - HEADER_HEIGHT }}
         >
-          <List
-            className="overflow-y-auto"
-            style={{
-              height: contentHeight - (HEADER_HEIGHT + LIST_ITEM_HEIGHT),
-            }}
-          >
-            {providerNames.map((providerName) => {
-              return (
-                <ListItem
-                  key={providerName}
-                  aria-label={providerName}
-                  onAction={() => {
-                    selectProvider(providerName);
-                  }}
-                  className="block hover:bg-stone-100 dark:hover:bg-stone-700"
-                >
-                  <div
-                    className={`flex justify-between items-center px-4 py-2 border-b border-gray-100 dark:border-stone-800 w-full ${selectedProvider?.name === providerName ? 'bg-stone-100 dark:bg-stone-700' : ''}`}
-                  >
-                    {providerName}
-                    {selectedProvider?.name === providerName && (
-                      <ChevronRightRegular />
-                    )}
-                  </div>
-                </ListItem>
-              );
-            })}
-          </List>
+          <ProviderList
+            height={contentHeight - (HEADER_HEIGHT + LIST_ITEM_HEIGHT)}
+          />
           <div className="absolute p-2 bottom-0 left-0 right-0 z-10 border-t border-base">
-            <Button size="small" appearance='subtle' className="w-full" icon={<AddIcon />}>
+            <Button
+              size="small"
+              appearance="subtle"
+              className="w-full"
+              icon={<AddIcon />}
+            >
               {t('Provider.OpenAICompatible')}
             </Button>
           </div>
@@ -102,7 +72,10 @@ export default function Providers() {
           {selectedProvider && (
             <div>
               <ProviderForm provider={selectedProvider} />
-              <ModelList provider={selectedProvider} height={contentHeight - (HEADER_HEIGHT + PROVIDER_FORM_HEIGHT)} />
+              <ModelList
+                provider={selectedProvider}
+                height={contentHeight - (HEADER_HEIGHT + PROVIDER_FORM_HEIGHT)}
+              />
             </div>
           )}
         </div>

@@ -55,30 +55,37 @@ export default function ModelFormDrawer({
         <Field label={t('Common.Description')} size="small">
           <Input />
         </Field>
-        <Field label={t('Provider.Model.ContextWindow')} size="small">
-          <SpinButton
-            placeholder={t('Common.Required')}
-            min={0}
-            max={MAX_CONTEXT_WINDOW}
-            size="small"
-          />
-        </Field>
-        <Field label={t('Common.MaxTokens')} size="small">
-          <SpinButton
-            defaultValue={DEFAULT_MAX_TOKENS}
-            min={0}
-            max={MAX_TOKENS}
-            size="small"
-          />
-        </Field>
-        <Field label={t('Common.InputPrice')} size="small">
-          <SpinButton defaultValue={0} min={0} max={999} size="small" />
-        </Field>
-        <Field label={t('Common.OutputPrice')} size="small">
-          <SpinButton defaultValue={0} min={0} max={999} size="small" />
-        </Field>
-        <Switch label={t('Provider.Model.Vision')} className="-ml-1.5" />
-        <Switch label={t('Provider.Model.Tools')} className="-ml-1.5 -mt-2" />
+        <div className="flex justify-evenly items-center gap-1">
+          <Field label={t('Provider.Model.ContextWindow')} size="small">
+            <SpinButton
+              placeholder={t('Common.Required')}
+              min={0}
+              max={MAX_CONTEXT_WINDOW}
+              size="small"
+            />
+          </Field>
+          <Field label={t('Common.MaxTokens')} size="small">
+            <SpinButton
+              defaultValue={DEFAULT_MAX_TOKENS}
+              min={0}
+              max={MAX_TOKENS}
+              size="small"
+            />
+          </Field>
+        </div>
+        <div className="flex justify-evenly items-center gap-1">
+          <Field label={t('Common.InputPrice')} size="small">
+            <SpinButton defaultValue={0} min={0} max={999} size="small" />
+          </Field>
+          <Field label={t('Common.OutputPrice')} size="small">
+            <SpinButton defaultValue={0} min={0} max={999} size="small" />
+          </Field>
+        </div>
+        <div className="grid grid-cols-2 gap-1 field-small">
+          <Switch label={t('Provider.Model.Vision')} className="-ml-1.5" />
+          <Switch label={t('Provider.Model.Tools')} className="-ml-1.5" />
+        </div>
+        <Switch label={t('Common.Enabled')} className="-ml-1.5 -mt-2 field-small" />
       </DrawerBody>
     </Drawer>
   );

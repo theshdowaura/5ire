@@ -1,4 +1,4 @@
-import { Checkbox, Field, Input, Select } from '@fluentui/react-components';
+import { Checkbox, Field, Input, Label, Select } from '@fluentui/react-components';
 import { IServiceProvider } from 'providers/types';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -33,7 +33,7 @@ export default function ProviderForm({
           className="flex-grow min-w-[185px]"
           size="small"
         >
-          <Input value={name} disabled={provider.isBuiltin} />
+          <Input value={name} disabled={provider.isBuiltIn} />
         </Field>
         <Field
           label={t('Common.Currency')}
@@ -46,29 +46,28 @@ export default function ProviderForm({
           </Select>
         </Field>
         <Field label={t('Common.Default')} size="small">
-          <Checkbox className=''/>
+          <Checkbox className="" />
         </Field>
       </div>
       <div className="mt-2">
-        <Field
-          label={t('Common.APIEndpoint')}
-          className="flex-grow min-w-[185px]"
-          size="small"
-        >
-          <Input
-            size="small"
-            value={endpoint}
-            placeholder={provider.apiBase || ''}
-          />
+        <Field size="small" className='field-small'>
+          <div className="flex justify-start items-center gap-1">
+            <Label className='w-[50px]'>{t('Common.APIEndpoint')}</Label>
+            <Input
+              size="small"
+              value={endpoint}
+              className="flex-grow"
+              placeholder={provider.apiBase || ''}
+            />
+          </div>
         </Field>
       </div>
       <div className="mt-2">
-        <Field
-          label={t('Common.APIKey')}
-          className="flex-grow min-w-[185px]"
-          size="small"
-        >
-          <MaskableInput />
+        <Field size="small" className='field-small'>
+          <div className="flex justify-start items-center gap-1">
+            <Label className='w-[50px]'>{t('Common.APIKey')}</Label>
+            <MaskableInput className="flex-grow" />
+          </div>
         </Field>
       </div>
     </div>

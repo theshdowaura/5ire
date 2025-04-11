@@ -42,7 +42,7 @@ export function getProviders(arg?: { withDisabled: boolean }): {
   const { session } = useAuthStore.getState();
   return Object.values(providers).reduce(
     (acc: { [key: string]: IServiceProvider }, cur: IServiceProvider) => {
-      cur.isBuiltin = true;
+      cur.isBuiltIn = true;
       if (!arg?.withDisabled && cur.disabled) return acc;
       if (!!session || !cur.isPremium) {
         acc[cur.name] = cur;
