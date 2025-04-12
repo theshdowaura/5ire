@@ -4,7 +4,7 @@ import {
   AddCircleRegular,
   bundleIcon,
 } from '@fluentui/react-icons';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import ModelList from './ModelList';
 import ProviderForm from './ProviderForm';
@@ -21,6 +21,7 @@ const AddIcon = bundleIcon(AddCircleFilled, AddCircleRegular);
 export default function Providers() {
   const { t } = useTranslation();
   const selectedProvider = useProviderStore((state) => state.provider);
+  const { createProvider } = useProviderStore();
   const [contentHeight, setContentHeight] = useState(DEFAULT_HEIGHT);
 
   useEffect(() => {
@@ -62,6 +63,9 @@ export default function Providers() {
               size="small"
               appearance="subtle"
               className="w-full"
+              onClick={() => {
+                createProvider();
+              }}
               icon={<AddIcon />}
             >
               {t('Provider.OpenAICompatible')}

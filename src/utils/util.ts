@@ -509,3 +509,13 @@ export function removeAdditionalProperties(schema: any): any {
     });
   }
 }
+
+export function genDefaultName(pool:string[], prefix: string): string {
+  let i = 1;
+  let name = `${prefix}${i}`;
+  while (pool.includes(name)) {
+    i++;
+    name = `${prefix}${i}`;
+  }
+  return name;
+}
