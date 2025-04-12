@@ -27,7 +27,7 @@ export default {
     options: {
       modelCustomizable: true,
     },
-    models: {},
+    models: [],
   },
   embedding: {
     apiSchema: ['base', 'model'],
@@ -37,6 +37,6 @@ export default {
     options: {
       modelCustomizable: true,
     },
-    models: {},
+    models: [],
   },
 } as IServiceProvider;

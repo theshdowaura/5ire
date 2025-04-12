@@ -1,4 +1,90 @@
+import { keyBy } from 'lodash';
 import { IServiceProvider } from './types';
+
+const chatModels = [
+  {
+    name: 'gpt-4o',
+    contextWindow: 128000,
+    maxTokens: 4096,
+    defaultMaxTokens: 4000,
+    inputPrice: 0.005,
+    outputPrice: 0.015,
+    capabilities: {
+      json: {
+        enabled: true,
+      },
+      tools: {
+        enabled: true,
+      },
+      vision: {
+        enabled: true,
+        allowBase64: true,
+        allowUrl: true,
+      },
+    },
+  },
+  {
+    name: 'gpt-4o-mini',
+    contextWindow: 128000,
+    maxTokens: 16384,
+    defaultMaxTokens: 16000,
+    inputPrice: 0.00015,
+    outputPrice: 0.0006,
+    description: `GPT-4o mini (“o” for “omni”) is OpenAI's advanced model in the small models category, and it's cheapest model yet. It is multimodal (accepting text or image inputs and outputting text), has higher intelligence than gpt-3.5-turbo but is just as fast. It is meant to be used for smaller tasks, including vision tasks.`,
+    capabilities: {
+      json: {
+        enabled: true,
+      },
+      tools: {
+        enabled: true,
+      },
+      vision: {
+        enabled: true,
+        allowBase64: true,
+        allowUrl: true,
+      },
+    },
+  },
+  {
+    name: 'gpt-4',
+    contextWindow: 8192,
+    maxTokens: 8192,
+    defaultMaxTokens: 8000,
+    inputPrice: 0.03,
+    outputPrice: 0.06,
+    capabilities: {
+      tools: {
+        enabled: true,
+      },
+    },
+  },
+  {
+    label: 'gpt-4-turbo',
+    contextWindow: 128000,
+    maxTokens: 4096,
+    defaultMaxTokens: 4000,
+    inputPrice: 0.03,
+    outputPrice: 0.06,
+    capabilities: {
+      tools: {
+        enabled: true,
+      },
+    },
+  },
+  {
+    name: 'gpt-4-32k',
+    contextWindow: 32000,
+    maxTokens: 4096,
+    defaultMaxTokens: 4000,
+    inputPrice: 0.06,
+    outputPrice: 0.12,
+    capabilities: {
+      tools: {
+        enabled: true,
+      },
+    },
+  },
+];
 
 export default {
   name: 'Azure',
@@ -9,8 +95,8 @@ export default {
     apiKeyCustomizable: true,
   },
   chat: {
-    apiSchema: ['base', 'key', 'deploymentId', 'model'],
-    modelAttributes: ['version'],
+    apiSchema: ['base', 'key', 'deploymentId'],
+    modeExtras: ['version'],
     docs: {
       deploymentId: 'The deployment name you chose when you deployed the model',
       temperature:
@@ -28,106 +114,6 @@ export default {
     options: {
       modelCustomizable: true,
     },
-    models: {
-      'gpt-4o': {
-        label: 'gpt-4o',
-        contextWindow: 128000,
-        maxTokens: 4096,
-        defaultMaxTokens: 4000,
-        inputPrice: 0.005,
-        outputPrice: 0.015,
-        capabilities: {
-          json: {
-            enabled: true,
-          },
-          tools: {
-            enabled: true,
-          },
-          vision: {
-            enabled: true,
-            allowBase64: true,
-            allowUrl: true,
-          },
-        },
-      },
-      'gpt-4o-mini': {
-        label: 'gpt-4o-mini',
-        contextWindow: 128000,
-        maxTokens: 16384,
-        defaultMaxTokens: 16000,
-        inputPrice: 0.00015,
-        outputPrice: 0.0006,
-        description: `GPT-4o mini (“o” for “omni”) is OpenAI's advanced model in the small models category, and it's cheapest model yet. It is multimodal (accepting text or image inputs and outputting text), has higher intelligence than gpt-3.5-turbo but is just as fast. It is meant to be used for smaller tasks, including vision tasks.`,
-        capabilities: {
-          json: {
-            enabled: true,
-          },
-          tools: {
-            enabled: true,
-          },
-          vision: {
-            enabled: true,
-            allowBase64: true,
-            allowUrl: true,
-          },
-        },
-      },
-      'gpt-4': {
-        label: 'gpt-4',
-        contextWindow: 8192,
-        maxTokens: 8192,
-        defaultMaxTokens: 8000,
-        inputPrice: 0.03,
-        outputPrice: 0.06,
-        capabilities: {
-          tools: {
-            enabled: true,
-          },
-        },
-      },
-      'gpt-4-turbo': {
-        label: 'gpt-4-turbo',
-        contextWindow: 128000,
-        maxTokens: 4096,
-        defaultMaxTokens: 4000,
-        inputPrice: 0.03,
-        outputPrice: 0.06,
-        capabilities: {
-          tools: {
-            enabled: true,
-          },
-        },
-      },
-      'gpt-4-32k': {
-        label: 'gpt-4-32k',
-        contextWindow: 32000,
-        maxTokens: 4096,
-        defaultMaxTokens: 4000,
-        inputPrice: 0.06,
-        outputPrice: 0.12,
-        capabilities: {
-          tools: {
-            enabled: true,
-          },
-        },
-      },
-    },
-  },
-  embedding: {
-    apiSchema: ['base', 'key', 'deploymentId', 'model'],
-    placeholders: {
-      base: ' https://{YOUR_RESOURCE_NAME}.openai.azure.com',
-    },
-    models: {
-      'text-embedding-3-small': {
-        name: 'text-embedding-3-small',
-        dimension: 1536,
-        price: 0.00002,
-        maxTokens: 8191,
-        description:
-          'Increased performance over 2nd generation ada embedding model',
-        isDefault: true,
-      },
-    },
+    models: chatModels,
   },
 } as IServiceProvider;

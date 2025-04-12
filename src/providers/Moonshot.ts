@@ -1,5 +1,45 @@
 import { IServiceProvider } from './types';
 
+const chatModels = [
+  {
+    name: 'moonshot-v1-8k',
+    contextWindow: 8192,
+    maxTokens: 1024,
+    inputPrice: 0.012,
+    outputPrice: 0.012,
+    isDefault: true,
+    capabilities: {
+      tools: {
+        enabled: true,
+      },
+    },
+  },
+  {
+    name: 'moonshot-v1-32k',
+    contextWindow: 32768,
+    maxTokens: 1024,
+    inputPrice: 0.024,
+    outputPrice: 0.024,
+    capabilities: {
+      tools: {
+        enabled: true,
+      },
+    },
+  },
+  {
+    name: 'moonshot-v1-128k',
+    contextWindow: 128000,
+    maxTokens: 1024,
+    inputPrice: 0.06,
+    outputPrice: 0.06,
+    capabilities: {
+      tools: {
+        enabled: true,
+      },
+    },
+  },
+];
+
 export default {
   name: 'Moonshot',
   apiBase: 'https://api.moonshot.cn/v1',
@@ -16,44 +56,6 @@ export default {
     options: {
       modelCustomizable: true,
     },
-    models: {
-      'moonshot-v1-8k': {
-        label: 'moonshot-v1-8k',
-        contextWindow: 8192,
-        maxTokens: 1024,
-        inputPrice: 0.012,
-        outputPrice: 0.012,
-        isDefault: true,
-        capabilities: {
-          tools: {
-            enabled: true,
-          },
-        },
-      },
-      'moonshot-v1-32k': {
-        label: 'moonshot-v1-32k',
-        contextWindow: 32768,
-        maxTokens: 1024,
-        inputPrice: 0.024,
-        outputPrice: 0.024,
-        capabilities: {
-          tools: {
-            enabled: true,
-          },
-        },
-      },
-      'moonshot-v1-128k': {
-        label: 'moonshot-v1-128k',
-        contextWindow: 128000,
-        maxTokens: 1024,
-        inputPrice: 0.06,
-        outputPrice: 0.06,
-        capabilities: {
-          tools: {
-            enabled: true,
-          },
-        },
-      },
-    },
+    models: chatModels,
   },
 } as IServiceProvider;

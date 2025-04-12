@@ -1,5 +1,38 @@
 import { IServiceProvider } from './types';
 
+const chatModels = [
+  {
+      name: 'deepseek-chat',
+      contextWindow: 65536,
+      maxTokens: 8192,
+      defaultMaxTokens: 8000,
+      inputPrice: 0.0006,
+      outputPrice: 0.002,
+      isDefault: true,
+      description: `60 tokens/second, Enhanced capabilities，API compatibility intact`,
+      capabilities: {
+        tools: {
+          enabled: true,
+        },
+      },
+    },{
+      name: 'deepseek-reasoner',
+      contextWindow: 65536,
+      maxTokens: 8192,
+      defaultMaxTokens: 8000,
+      inputPrice: 0.003,
+      outputPrice: 0.016,
+      isDefault: true,
+      description: `Performance on par with OpenAI-o1`,
+      capabilities: {
+        tools: {
+          enabled: true,
+        },
+      },
+    },
+
+]
+
 export default {
   name: 'DeepSeek',
   apiBase: 'https://api.deepseek.com',
@@ -16,37 +49,6 @@ export default {
     options: {
       modelCustomizable: true,
     },
-    models: {
-      'deepseek-chat': {
-        label: 'deepseek-chat',
-        contextWindow: 65536,
-        maxTokens: 8192,
-        defaultMaxTokens: 8000,
-        inputPrice: 0.0006,
-        outputPrice: 0.002,
-        isDefault: true,
-        description: `60 tokens/second, Enhanced capabilities，API compatibility intact`,
-        capabilities: {
-          tools: {
-            enabled: true,
-          },
-        },
-      },
-      'deepseek-reasoner': {
-        label: 'deepseek-reasoner',
-        contextWindow: 65536,
-        maxTokens: 8192,
-        defaultMaxTokens: 8000,
-        inputPrice: 0.003,
-        outputPrice: 0.016,
-        isDefault: true,
-        description: `Performance on par with OpenAI-o1`,
-        capabilities: {
-          tools: {
-            enabled: true,
-          },
-        },
-      },
-    },
+    models: chatModels,
   },
 } as IServiceProvider;
