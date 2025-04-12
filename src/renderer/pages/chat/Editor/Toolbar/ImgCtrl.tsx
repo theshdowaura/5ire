@@ -28,7 +28,7 @@ import { useTranslation } from 'react-i18next';
 import { isBlank } from 'utils/validators';
 import { isWebUri } from 'valid-url';
 import { insertAtCursor } from 'utils/util';
-import { IChatModelVision } from 'providers/types';
+import { IVersionCapability } from 'providers/types';
 import useChatStore from 'stores/useChatStore';
 
 const ImageAddIcon = bundleIcon(ImageAdd20Filled, ImageAdd20Regular);
@@ -70,8 +70,8 @@ export default function ImgCtrl({
     Mousetrap.unbind('esc');
   };
 
-  const vision = useMemo<IChatModelVision>(() => {
-    return model?.vision || { enabled: false };
+  const vision = useMemo<IVersionCapability>(() => {
+    return model?.capabilities?.vision || { enabled: false };
   }, [model]);
 
   useEffect(() => {

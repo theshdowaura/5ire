@@ -23,16 +23,23 @@ export default {
         defaultMaxTokens: 8000,
         inputPrice: 0.003,
         outputPrice: 0.015,
-        toolEnabled: true,
-        vision: {
-          enabled: true,
-          allowBase64: true,
-          allowedMimeTypes: [
-            'image/jpeg',
-            'image/png',
-            'image/gif',
-            'image/webp',
-          ],
+        capabilities: {
+          json: {
+            enabled: true,
+          },
+          tools: {
+            enabled: true,
+          },
+          vision: {
+            enabled: true,
+            allowBase64: true,
+            allowedMimeTypes: [
+              'image/jpeg',
+              'image/png',
+              'image/gif',
+              'image/webp',
+            ],
+          }
         },
         description: `Highest level of intelligence and capability with toggleable extended thinking`,
         group: 'Claude-Sonnet',
@@ -44,16 +51,23 @@ export default {
         defaultMaxTokens: 8000,
         inputPrice: 0.003,
         outputPrice: 0.015,
-        toolEnabled: true,
-        vision: {
-          enabled: true,
-          allowBase64: true,
-          allowedMimeTypes: [
-            'image/jpeg',
-            'image/png',
-            'image/gif',
-            'image/webp',
-          ],
+        capabilities: {
+          json: {
+            enabled: true,
+          },
+          tools: {
+            enabled: true,
+          },
+          vision: {
+            enabled: true,
+            allowBase64: true,
+            allowedMimeTypes: [
+              'image/jpeg',
+              'image/png',
+              'image/gif',
+              'image/webp',
+            ],
+          }
         },
         description: `High level of intelligence and capability`,
       },
@@ -65,7 +79,24 @@ export default {
         inputPrice: 0.001,
         outputPrice: 0.005,
         description: `The fastest model of Anthropic, Intelligence at blazing speeds`,
-        toolEnabled: true,
+        capabilities: {
+          json: {
+            enabled: true,
+          },
+          tools: {
+            enabled: true,
+          },
+          vision: {
+            enabled: true,
+            allowBase64: true,
+            allowedMimeTypes: [
+              'image/jpeg',
+              'image/png',
+              'image/gif',
+              'image/webp',
+            ],
+          }
+        },
       },
       'claude-3-opus-20240229': {
         label: 'claude-3-opus',
@@ -74,16 +105,23 @@ export default {
         defaultMaxTokens: 4000,
         inputPrice: 0.015,
         outputPrice: 0.075,
-        toolEnabled: true,
-        vision: {
-          enabled: true,
-          allowBase64: true,
-          allowedMimeTypes: [
-            'image/jpeg',
-            'image/png',
-            'image/gif',
-            'image/webp',
-          ],
+        capabilities: {
+          json: {
+            enabled: true,
+          },
+          tools: {
+            enabled: true,
+          },
+          vision: {
+            enabled: true,
+            allowBase64: true,
+            allowedMimeTypes: [
+              'image/jpeg',
+              'image/png',
+              'image/gif',
+              'image/webp',
+            ],
+          }
         },
         description: `Powerful multilingual model for highly complex tasks, top-level performance, intelligence, fluency, and understanding`,
       },
@@ -94,16 +132,23 @@ export default {
         defaultMaxTokens: 4000,
         inputPrice: 0.003,
         outputPrice: 0.015,
-        toolEnabled: true,
-        vision: {
-          enabled: true,
-          allowBase64: true,
-          allowedMimeTypes: [
-            'image/jpeg',
-            'image/png',
-            'image/gif',
-            'image/webp',
-          ],
+        capabilities: {
+          json: {
+            enabled: true,
+          },
+          tools: {
+            enabled: true,
+          },
+          vision: {
+            enabled: true,
+            allowBase64: true,
+            allowedMimeTypes: [
+              'image/jpeg',
+              'image/png',
+              'image/gif',
+              'image/webp',
+            ],
+          }
         },
         description:
           'A multilingual model with balance of intelligence and speed, strong utility, balanced for scaled deployments',
@@ -115,17 +160,24 @@ export default {
         defaultMaxTokens: 4000,
         inputPrice: 0.000025,
         outputPrice: 0.00125,
-        toolEnabled: true,
-        vision: {
-          enabled: true,
-          allowBase64: true,
-          allowedMimeTypes: [
-            'image/jpeg',
-            'image/png',
-            'image/gif',
-            'image/webp',
-          ],
-        },
+        capabilities: {
+            json: {
+              enabled: true,
+            },
+            tools: {
+              enabled: true,
+            },
+            vision: {
+              enabled: true,
+              allowBase64: true,
+              allowedMimeTypes: [
+                'image/jpeg',
+                'image/png',
+                'image/gif',
+                'image/webp',
+              ],
+            }
+          },
         description:
           'Fastest and most compact multilingual model for near-instant responsiveness, quick and accurate targeted performance',
       },

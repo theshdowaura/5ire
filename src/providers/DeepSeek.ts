@@ -26,7 +26,11 @@ export default {
         outputPrice: 0.002,
         isDefault: true,
         description: `60 tokens/second, Enhanced capabilities，API compatibility intact`,
-        toolEnabled: true,
+        capabilities: {
+          tools: {
+            enabled: true,
+          },
+        },
       },
       'deepseek-reasoner': {
         label: 'deepseek-reasoner',
@@ -37,7 +41,11 @@ export default {
         outputPrice: 0.016,
         isDefault: true,
         description: `Performance on par with OpenAI-o1`,
-        toolEnabled: false,
+        capabilities: {
+          tools: {
+            enabled: true,
+          },
+        },
       },
     },
   },

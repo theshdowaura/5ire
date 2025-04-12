@@ -1,5 +1,5 @@
 import { Checkbox, Field, Input, Label, Select } from '@fluentui/react-components';
-import { IServiceProvider } from 'providers/types';
+import { IChatProviderConfig } from 'providers/types';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import MaskableInput from 'renderer/components/MaskableInput';
@@ -7,7 +7,7 @@ import MaskableInput from 'renderer/components/MaskableInput';
 export default function ProviderForm({
   provider,
 }: {
-  provider: IServiceProvider;
+  provider: IChatProviderConfig| null;
 }) {
   const { t } = useTranslation();
   const [name, setName] = useState<string>('');
@@ -15,9 +15,9 @@ export default function ProviderForm({
   const [endpoint, setEndpoint] = useState<string>('');
 
   useEffect(() => {
-    setName(provider.name);
-    setEndpoint(provider.apiBase);
-    setCurrency(provider.currency || 'USD');
+    setName(provider?.name||'');
+    setEndpoint(provider?.apiBase||'');
+    setCurrency(provider?.currency || 'USD');
     return () => {
       setName('');
       setEndpoint('');
@@ -33,7 +33,7 @@ export default function ProviderForm({
           className="flex-grow min-w-[185px]"
           size="small"
         >
-          <Input value={name} disabled={provider.isBuiltIn} />
+          <Input value={name} disabled={provider?.isBuiltIn} />
         </Field>
         <Field
           label={t('Common.Currency')}
@@ -57,7 +57,7 @@ export default function ProviderForm({
               size="small"
               value={endpoint}
               className="flex-grow"
-              placeholder={provider.apiBase || ''}
+              placeholder={provider?.apiBase || ''}
             />
           </div>
         </Field>

@@ -25,10 +25,18 @@ export default {
         defaultMaxTokens: 32000,
         inputPrice: 0.0001,
         outputPrice: 0.0004,
-        jsonModelEnabled: true,
-        toolEnabled: true,
-        vision: {
-          enabled: true,
+        capabilities: {
+          tools: {
+            enabled: true,
+          },
+          json: {
+            enabled: true,
+          },
+          vision: {
+            enabled: true,
+            allowBase64: true,
+            allowUrl: true,
+          },
         },
         description: `Google's our most advanced coding model yet and is state-of-the-art across a range of benchmarks requiring enhanced reasoning.`,
       },
@@ -39,10 +47,18 @@ export default {
         defaultMaxTokens: 8000,
         inputPrice: 0.0001,
         outputPrice: 0.0004,
-        jsonModelEnabled: true,
-        toolEnabled: true,
-        vision: {
-          enabled: true,
+        capabilities: {
+          tools: {
+            enabled: true,
+          },
+          json: {
+            enabled: true,
+          },
+          vision: {
+            enabled: true,
+            allowBase64: true,
+            allowUrl: true,
+          },
         },
         description: `Next generation features, superior speed, native tool use, and multimodal generation`,
       },
@@ -53,10 +69,18 @@ export default {
         defaultMaxTokens: 8000,
         inputPrice: 0.0001,
         outputPrice: 0.0004,
-        jsonModelEnabled: true,
-        toolEnabled: true,
-        vision: {
-          enabled: true,
+        capabilities: {
+          tools: {
+            enabled: true,
+          },
+          json: {
+            enabled: true,
+          },
+          vision: {
+            enabled: true,
+            allowBase64: true,
+            allowUrl: true,
+          },
         },
         description: `The quality has improved, especially for world knowledge, code, and long contexts.`,
       },
@@ -67,10 +91,15 @@ export default {
         defaultMaxTokens: 8000,
         inputPrice: 0.0001,
         outputPrice: 0.0004,
-        jsonModelEnabled: true,
-        toolEnabled: false,
-        vision: {
-          enabled: true,
+        capabilities: {
+          json: {
+            enabled: true,
+          },
+          vision: {
+            enabled: true,
+            allowBase64: true,
+            allowUrl: true,
+          },
         },
         description: `Capable of reasoning about complex problems and possessing new thinking abilities`,
       },
@@ -81,11 +110,19 @@ export default {
         defaultMaxTokens: 8000,
         inputPrice: 0.000075,
         outputPrice: 0.0003,
-        jsonModelEnabled: true,
-        toolEnabled: true,
         isDefault: true,
-        vision: {
-          enabled: true,
+        capabilities: {
+          tools: {
+            enabled: true,
+          },
+          json: {
+            enabled: true,
+          },
+          vision: {
+            enabled: true,
+            allowBase64: true,
+            allowUrl: true,
+          },
         },
         description: `Quality improvements, celebrate 1 year of Gemini`,
       },
@@ -96,10 +133,18 @@ export default {
         defaultMaxTokens: 8000,
         inputPrice: 0.00035,
         outputPrice: 0.0105,
-        jsonModelEnabled: true,
-        toolEnabled: true,
-        vision: {
-          enabled: true,
+        capabilities: {
+          tools: {
+            enabled: true,
+          },
+          json: {
+            enabled: true,
+          },
+          vision: {
+            enabled: true,
+            allowBase64: true,
+            allowUrl: true,
+          },
         },
         description: `The multi-modal model from Google's Gemini family that balances model performance and speed.`,
       },
@@ -110,10 +155,18 @@ export default {
         defaultMaxTokens: 8000,
         inputPrice: 0.00035,
         outputPrice: 0.00105,
-        jsonModelEnabled: true,
-        toolEnabled: true,
-        vision: {
-          enabled: true,
+        capabilities: {
+          tools: {
+            enabled: true,
+          },
+          json: {
+            enabled: true,
+          },
+          vision: {
+            enabled: true,
+            allowBase64: true,
+            allowUrl: true,
+          },
         },
         description: `Lightweight, fast and cost-efficient while featuring multimodal reasoning and a breakthrough long context window of up to one million tokens.`,
       },
@@ -124,10 +177,18 @@ export default {
         defaultMaxTokens: 8000,
         inputPrice: 0.0000375,
         outputPrice: 0.00015,
-        jsonModelEnabled: true,
-        toolEnabled: true,
-        vision: {
-          enabled: true,
+        capabilities: {
+          tools: {
+            enabled: true,
+          },
+          json: {
+            enabled: true,
+          },
+          vision: {
+            enabled: true,
+            allowBase64: true,
+            allowUrl: true,
+          },
         },
         description: `The Gemini 1.5 Flash-8B is a small model designed for tasks that require less intelligence.`,
       },

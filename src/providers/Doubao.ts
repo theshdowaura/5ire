@@ -33,10 +33,12 @@ export default {
         defaultMaxTokens: 4000,
         inputPrice: 0.0008,
         outputPrice: 0.002,
-        vision: {
-          enabled: true,
-          allowBase64: true,
-          allowUrl: true,
+        capabilities: {
+          vision: {
+            enabled: true,
+            allowBase64: true,
+            allowUrl: true,
+          },
         },
       },
       'doubao-pro-256k': {
@@ -46,7 +48,11 @@ export default {
         defaultMaxTokens: 4000,
         inputPrice: 0.005,
         outputPrice: 0.009,
-        toolEnabled: true,
+        capabilities: {
+          tools: {
+            enabled: true,
+          },
+        },
       },
       'doubao-pro-128k': {
         label: 'doubao-pro-128k',
@@ -56,7 +62,11 @@ export default {
         inputPrice: 0.005,
         outputPrice: 0.009,
         isDefault: true,
-        toolEnabled: true,
+        capabilities: {
+          tools: {
+            enabled: true,
+          },
+        },
       },
       'doubao-pro-32k': {
         label: 'doubao-pro-32k',
@@ -65,7 +75,11 @@ export default {
         defaultMaxTokens: 4000,
         inputPrice: 0.0008,
         outputPrice: 0.002,
-        toolEnabled: true,
+        capabilities: {
+          tools: {
+            enabled: true,
+          },
+        },
       },
       'doubao-pro-4k': {
         label: 'doubao-pro-4k',
@@ -74,7 +88,11 @@ export default {
         defaultMaxTokens: 4000,
         inputPrice: 0.0008,
         outputPrice: 0.002,
-        toolEnabled: true,
+        capabilities: {
+          tools: {
+            enabled: true,
+          },
+        },
       },
       'doubao-lite-128k': {
         label: 'doubao-lite-128k',
@@ -83,7 +101,11 @@ export default {
         maxTokens: 4096,
         inputPrice: 0.0008,
         outputPrice: 0.001,
-        toolEnabled: true,
+        capabilities: {
+          tools: {
+            enabled: true,
+          },
+        },
       },
       'doubao-lite-32k': {
         label: 'doubao-lite-32k',
@@ -92,7 +114,11 @@ export default {
         defaultMaxTokens: 4000,
         inputPrice: 0.0003,
         outputPrice: 0.0006,
-        toolEnabled: true,
+        capabilities: {
+          tools: {
+            enabled: true,
+          },
+        },
       },
       'doubao-lite-4k': {
         label: 'doubao-lite-4k',
@@ -101,7 +127,11 @@ export default {
         defaultMaxTokens: 4000,
         inputPrice: 0.0003,
         outputPrice: 0.0006,
-        toolEnabled: true,
+        capabilities: {
+          tools: {
+            enabled: true,
+          },
+        },
       },
     },
   },

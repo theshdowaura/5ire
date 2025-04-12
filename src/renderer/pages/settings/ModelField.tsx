@@ -25,7 +25,7 @@ export default function ModelField() {
   const model = useSettingsStore((state) => state.api.model);
   const provider = getProvider(providerName);
   const { setAPI, setToolState, getToolState, toolStates } = useSettingsStore();
-  const [toolEnabled, setToolEnabled] = useState(
+  const [toolsEnabled, setToolsEnabled] = useState(
     getToolState(provider.name, model) || false,
   );
 
@@ -48,12 +48,12 @@ export default function ModelField() {
 
   useEffect(() => {
     if (provider && model) {
-      let newToolEnabled = getToolState(provider.name, model);
-      if (isUndefined(newToolEnabled)) {
+      let newState = getToolState(provider.name, model);
+      if (isUndefined(newState)) {
         const curModel = models.find((m) => m.name === model);
-        newToolEnabled = curModel?.toolEnabled || false;
+        newState = curModel?.capabilities?.tools?.enabled || false;
       }
-      setToolEnabled(newToolEnabled);
+      setToolsEnabled(newState);
     }
   }, [provider, model, toolStates]);
 
@@ -177,7 +177,7 @@ export default function ModelField() {
           <TooltipIcon tip={t('Common.SupportToolsTip')} />
         </div>
         <div className="flex justify-start items-center gap-1 -mb-1.5">
-          <Switch checked={toolEnabled} onChange={setToolSetting} />
+          <Switch checked={toolsEnabled} onChange={setToolSetting} />
         </div>
       </div>
     </div>

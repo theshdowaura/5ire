@@ -1,3 +1,5 @@
+import { extend } from 'lodash';
+
 export type ProviderType =
   | 'OpenAI'
   | 'Google'
@@ -23,8 +25,7 @@ export interface INumberRange {
     rightOpen: boolean;
   };
 }
-
-export interface IChatModelVision {
+export interface IVersionCapability {
   enabled: boolean;
   allowUrl?: boolean;
   allowBase64?: boolean;
@@ -40,9 +41,11 @@ export interface IChatModel {
   isDefault?: boolean;
   inputPrice: number;
   outputPrice: number;
-  jsonModelEnabled?: boolean;
-  toolEnabled?: boolean;
-  vision?: IChatModelVision;
+  capabilities?: {
+    json?: { enabled: boolean };
+    tools?: { enabled: boolean };
+    vision?: IVersionCapability;
+  };
 }
 
 export interface IChatConfig {
@@ -110,4 +113,39 @@ export interface IServiceProvider {
   };
   chat: IChatConfig;
   embedding?: IEmbeddingConfig;
+}
+
+export interface IChatModelConfig {
+  name: string;
+  label?: string;
+  description?: string | null;
+  maxTokens?: number | null;
+  defaultMaxTokens?: number | null;
+  contextWindow: number | null;
+  isDefault?: boolean;
+  isBuiltIn?: boolean;
+  isPremium?: boolean;
+  inputPrice: number;
+  outputPrice: number;
+  capabilities: {
+    json?: { enabled: boolean };
+    tools?: { enabled: boolean };
+    vision?: IVersionCapability;
+  };
+  disabled?: boolean;
+  deploymentId?: string;
+}
+
+export interface IChatProviderConfig {
+  name: string;
+  description?: string;
+  disabled: boolean;
+  isBuiltIn: boolean;
+  isDefault: boolean;
+  isPremium: boolean;
+  apiBase: string;
+  apiKey: string;
+  currency: 'USD' | 'CNY';
+  modelsEndpoint: string | null;
+  models: { [key: string]: IChatModelConfig };
 }

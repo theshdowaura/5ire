@@ -24,6 +24,14 @@ export default {
         defaultMaxTokens: 4000,
         inputPrice: 0.005,
         outputPrice: 0.015,
+        tools: {
+          enabled: true,
+        },
+        vision: {
+          enabled: true,
+          allowBase64: true,
+          allowUrl: true,
+        },
         description: `GPT-4o it's most advanced multimodal model of OpenAI that’s faster and cheaper than GPT-4 Turbo with stronger vision capabilities`,
       },
       'gpt-4o-mini': {
@@ -33,11 +41,14 @@ export default {
         defaultMaxTokens: 16000,
         inputPrice: 0.00015,
         outputPrice: 0.0006,
-        vision: {
-          enabled: true,
-          allowBase64: true,
-          allowUrl: true,
+        capabilities: {
+          vision: {
+            enabled: true,
+            allowBase64: true,
+            allowUrl: true,
+          },
         },
+
         description: `GPT-4o mini (“o” for “omni”) is OpenAI's advanced model in the small models category, and it's cheapest model yet. It is multimodal (accepting text or image inputs and outputting text), has higher intelligence than gpt-3.5-turbo but is just as fast. It is meant to be used for smaller tasks, including vision tasks.`,
       },
       'gpt-4': {
@@ -47,6 +58,13 @@ export default {
         defaultMaxTokens: 4000,
         inputPrice: 0.08,
         outputPrice: 0.3,
+        capabilities: {
+          vision: {
+            enabled: true,
+            allowBase64: true,
+            allowUrl: true,
+          },
+        },
         description: `The latest GPT-4 model with improved instruction following,
       JSON mode, reproducible outputs, parallel function calling,
       and more. Returns a maximum of 4,096 output tokens.

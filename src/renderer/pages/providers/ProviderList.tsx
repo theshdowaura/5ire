@@ -24,7 +24,7 @@ const MoreVerticalIcon = bundleIcon(MoreVerticalFilled, MoreVerticalRegular);
 export default function ProviderList({ height = 400 }: { height: number }) {
   const selectedProvider = useProviderStore((state) => state.provider);
   const providers = useProviderStore((state) => state.providers);
-  const { selectProvider } = useProviderStore();
+  const { setProvider: selectProvider } = useProviderStore();
 
   const providerNames = useMemo(
     () =>

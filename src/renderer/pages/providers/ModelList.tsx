@@ -11,8 +11,7 @@ import {
   AddCircleRegular,
   bundleIcon,
 } from '@fluentui/react-icons';
-import { getChatModels } from 'providers';
-import { IChatModel, IServiceProvider } from 'providers/types';
+import { IChatModel, IChatProviderConfig } from 'providers/types';
 import { useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import Spinner from 'renderer/components/Spinner';
@@ -26,7 +25,7 @@ export default function ModelList({
   provider,
   height = 400,
 }: {
-  provider: IServiceProvider;
+  provider: IChatProviderConfig;
   height?: number;
 }) {
   const { t } = useTranslation();
@@ -41,11 +40,11 @@ export default function ModelList({
   };
 
   const loadModels = useCallback(async () => {
-    if (provider.options?.modelsEndpoint) {
+    if (provider.modelsEndpoint) {
       setLoading(true);
       try {
         const resp = await fetch(
-          `${provider.apiBase}${provider.options.modelsEndpoint}`,
+          `${provider.apiBase}${provider.modelsEndpoint}`,
           {
             method: 'GET',
             headers: {
@@ -66,7 +65,7 @@ export default function ModelList({
         setLoading(false);
       }
     } else {
-      setModels(getChatModels(provider.name));
+      setModels(Object.values(provider.models));
     }
   }, [provider]);
 
@@ -164,12 +163,12 @@ export default function ModelList({
                         )}
                       </div>
                       <div className="flex justify-end gap-1">
-                        {model.vision && (
+                        {model.capabilities?.vision && (
                           <div className="text-xs text-amber-900 dark:text-amber-500 px-1.5 ground bg-amber-100 dark:bg-amber-900 rounded-lg dark:opacity-80">
                             {t('Tags.Vision')}
                           </div>
                         )}
-                        {model.toolEnabled && (
+                        {model.capabilities?.tools && (
                           <ToolTag
                             provider={provider.name}
                             model={model.name}

@@ -16,16 +16,16 @@ export default function ToolStatusIndicator(
   const { getToolState } = useSettingsStore();
 
   const originalSupport = useMemo(
-    () => getChatModel(provider, model).toolEnabled || false,
+    () => getChatModel(provider, model).capabilities?.tools?.enabled || false,
     [provider, model],
   );
 
   const actualSupport = useMemo(() => {
-    let toolEnabled = getToolState(provider, model);
-    if (isUndefined(toolEnabled)) {
-      toolEnabled = originalSupport;
+    let toolState = getToolState(provider, model);
+    if (isUndefined(toolState)) {
+      toolState = originalSupport;
     }
-    return toolEnabled;
+    return toolState;
   }, [provider, model, originalSupport]);
 
   const { t } = useTranslation();

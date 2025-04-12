@@ -54,10 +54,13 @@ export default {
         defaultMaxTokens: 4000,
         inputPrice: 0.005,
         outputPrice: 0.015,
-        vision: {
-          enabled: true,
+        capabilities: {
+          vision: {
+            enabled: true,
+            allowBase64: true,
+            allowUrl: true,
+          },
         },
-        jsonModelEnabled: false,
         description: ``,
       },
       'gpt-4': {

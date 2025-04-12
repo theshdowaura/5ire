@@ -210,7 +210,7 @@ export default class GoogleChatService
         temperature: this.context.getTemperature(),
       },
     };
-    if (this.context.isToolEnabled()) {
+    if (this.context.isToolsEnabled()) {
       const tools = await window.electron.mcp.listTools();
       if (tools) {
         const _tools = tools

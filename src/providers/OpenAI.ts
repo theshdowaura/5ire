@@ -23,12 +23,13 @@ export default {
         maxTokens: 100000,
         inputPrice: 0.015,
         outputPrice: 0.05,
-        vision: {
-          enabled: true,
-          allowBase64: true,
-          allowUrl: true,
+        capabilities: {
+          vision: {
+            enabled: true,
+            allowBase64: true,
+            allowUrl: true,
+          },
         },
-        toolEnabled: false,
         description: `The o1 reasoning model is designed to solve hard problems across domains`,
       },
       'o1-mini': {
@@ -38,12 +39,13 @@ export default {
         defaultMaxTokens: 60000,
         inputPrice: 0.0011,
         outputPrice: 0.004,
-        vision: {
-          enabled: true,
-          allowBase64: true,
-          allowUrl: true,
+        capabilities: {
+          vision: {
+            enabled: true,
+            allowBase64: true,
+            allowUrl: true,
+          },
         },
-        toolEnabled: false,
         description: `o1-mini is a faster and more affordable reasoning model`,
       },
       'o3-mini': {
@@ -53,7 +55,11 @@ export default {
         defaultMaxTokens: 100000,
         inputPrice: 0.0011,
         outputPrice: 0.004,
-        toolEnabled: true,
+        capabilities: {
+          tools: {
+            enabled: true,
+          },
+        },
         isDefault: false,
         description: `o3-mini is OpenAI's most recent small reasoning model, providing high intelligence at the same cost and latency targets of o1-min`,
       },
@@ -64,12 +70,16 @@ export default {
         defaultMaxTokens: 4000,
         inputPrice: 0.005,
         outputPrice: 0.015,
-        vision: {
-          enabled: true,
-          allowBase64: true,
-          allowUrl: true,
+        capabilities: {
+          tools: {
+            enabled: true,
+          },
+          vision: {
+            enabled: true,
+            allowBase64: true,
+            allowUrl: true,
+          },
         },
-        toolEnabled: true,
         isDefault: true,
         description: `GPT-4o it's most advanced multimodal model of OpenAI that’s faster and cheaper than GPT-4 Turbo with stronger vision capabilities`,
       },
@@ -80,12 +90,16 @@ export default {
         defaultMaxTokens: 16000,
         inputPrice: 0.00015,
         outputPrice: 0.0006,
-        vision: {
-          enabled: true,
-          allowBase64: true,
-          allowUrl: true,
+        capabilities: {
+          tools: {
+            enabled: true,
+          },
+          vision: {
+            enabled: true,
+            allowBase64: true,
+            allowUrl: true,
+          },
         },
-        toolEnabled: true,
         description: `GPT-4o mini (“o” for “omni”) is OpenAI's advanced model in the small models category, and it's cheapest model yet. It is multimodal (accepting text or image inputs and outputting text), has higher intelligence than gpt-3.5-turbo but is just as fast. It is meant to be used for smaller tasks, including vision tasks.`,
       },
       'gpt-4-turbo': {
@@ -95,13 +109,19 @@ export default {
         defaultMaxTokens: 4000,
         inputPrice: 0.005,
         outputPrice: 0.015,
-        jsonModelEnabled: true,
-        vision: {
-          enabled: true,
-          allowBase64: true,
-          allowUrl: true,
+        capabilities: {
+          json: {
+            enabled: true,
+          },
+          tools: {
+            enabled: true,
+          },
+          vision: {
+            enabled: true,
+            allowBase64: true,
+            allowUrl: true,
+          },
         },
-        toolEnabled: true,
         description: `The latest GPT-4 Turbo model with vision capabilities.
         Vision requests can now use JSON mode and function calling.
         Currently points to gpt-4-turbo-2024-04-09.`,
@@ -113,7 +133,11 @@ export default {
         defaultMaxTokens: 8000,
         inputPrice: 0.03,
         outputPrice: 0.06,
-        toolEnabled: true,
+        capabilities: {
+          tools: {
+            enabled: true,
+          },
+        },
         description: `Snapshot of gpt-4 from June 13th 2023 with improved function calling support`,
       },
       'gpt-3.5-turbo': {
@@ -123,7 +147,11 @@ export default {
         defaultMaxTokens: 4000,
         inputPrice: 0.0005,
         outputPrice: 0.0015,
-        toolEnabled: true,
+        capabilities: {
+          tools: {
+            enabled: true,
+          },
+        },
         description: `The latest GPT-3.5 Turbo model with higher accuracy at responding in requested formats
         and a fix for a bug which caused a text encoding issue for non-English language function calls`,
       },

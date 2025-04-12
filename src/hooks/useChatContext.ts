@@ -115,14 +115,14 @@ export default function useChatContext(): IChatContext {
       return stream;
     };
 
-    const isToolEnabled = () => {
+    const isToolsEnabled = () => {
       const { getToolState } = useSettingsStore.getState();
       const model = getModel();
-      let toolEnabled = getToolState(getProvider().name, model.name as string);
-      if (isUndefined(toolEnabled)) {
-        toolEnabled = model.toolEnabled || false;
+      let toolsEnabled = getToolState(getProvider().name, model.name as string);
+      if (isUndefined(toolsEnabled)) {
+        toolsEnabled = model.capabilities?.tools?.enabled || false;
       }
-      return toolEnabled;
+      return toolsEnabled;
     };
 
     const getCtxMessages = (msgId?: string) => {
@@ -164,7 +164,7 @@ export default function useChatContext(): IChatContext {
       getMaxTokens,
       getChatContext,
       isStream,
-      isToolEnabled,
+      isToolsEnabled,
     };
     return ctx;
   }, []);

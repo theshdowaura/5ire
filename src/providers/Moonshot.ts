@@ -24,7 +24,11 @@ export default {
         inputPrice: 0.012,
         outputPrice: 0.012,
         isDefault: true,
-        toolEnabled: true,
+        capabilities: {
+          tools: {
+            enabled: true,
+          },
+        },
       },
       'moonshot-v1-32k': {
         label: 'moonshot-v1-32k',
@@ -32,7 +36,11 @@ export default {
         maxTokens: 1024,
         inputPrice: 0.024,
         outputPrice: 0.024,
-        toolEnabled: true,
+        capabilities: {
+          tools: {
+            enabled: true,
+          },
+        },
       },
       'moonshot-v1-128k': {
         label: 'moonshot-v1-128k',
@@ -40,7 +48,11 @@ export default {
         maxTokens: 1024,
         inputPrice: 0.06,
         outputPrice: 0.06,
-        toolEnabled: true,
+        capabilities: {
+          tools: {
+            enabled: true,
+          },
+        },
       },
     },
   },

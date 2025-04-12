@@ -137,9 +137,9 @@ export default function ModelCtrl({
       <MenuPopover>
         <MenuList>
           {models.map((item) => {
-            let toolEnabled = getToolState(providerName, item.name as string);
-            if (isUndefined(toolEnabled)) {
-              toolEnabled = item.toolEnabled;
+            let toolsEnabled = getToolState(providerName, item.name as string);
+            if (isUndefined(toolsEnabled)) {
+              toolsEnabled = item.capabilities?.tools?.enabled || false;
             }
             return (
               <MenuItemRadio
