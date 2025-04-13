@@ -64,7 +64,7 @@ We utilize [Axiom](https://axiom.co/) to collect anonymized minimal operational 
 
 To get your Axiom credentials:
 
-1. Create an Organization on [Axiom](https://https://app.axiom.co)
+1. Create an Organization on [Axiom](https://app.axiom.co)
 2. Get Organization ID from Org Settings.
 3. Create a new API Token in the organization settings.
 
