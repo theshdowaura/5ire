@@ -15,6 +15,7 @@ module.exports = {
     'no-unused-vars': 'warn',
     'react-hooks/exhaustive-deps': 'warn',
     '@typescript-eslint/no-unused-vars': 'error',
+    'react/jsx-props-no-spreading': 'warn',
   },
   parserOptions: {
     ecmaVersion: 2020,
