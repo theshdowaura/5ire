@@ -10,6 +10,9 @@ import hljs from 'highlight.js/lib/common';
 import MarkdownItCodeCopy from '../libs/markdownit-plugins/CodeCopy';
 import useToast from './useToast';
 import useAppearanceStore from 'stores/useAppearanceStore';
+// @ts-ignore
+import {full as markdownItEmoji } from 'markdown-it-emoji';
+import markdownItEChartsPlugin from '../libs/markdownit-plugins/markdownItEChartsPlugin';
 
 export default function useMarkdown() {
   const theme = useAppearanceStore((state) => state.theme);
@@ -69,7 +72,10 @@ export default function useMarkdown() {
       onSuccess: () => {
         notifySuccess(t('Common.Notification.Copied'));
       },
-    });
+    })
+    .use(markdownItEmoji)
+    .use(markdownItEChartsPlugin)
+    ;
   md.mermaid.loadPreferences({
     get: (key: string) => {
       if (key === 'mermaid-theme') {
