@@ -1,9 +1,44 @@
-import { find } from 'lodash';
+import { find, isNil } from 'lodash';
 import { getProviders } from 'providers';
 import { IChatModelConfig, IChatProviderConfig } from 'providers/types';
 import { genDefaultName } from 'utils/util';
 import { create } from 'zustand';
 import OpenAI from 'providers/OpenAI';
+
+const isProviderReady = (provider: IChatProviderConfig) => {
+  if (!provider.apiBase) {
+    return false;
+  }
+  if (!provider.apiKey) {
+    return false;
+  }
+  try {
+    const url = new URL(provider.apiBase);
+    return ['http:', 'https:'].includes(url.protocol);
+  } catch {
+    return false;
+  }
+};
+
+const isModelReady = (
+  provider: IChatProviderConfig,
+  model: IChatModelConfig,
+) => {
+  const extraKeys = Object.keys(provider.modelExtras || {});
+  return extraKeys.every((key: string) => {
+    return (
+      !isNil(model.extras?.[key]) &&
+      (model.extras?.[key] as string).trim() !== ''
+    );
+  });
+};
+
+export type ModelOption = {
+  label: string;
+  value: string;
+  isReady: boolean;
+  isDefault: boolean;
+};
 
 const builtInToConfig = () => {
   const config: { [key: string]: IChatProviderConfig } = {};
@@ -47,7 +82,6 @@ const builtInToConfig = () => {
 export interface IProviderStore {
   provider: IChatProviderConfig | null;
   providers: { [key: string]: IChatProviderConfig };
-  isProviderReady: (provider: IChatProviderConfig) => boolean;
   hasValidModels: (provider: IChatProviderConfig) => boolean;
   getProvidersWithModels: () => IChatProviderConfig[];
   setProvider: (providerName: string | null) => IChatProviderConfig | null;
@@ -57,7 +91,7 @@ export interface IProviderStore {
     modelName: string,
   ) => IChatModelConfig;
   getGroupedModelOptions: () => {
-    [key: string]: { label: string; value: string }[];
+    [key: string]:  ModelOption[];
   };
   createProvider: (providerName?: string) => void;
 }
@@ -76,20 +110,6 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
     set({ provider });
     return provider;
   },
-  isProviderReady: (provider: IChatProviderConfig) => {
-    if (!provider.apiBase) {
-      return false;
-    }
-    if (!provider.apiKey) {
-      return false;
-    }
-    try {
-      const url = new URL(provider.apiBase);
-      return ['http:', 'https:'].includes(url.protocol);
-    } catch {
-      return false;
-    }
-  },
   hasValidModels: (provider: IChatProviderConfig) => {
     let models = Object.values(provider.models || {});
     if (models.length === 0) return false;
@@ -105,9 +125,14 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
   },
   getProvidersWithModels: () => {
     const { providers } = get();
-    return Object.values(providers).filter((p) => {
-      return p.models.length > 0;
-    });
+    return Object.values(providers)
+      .filter((p) => {
+        return p.models.length > 0;
+      })
+      .map((provider) => {
+        provider.isReady = isProviderReady(provider);
+        return provider;
+      });
   },
   getAvailableProvider: (providerName: string) => {
     const { getProvidersWithModels } = get();
@@ -148,16 +173,15 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
   },
   getGroupedModelOptions: () => {
     const { getProvidersWithModels } = get();
-    const result: { [key: string]: { label: string; value: string }[] } = {};
+    const result: { [key: string]: ModelOption[] } = {};
     const providers = getProvidersWithModels();
     providers.forEach((provider) => {
-      result[provider.name] = provider.models.map(
-        (model) =>
-          ({
-            label: model.label || model.name,
-            value: model.name,
-          }) as { label: string; value: string },
-      );
+      result[provider.name] = provider.models.map((model) => ({
+        label: model.label || model.name,
+        value: model.name,
+        isReady: isModelReady(provider, model),
+        isDefault: model.isDefault || false,
+      }));
     });
     return result;
   },

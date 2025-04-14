@@ -192,7 +192,7 @@ export default function Settings() {
         )}
       </div>
       <div className="overflow-y-auto h-full pb-28 -mr-5 pr-5">
-        <APISettings />
+        <div>迁移至 Provider</div>
         <EmbedSettings />
         <AppearanceSettings />
         <LanguageSettings />

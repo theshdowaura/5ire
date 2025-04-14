@@ -17,7 +17,6 @@ import {
 import { useState, ChangeEvent, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import useChatStore from 'stores/useChatStore';
-import Debug from 'debug';
 import { IChat, IChatContext } from 'intellichat/types';
 import useSettingsStore from 'stores/useSettingsStore';
 import Mousetrap from 'mousetrap';
@@ -51,8 +50,8 @@ export default function TemperatureCtrl({
       }),
     );
     const provider = ctx.getProvider();
-    setMinTemperature(provider.chat.temperature.min);
-    setMaxTemperature(provider.chat.temperature.max);
+    setMinTemperature(provider.temperature.min);
+    setMaxTemperature(provider.temperature.max);
     setTemperature(ctx.getTemperature());
     return () => {
       Mousetrap.unbind('mod+shift+5');

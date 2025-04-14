@@ -528,34 +528,3 @@ export function genDefaultName(pool: string[], prefix: string): string {
   return name;
 }
 
-export function isProviderReady(provider: IChatProviderConfig) {
-  if (!provider.apiBase) {
-    return false;
-  }
-  if (!provider.apiKey) {
-    return false;
-  }
-  try {
-    if (!provider.apiBase) {
-      return false;
-    }
-    const url = new URL(provider.apiBase);
-    return ['http:', 'https:'].includes(url.protocol);
-  } catch {
-    return false;
-  }
-}
-
-export function isProviderHasReadyModels(provider: IChatProviderConfig) {
-  let models = Object.values(provider.models || {});
-  if (models.length === 0) return false;
-  const extraKeys = Object.keys(provider.modelExtras || {});
-  if (extraKeys.length > 0) {
-    models = models.filter((model) => {
-      return extraKeys.every((key: string) => {
-        return model.extras?.[key] || '' !== '';
-      });
-    });
-  }
-  return models.length > 0;
-}

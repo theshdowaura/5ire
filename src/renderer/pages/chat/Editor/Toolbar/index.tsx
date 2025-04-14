@@ -2,7 +2,7 @@ import { Toolbar } from '@fluentui/react-components';
 import useChatContext from 'hooks/useChatContext';
 import useChatStore from 'stores/useChatStore';
 import { IChat } from 'intellichat/types';
-import ModelCtrl from './ModelCtrl.bak';
+import ModelCtrl from './ModelCtrl';
 import PromptCtrl from './PromptCtrl';
 import TemperatureCtrl from './TemperatureCtrl';
 import MaxTokensCtrl from './MaxTokensCtrl';
@@ -34,10 +34,6 @@ export default function EditorToolbar({
         <TemperatureCtrl ctx={ctx} chat={chat} />
         <CtxNumCtrl ctx={ctx} chat={chat} />
         <ImgCtrl ctx={ctx} chat={chat} />
-
-        {provider.chat.options.streamCustomizable && (
-          <StreamCtrl ctx={ctx} chat={chat} />
-        )}
       </Toolbar>
     </div>
   );

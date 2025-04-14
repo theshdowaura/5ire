@@ -24,10 +24,10 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import useChatStore from 'stores/useChatStore';
 import useSettingsStore from 'stores/useSettingsStore';
 import useAuthStore from 'stores/useAuthStore';
-import { getChatModel, getChatModels, getProvider } from 'providers';
 import { IChatModel } from 'providers/types';
 import { DEFAULT_TEMPERATURE, tempChatId } from 'consts';
 import ToolStatusIndicator from './ToolStatusIndicator';
+import useProviderStore from 'stores/useProviderStore';
 
 export default function FolderSettingsDialog({
   open,
@@ -45,17 +45,14 @@ export default function FolderSettingsDialog({
   const [folderModel, setFolderModel] = useState(api.model);
   const [folderSystemMessage, setFolderSystemMessage] = useState('');
   const [folderTemperature, setFolderTemperature] = useState(1);
+  const {getAvailableProvider, getAvailableModel} = useProviderStore();
 
   const temperatureConfig = useMemo(() => {
-    return getProvider(api.provider).chat.temperature;
+    return getAvailableProvider(api.provider).temperature;
   }, [api.provider]);
 
   const models = useMemo<IChatModel[]>(() => {
-    if (!api.provider || api.provider === 'Azure') return [];
-    const provider = getProvider(api.provider);
-    if (provider.chat.options.modelCustomizable) {
-      return getChatModels(provider.name) || [];
-    }
+    // TODO: 这里需要根据当前的 provider 来获取模型列表
     return [];
   }, [api.provider, session]);
 
@@ -67,7 +64,7 @@ export default function FolderSettingsDialog({
   const curModel = useMemo(() => {
     let curModel = models.find((m) => m.name === folderModel);
     if (!curModel) {
-      curModel = getChatModel(api.provider, folderModel);
+      curModel = getAvailableModel(api.provider, folderModel);
     }
     return curModel || {};
   }, [folderModel, models]);
@@ -127,7 +124,7 @@ export default function FolderSettingsDialog({
 
   useEffect(() => {
     if (open) {
-      const model = getChatModel(api.provider, folder?.model || api.model);
+      const model = getAvailableModel(api.provider, folder?.model || api.model);
       setFolderModel(model.name || api.model);
       setFolderSystemMessage(folder?.systemMessage || '');
       let temperature =

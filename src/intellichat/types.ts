@@ -195,8 +195,8 @@ export type ModelGroup =
 
 export interface IChatContext {
   getActiveChat: () => IChat;
-  getProvider: () => IChatProviderConfig|null;
-  getModel: () => IChatModelConfig|null;
+  getProvider: () => IChatProviderConfig;
+  getModel: () => IChatModelConfig;
   getSystemMessage: () => string | null;
   getTemperature: () => number;
   getMaxTokens: () => number;

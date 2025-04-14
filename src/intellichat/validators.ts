@@ -1,9 +1,8 @@
+import useProviderStore from 'stores/useProviderStore';
 import { isNull, isNumber } from 'lodash';
 import { isBlank } from 'utils/validators';
 import { ProviderType } from '../providers/types';
-import { getChatModel, getProvider } from '../providers';
-
-const DEFAULT_MAX_TOKEN = 4096;
+import { DEFAULT_MAX_TOKENS } from '../consts';
 
 export function isValidMaxTokens(
   maxTokens: number | null | undefined,
@@ -14,8 +13,10 @@ export function isValidMaxTokens(
   if (!isNumber(maxTokens)) return false;
   if (maxTokens <= 0) return false;
 
-  const model = getChatModel(providerName, modelName);
-  return maxTokens <= (model.maxTokens || DEFAULT_MAX_TOKEN);
+  const model = useProviderStore
+    .getState()
+    .getAvailableModel(providerName, modelName);
+  return maxTokens <= (model.maxTokens || DEFAULT_MAX_TOKENS);
 }
 
 export function isValidTemperature(
@@ -28,8 +29,10 @@ export function isValidTemperature(
   if (!isNumber(temperature)) {
     return false;
   }
-  const provider = getProvider(providerName);
-  const { min, max, interval } = provider.chat.temperature;
+  const provider = useProviderStore
+    .getState()
+    .getAvailableProvider(providerName);
+  const { min, max, interval } = provider.temperature;
   if (interval?.leftOpen ? temperature <= min : temperature < min) {
     return false;
   }

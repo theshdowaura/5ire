@@ -15,7 +15,7 @@ import useProviderStore from 'stores/useProviderStore';
 // const debug = Debug('5ire:hooks:useChatContext');
 
 export default function useChatContext(): IChatContext {
-  const { getAvailableProvider: getChatProvider, getModel: getChatModel } =
+  const { getAvailableProvider, getAvailableModel } =
     useProviderStore();
 
   const context = useMemo(() => {
@@ -28,7 +28,7 @@ export default function useChatContext(): IChatContext {
 
     const getProvider = () => {
       const { api } = useSettingsStore.getState();
-      return getChatProvider(api.provider);
+      return getAvailableProvider(api.provider);
     };
 
     /**
@@ -39,17 +39,17 @@ export default function useChatContext(): IChatContext {
     const getModel = () => {
       const { api } = useSettingsStore.getState();
       const defaultModel = { name: api.model, label: api.model } as IChatModelConfig;
-      const provider = getChatProvider(api.provider);
+      const provider = getAvailableProvider(api.provider);
       if (Object.keys(provider?.models || {}).length === 0) {
         return defaultModel;
       }
-      let model = getChatModel(api.provider, api.model);
+      let model = getAvailableModel(api.provider, api.model);
       if (api.provider === 'Azure') {
         return model;
       }
       const { chat } = useChatStore.getState();
       if (chat?.model) {
-        model = getChatModel(api.provider, chat.model);
+        model = getAvailableModel(api.provider, chat.model);
       }
       // debug(`Chat(${chat.id}):getModel: ${model.label}`);
       return model as IChatModelConfig;
@@ -67,7 +67,7 @@ export default function useChatContext(): IChatContext {
     const getTemperature = (): number => {
       const { chat } = useChatStore.getState();
       const { api } = useSettingsStore.getState();
-      let temperature = getChatProvider(api.provider)?.temperature
+      let temperature = getAvailableProvider(api.provider)?.temperature
         .default as number;
       const prompt = chat.prompt as IPrompt | null;
       if (isValidTemperature(prompt?.temperature, api.provider)) {
@@ -76,7 +76,7 @@ export default function useChatContext(): IChatContext {
       if (isValidTemperature(chat?.temperature, api.provider)) {
         temperature = chat?.temperature as number;
       }
-      // debug(`Chat(${chat.id}):getSystemMessage: ${temperature}`);
+      // debug(`Chat(${chat.id}):getTemperature: ${temperature}`);
       return temperature;
     };
 

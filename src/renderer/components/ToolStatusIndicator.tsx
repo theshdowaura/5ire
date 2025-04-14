@@ -1,8 +1,8 @@
 import { Tooltip } from '@fluentui/react-components';
 import { isUndefined } from 'lodash';
-import { getChatModel } from 'providers';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import useProviderStore from 'stores/useProviderStore';
 import useSettingsStore from 'stores/useSettingsStore';
 
 export default function ToolStatusIndicator(
@@ -14,9 +14,10 @@ export default function ToolStatusIndicator(
 ) {
   const { provider, model, withTooltip, ...rest } = props;
   const { getToolState } = useSettingsStore();
+  const {getAvailableModel} = useProviderStore();
 
   const originalSupport = useMemo(
-    () => getChatModel(provider, model).capabilities?.tools?.enabled || false,
+    () => getAvailableModel(provider, model).capabilities?.tools?.enabled || false,
     [provider, model],
   );
 
