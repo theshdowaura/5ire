@@ -17,6 +17,27 @@ export default {
       modelCustomizable: true,
     },
     models: {
+      'grok-3-beta': {
+        label: 'grok-3-beta',
+        contextWindow: 131072,
+        defaultMaxTokens: 4000,
+        maxTokens: 131072,
+        inputPrice: 0.003,
+        outputPrice: 0.015,
+        description: `Grok's flagship model that excels at enterprise tasks like data extraction, programming, and text summarization.`,
+        toolEnabled: true,
+      },
+      'grok-3-mini-beta': {
+        label: 'grok-3-mini-beta',
+        contextWindow: 131072,
+        defaultMaxTokens: 4000,
+        maxTokens: 131072,
+        inputPrice: 0.0003,
+        outputPrice: 0.0005,
+        isDefault: true,
+        description: `A lightweight model that thinks before responding. Excels at quantitative tasks that involve math and reasoning.`,
+        toolEnabled: true,
+      },
       'grok-2-vision': {
         label: 'grok-2-vision',
         contextWindow: 32768,
@@ -24,7 +45,6 @@ export default {
         maxTokens: 4096,
         inputPrice: 0.002,
         outputPrice: 0.01,
-        isDefault: true,
         vision: {
           enabled: true,
           allowBase64: true,
@@ -32,7 +52,6 @@ export default {
         },
         description: `specialized model for advanced image generation and understanding`,
         toolEnabled: true,
-        group: 'Grok',
       },
       'grok-2': {
         label: 'grok-2',
@@ -44,7 +63,6 @@ export default {
         isDefault: true,
         description: `Comparable performance to Grok 2 but with improved efficiency, speed and capabilities.`,
         toolEnabled: true,
-        group: 'Grok',
       },
     },
   },

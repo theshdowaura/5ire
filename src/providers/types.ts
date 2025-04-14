@@ -24,24 +24,6 @@ export interface INumberRange {
   };
 }
 
-export type ChatModelGroup =
-  | 'O'
-  | 'GPT-3.5'
-  | 'GPT-4'
-  | 'Gemini'
-  | 'Grok'
-  | 'DeepSeek'
-  | 'ERNIE'
-  | 'Moonshot'
-  | 'Mistral'
-  | 'Ministral'
-  | 'Codestral'
-  | 'Pixtral'
-  | 'Claude-3'
-  | 'Claude-3.5'
-  | 'Doubao-Pro'
-  | 'Doubao-Lite'
-  | 'Open Source';
 
 export interface IChatModelVision {
   enabled: boolean;
@@ -63,7 +45,6 @@ export interface IChatModel {
   toolEnabled?: boolean;
   vision?: IChatModelVision;
   endpoint?: string;
-  group: ChatModelGroup;
 }
 
 export interface IChatConfig {

@@ -11,7 +11,6 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@fluentui/react-components';
 import { removeTagsExceptImg, setCursorToEnd } from 'utils/util';
 import { debounce } from 'lodash';
-import { tempChatId } from 'consts';
 import Spinner from '../../../components/Spinner';
 import Toolbar from './Toolbar';
 
@@ -100,17 +99,14 @@ export default function Editor({
     // @ts-expect-error clipboardData is not defined in types
     const clipboardItems = e.clipboardData.items || window.clipboardData;
     let text = '';
-    // 遍历剪贴板中的项目
-    for (const item of clipboardItems) {
+    Array.from(clipboardItems).forEach((item: DataTransferItem) => {
       if (item.kind === 'string' && item.type === 'text/plain') {
-        // 获取纯文本
         item.getAsString(function (clipText) {
-          let _text = clipText.replace(/&[a-z]+;/gi, ' ');
-          _text = _text.replace(/<\/(p|div|br|h[1-6])>/gi, '\n');
-          _text = _text.replace(/(<([^>]+)>)/gi, '');
-          _text = _text.replace(/\n+/g, '\n\n').trim();
-          text += _text;
-          insertText(text); // 插入文本
+          let txt = clipText.replace(/&[a-z]+;/gi, ' ');
+          txt = txt.replace(/<\/(p|div|br|h[1-6])>/gi, '\n');
+          txt = txt.replace(/\n+/g, '\n\n').trim();
+          text += txt;
+          insertText(text);
         });
       } else if (item.kind === 'file' && item.type.startsWith('image/')) {
         // 处理图片
@@ -118,12 +114,14 @@ export default function Editor({
         const reader = new FileReader();
         reader.onload = function (event) {
           const img = document.createElement('img');
-          img.src = event.target?.result as string; // 设置图片源
-          editorRef.current && editorRef.current.appendChild(img); // 插入图片
+          img.src = event.target?.result as string;
+          if (editorRef.current) {
+            editorRef.current.appendChild(img);
+          }
         };
-        reader.readAsDataURL(file as Blob); // 读取文件为数据URL
+        reader.readAsDataURL(file as Blob);
       }
-    }
+    });
   }, []);
 
   const onInput = () => {
@@ -173,9 +171,14 @@ export default function Editor({
       <Toolbar onConfirm={onToolbarActionConfirm} />
       <div
         contentEditable
+        role="textbox"
+        aria-label="editor"
+        aria-multiline="true"
+        tabIndex={0}
         suppressContentEditableWarning
         id="editor"
         ref={editorRef}
+        autoCorrect="on"
         className="w-full outline-0 pl-2.5 pr-2.5 pb-2.5 bg-brand-surface-1 flex-grow overflow-y-auto overflow-x-hidden"
         onKeyDown={onKeyDown}
         onFocus={restoreRange}

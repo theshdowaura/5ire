@@ -9,13 +9,11 @@ import { isValidMaxTokens, isValidTemperature } from 'intellichat/validators';
 
 import { IChat, IChatContext, IChatMessage, IPrompt } from 'intellichat/types';
 import { IChatModel } from 'providers/types';
-import useProvider from './useProvider';
+import { getProvider as getChatProvider, getChatModel } from 'providers';
 
 // const debug = Debug('5ire:hooks:useChatContext');
 
 export default function useChatContext(): IChatContext {
-  const { getProvider: getChatProvider, getChatModel } = useProvider();
-
   const context = useMemo(() => {
     const getActiveChat = () => {
       const { chat } = useChatStore.getState();

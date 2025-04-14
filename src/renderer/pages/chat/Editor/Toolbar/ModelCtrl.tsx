@@ -17,10 +17,10 @@ import { useTranslation } from 'react-i18next';
 import useChatStore from 'stores/useChatStore';
 import useSettingsStore from 'stores/useSettingsStore';
 import { IChatModel, ProviderType } from 'providers/types';
-import useProvider from 'hooks/useProvider';
 import useAuthStore from 'stores/useAuthStore';
 import ToolStatusIndicator from 'renderer/components/ToolStatusIndicator';
 import { isUndefined } from 'lodash';
+import { getChatModels, getProvider } from 'providers';
 
 export default function ModelCtrl({
   ctx,
@@ -35,7 +35,6 @@ export default function ModelCtrl({
   const modelMapping = useSettingsStore((state) => state.modelMapping);
   const { getToolState } = useSettingsStore();
   const session = useAuthStore((state) => state.session);
-  const { getProvider, getChatModels } = useProvider();
   const [providerName, setProviderName] = useState<ProviderType>(api.provider);
   const editStage = useChatStore((state) => state.editStage);
 

@@ -94,10 +94,10 @@ export default function Form() {
     if (id) {
       getPrompt(id)
         .then(($prompt) => {
-          setName($prompt.name);
+          setName($prompt.name || '');
           setModels($prompt.models || []);
-          setSystemMessage($prompt.systemMessage);
-          setUserMessage($prompt.userMessage);
+          setSystemMessage($prompt.systemMessage || '');
+          setUserMessage($prompt.userMessage || '');
           return $prompt;
         })
         .catch(() => {
@@ -181,7 +181,6 @@ export default function Form() {
                 <Input
                   value={name}
                   placeholder={t('Common.Required')}
-                  defaultValue={prompt.name || ''}
                   onChange={(
                     ev: ChangeEvent<HTMLInputElement>,
                     data: InputOnChangeData,
@@ -203,7 +202,7 @@ export default function Form() {
                   {Object.keys(groupedModelNames).map((group: string) => (
                     <OptionGroup label={group} key={group}>
                       {groupedModelNames[group].map((model: string) => (
-                        <Option key={model} value={model}>
+                        <Option key={`${group}-${model}`} value={model}>
                           {model}
                         </Option>
                       ))}

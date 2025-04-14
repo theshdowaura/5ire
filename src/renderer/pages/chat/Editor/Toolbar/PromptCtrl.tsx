@@ -17,13 +17,15 @@ import {
   Prompt20Regular,
   Prompt20Filled,
   Search20Regular,
+  HeartFilled,
+  HeartOffRegular,
 } from '@fluentui/react-icons';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import usePromptStore from 'stores/usePromptStore';
 import { fillVariables, highlight, insertAtCursor } from 'utils/util';
 import { isNil, pick } from 'lodash';
-import { IChat, IChatContext, IPrompt } from 'intellichat/types';
+import { IChat, IChatContext, IPrompt, IPromptDef } from 'intellichat/types';
 import useChatStore from 'stores/useChatStore';
 import PromptVariableDialog from '../PromptVariableDialog';
 
@@ -49,6 +51,11 @@ export default function PromptCtrl({
   const getPrompt = usePromptStore((state) => state.getPrompt);
   const editStage = useChatStore((state) => state.editStage);
 
+  const curModelLabel = useMemo(() => {
+    const model = ctx.getModel();
+    return model.label || (model.name as string);
+  }, [open]);
+
   const closeDialog = () => {
     setOpen(false);
     Mousetrap.unbind('esc');
@@ -63,7 +70,6 @@ export default function PromptCtrl({
     );
     Mousetrap.bind('esc', closeDialog);
   };
-
 
   const prompts = useMemo(() => {
     return allPrompts.filter((prompt) => {
@@ -161,7 +167,7 @@ export default function PromptCtrl({
         <DialogTrigger disableButtonEnhancement>
           <Button
             size="small"
-            title={t('Common.Prompts')+'(Mod+Shift+2)'}
+            title={t('Common.Prompts') + '(Mod+Shift+2)'}
             aria-label={t('Common.Prompts')}
             appearance="subtle"
             style={{ borderColor: 'transparent', boxShadow: 'none' }}
@@ -212,10 +218,23 @@ export default function PromptCtrl({
                     />
                   </div>
                   <div>
-                    {prompts.map((prompt: IPrompt) => {
+                    {prompts.map((prompt: IPromptDef) => {
+                      let applicableState = 0,
+                        icon = null;
+                      if ((prompt.models?.length || 0) > 0) {
+                        applicableState = prompt.models?.includes(curModelLabel)
+                          ? 1
+                          : -1;
+                        icon =
+                          applicableState > 0 ? (
+                            <HeartFilled className="-mb-0.5" />
+                          ) : (
+                            <HeartOffRegular className="-mb-0.5" />
+                          );
+                      }
                       return (
                         <Button
-                          className="w-full justify-start my-1.5"
+                          className={`w-full flex items-center justify-start gap-1 my-1.5 ${applicableState < 0 ? 'opacity-50' : ''}`}
                           appearance="subtle"
                           key={prompt.id}
                           onClick={() => applyPrompt(prompt.id)}
@@ -225,6 +244,7 @@ export default function PromptCtrl({
                               __html: highlight(prompt.name, keyword),
                             }}
                           />
+                          {icon}
                         </Button>
                       );
                     })}

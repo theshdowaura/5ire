@@ -41,7 +41,6 @@ export default {
           allowBase64: true,
           allowUrl: true,
         },
-        group: 'GPT-4',
       },
       'gpt-4o-mini': {
         label: 'gpt-4o-mini',
@@ -57,7 +56,6 @@ export default {
           allowBase64: true,
           allowUrl: true,
         },
-        group: 'GPT-4',
       },
       'gpt-4': {
         label: 'gpt-4',
@@ -67,7 +65,6 @@ export default {
         inputPrice: 0.03,
         outputPrice: 0.06,
         toolEnabled: true,
-        group: 'GPT-4',
       },
       'gpt-4-turbo': {
         label: 'gpt-4-turbo',
@@ -77,7 +74,6 @@ export default {
         inputPrice: 0.03,
         outputPrice: 0.06,
         toolEnabled: true,
-        group: 'GPT-4',
       },
       'gpt-4-32k': {
         label: 'gpt-4-32k',
@@ -87,7 +83,6 @@ export default {
         inputPrice: 0.06,
         outputPrice: 0.12,
         toolEnabled: true,
-        group: 'GPT-4',
       },
     },
   },

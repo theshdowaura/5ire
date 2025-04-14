@@ -38,7 +38,6 @@ export default {
           allowBase64: true,
           allowUrl: true,
         },
-        group: 'Doubao-Pro',
       },
       'doubao-pro-256k': {
         label: 'doubao-pro-256k',
@@ -48,7 +47,6 @@ export default {
         inputPrice: 0.005,
         outputPrice: 0.009,
         toolEnabled: true,
-        group: 'Doubao-Pro',
       },
       'doubao-pro-128k': {
         label: 'doubao-pro-128k',
@@ -59,7 +57,6 @@ export default {
         outputPrice: 0.009,
         isDefault: true,
         toolEnabled: true,
-        group: 'Doubao-Pro',
       },
       'doubao-pro-32k': {
         label: 'doubao-pro-32k',
@@ -69,7 +66,6 @@ export default {
         inputPrice: 0.0008,
         outputPrice: 0.002,
         toolEnabled: true,
-        group: 'Doubao-Pro',
       },
       'doubao-pro-4k': {
         label: 'doubao-pro-4k',
@@ -79,7 +75,6 @@ export default {
         inputPrice: 0.0008,
         outputPrice: 0.002,
         toolEnabled: true,
-        group: 'Doubao-Pro',
       },
       'doubao-lite-128k': {
         label: 'doubao-lite-128k',
@@ -89,7 +84,6 @@ export default {
         inputPrice: 0.0008,
         outputPrice: 0.001,
         toolEnabled: true,
-        group: 'Doubao-Lite',
       },
       'doubao-lite-32k': {
         label: 'doubao-lite-32k',
@@ -99,7 +93,6 @@ export default {
         inputPrice: 0.0003,
         outputPrice: 0.0006,
         toolEnabled: true,
-        group: 'Doubao-Lite',
       },
       'doubao-lite-4k': {
         label: 'doubao-lite-4k',
@@ -109,7 +102,6 @@ export default {
         inputPrice: 0.0003,
         outputPrice: 0.0006,
         toolEnabled: true,
-        group: 'Doubao-Lite',
       },
     },
   },

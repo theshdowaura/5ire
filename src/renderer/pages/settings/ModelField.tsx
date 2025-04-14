@@ -10,7 +10,6 @@ import {
 } from '@fluentui/react-components';
 import { useTranslation } from 'react-i18next';
 import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react';
-import useProvider from 'hooks/useProvider';
 import { Info16Regular } from '@fluentui/react-icons';
 import TooltipIcon from 'renderer/components/TooltipIcon';
 import ToolStatusIndicator from 'renderer/components/ToolStatusIndicator';
@@ -18,16 +17,14 @@ import { isUndefined } from 'lodash';
 import RemoteModelPicker from './RemoteModelPicker';
 import { IChatModel } from '../../../providers/types';
 import useSettingsStore from '../../../stores/useSettingsStore';
+import { getChatModels, getDefaultChatModel, getProvider } from 'providers';
 
 export default function ModelField() {
   const { t } = useTranslation();
-  const { getProvider } = useProvider();
   const providerName = useSettingsStore((state) => state.api.provider);
   const model = useSettingsStore((state) => state.api.model);
   const provider = getProvider(providerName);
-  const { getChatModels } = useProvider();
   const { setAPI, setToolState, getToolState, toolStates } = useSettingsStore();
-  const { getDefaultChatModel } = useProvider();
   const [toolEnabled, setToolEnabled] = useState(
     getToolState(provider.name, model) || false,
   );

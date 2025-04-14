@@ -12,12 +12,12 @@ import {
   useScrollbarWidth,
 } from '@fluentui/react-components';
 import { BoxMultiple24Regular } from '@fluentui/react-icons';
-import useProvider from 'hooks/useProvider';
 
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IUsageStatistics } from 'types/usage';
 import { ProviderType } from '../../../providers/types';
+import { getProvider } from 'providers';
 
 type modelCell = {
   value: string;
@@ -52,7 +52,6 @@ export default function Grid({
   statistics: IUsageStatistics[];
 }) {
   const { t } = useTranslation();
-  const { getProvider } = useProvider();
   const currencySymbol = useMemo(() => {
     const $provider = getProvider(provider);
     return $provider?.currency === 'USD' ? '$' : '¥';

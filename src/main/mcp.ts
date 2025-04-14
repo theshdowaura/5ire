@@ -46,7 +46,7 @@ export default class ModuleContext {
 
   private Client: any;
 
-  private Transport: any;
+  private StdioTransport: any;
 
   private cfgPath: string;
 
@@ -55,25 +55,25 @@ export default class ModuleContext {
   }
 
   public async init() {
-    this.Client = await this.importClient();
-    this.Transport = await this.importTransport();
+    this.Client = await ModuleContext.importClient();
+    this.StdioTransport = await ModuleContext.importStdioTransport();
   }
 
-  private async importClient() {
+  private static async importClient() {
     const { Client } = await import(
       '@modelcontextprotocol/sdk/client/index.js'
     );
     return Client;
   }
 
-  private async importTransport() {
+  private static async importStdioTransport() {
     const { StdioClientTransport } = await import(
       '@modelcontextprotocol/sdk/client/stdio.js'
     );
     return StdioClientTransport;
   }
 
-  private getMCPServer(server: IMCPServer, config: IMCPConfig) {
+  private static getMCPServer(server: IMCPServer, config: IMCPConfig) {
     let mcpSvr = config.servers.find(
       (svr: IMCPServer) => svr.key === server.key,
     );
@@ -139,15 +139,17 @@ export default class ModuleContext {
 
   public async load() {
     const { servers } = await this.getConfig();
-    await Promise.all(servers.map(async (server: IMCPServer) => {
-      if (server.isActive) {
-        logging.debug('Activating server:', server.key);
-        const { error } = await this.activate(server);
-        if (error) {
-          logging.error('Failed to activate server:', server.key, error);
+    await Promise.all(
+      servers.map(async (server: IMCPServer) => {
+        if (server.isActive) {
+          logging.debug('Activating server:', server.key);
+          const { error } = await this.activate(server);
+          if (error) {
+            logging.error('Failed to activate server:', server.key, error);
+          }
         }
-      }
-    }));
+      }),
+    );
   }
 
   public async addServer(server: IMCPServer) {
@@ -176,7 +178,7 @@ export default class ModuleContext {
   public async activate(server: IMCPServer): Promise<{ error: any }> {
     try {
       const config = await this.getConfig();
-      const mcpSvr = this.getMCPServer(server, config) as IMCPServer;
+      const mcpSvr = ModuleContext.getMCPServer(server, config) as IMCPServer;
       const { key, command, args, env } = mcpSvr;
       let cmd: string = command;
       if (command === 'npx') {
@@ -196,14 +198,13 @@ export default class ModuleContext {
           capabilities: {},
         },
       );
-      const transport = new this.Transport({
+      const transport = new this.StdioTransport({
         command: cmd,
         args,
         stderr: process.platform === 'win32' ? 'pipe' : 'inherit',
         env: mergedEnv,
       });
-      // await client.connect(transport, { timeout: 60 * 1000 * 5 }); not yet
-      await client.connect(transport);
+      await client.connect(transport, { timeout: 60 * 1000 * 5 });
       this.clients[key] = client;
       await this.updateConfigAfterActivation(mcpSvr, config);
       return { error: null };
@@ -250,15 +251,17 @@ export default class ModuleContext {
         return tool;
       });
     } else {
-      await Promise.all(Object.keys(this.clients).map(async (clientName:string) => {
-        const { tools } = await this.clients[clientName].listTools();
-        allTools = allTools.concat(
-          tools.map((tool: any) => {
-            tool.name = `${clientName}--${tool.name}`;
-            return tool;
-          }),
-        );
-      }));
+      await Promise.all(
+        Object.keys(this.clients).map(async (clientName: string) => {
+          const { tools } = await this.clients[clientName].listTools();
+          allTools = allTools.concat(
+            tools.map((tool: any) => {
+              tool.name = `${clientName}--${tool.name}`;
+              return tool;
+            }),
+          );
+        }),
+      );
     }
     // logging.debug('All Tools:', JSON.stringify(allTools, null, 2));
     return allTools;

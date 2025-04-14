@@ -1,6 +1,5 @@
 import { isNull, isNumber } from 'lodash';
 import { isBlank } from 'utils/validators';
-import { captureException } from '../renderer/logging';
 import { ProviderType } from '../providers/types';
 import { getChatModel, getProvider } from '../providers';
 

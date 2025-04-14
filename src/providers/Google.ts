@@ -31,7 +31,6 @@ export default {
           enabled: true,
         },
         description: `Google's our most advanced coding model yet and is state-of-the-art across a range of benchmarks requiring enhanced reasoning.`,
-        group: 'Gemini',
       },
       'gemini-2.0-flash-001': {
         label: 'gemini-2.0-flash',
@@ -46,7 +45,6 @@ export default {
           enabled: true,
         },
         description: `Next generation features, superior speed, native tool use, and multimodal generation`,
-        group: 'Gemini',
       },
       'gemini-2.0-pro-exp-02-05': {
         label: 'gemini-2.0-pro-exp-02-05',
@@ -61,7 +59,6 @@ export default {
           enabled: true,
         },
         description: `The quality has improved, especially for world knowledge, code, and long contexts.`,
-        group: 'Gemini',
       },
       'gemini-2.0-flash-thinking-exp': {
         label: 'gemini-2.0-flash-thinking-exp',
@@ -76,7 +73,6 @@ export default {
           enabled: true,
         },
         description: `Capable of reasoning about complex problems and possessing new thinking abilities`,
-        group: 'Gemini',
       },
       'gemini-2.0-flash-lite-preview-02-05': {
         label: 'gemini-2.0-flash-lite',
@@ -92,7 +88,6 @@ export default {
           enabled: true,
         },
         description: `Quality improvements, celebrate 1 year of Gemini`,
-        group: 'Gemini',
       },
       'gemini-1.5-pro': {
         label: 'gemini-1.5-pro',
@@ -107,7 +102,6 @@ export default {
           enabled: true,
         },
         description: `The multi-modal model from Google's Gemini family that balances model performance and speed.`,
-        group: 'Gemini',
       },
       'gemini-1.5-flash': {
         label: 'gemini-1.5-flash',
@@ -122,7 +116,6 @@ export default {
           enabled: true,
         },
         description: `Lightweight, fast and cost-efficient while featuring multimodal reasoning and a breakthrough long context window of up to one million tokens.`,
-        group: 'Gemini',
       },
       'gemini-1.5-flash-8b': {
         label: 'gemini-1.5-flash-8b',
@@ -137,7 +130,6 @@ export default {
           enabled: true,
         },
         description: `The Gemini 1.5 Flash-8B is a small model designed for tasks that require less intelligence.`,
-        group: 'Gemini',
       },
     },
   },
