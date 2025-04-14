@@ -1,4 +1,4 @@
-import { IChatModel, IServiceProvider } from 'providers/types';
+import { IChatModel, IChatModelConfig, IChatProviderConfig, IServiceProvider } from 'providers/types';
 
 export interface IPrompt {
   id: string;
@@ -195,8 +195,8 @@ export type ModelGroup =
 
 export interface IChatContext {
   getActiveChat: () => IChat;
-  getProvider: () => IServiceProvider;
-  getModel: () => IChatModel;
+  getProvider: () => IChatProviderConfig|null;
+  getModel: () => IChatModelConfig|null;
   getSystemMessage: () => string | null;
   getTemperature: () => number;
   getMaxTokens: () => number;

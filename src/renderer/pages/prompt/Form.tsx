@@ -11,7 +11,6 @@ import {
   OptionGroup,
 } from '@fluentui/react-components';
 import { BracesVariable20Regular } from '@fluentui/react-icons';
-import { getGroupedChatModelNames } from 'providers';
 import useToast from 'hooks/useToast';
 import { IPromptDef } from 'intellichat/types';
 import { ChangeEvent, useEffect, useMemo, useState } from 'react';
@@ -20,6 +19,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import usePromptStore from 'stores/usePromptStore';
 import { parseVariables } from 'utils/util';
 import { isBlank } from 'utils/validators';
+import useProviderStore from 'stores/useProviderStore';
 
 function MessageField({
   label,
@@ -76,6 +76,7 @@ export default function Form() {
   const { id } = useParams();
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { getGroupedModelOptions } = useProviderStore();
   const [name, setName] = useState<string>('');
   const [models, setModels] = useState<string[]>([]);
   const [systemMessage, setSystemMessage] = useState<string>('');
@@ -86,7 +87,7 @@ export default function Form() {
   const updatePrompt = usePromptStore((state) => state.updatePrompt);
   const getPrompt = usePromptStore((state) => state.getPrompt);
   const { notifyInfo, notifySuccess, notifyError } = useToast();
-  const groupedModelNames = useMemo(() => getGroupedChatModelNames(), []);
+  const groupedModelOptions = useMemo(() => getGroupedModelOptions(), []);
 
   type PromptPayload = { id: string } & Partial<IPromptDef>;
 
@@ -199,13 +200,18 @@ export default function Form() {
                   selectedOptions={models}
                   onOptionSelect={onModelSelect}
                 >
-                  {Object.keys(groupedModelNames).map((group: string) => (
+                  {Object.keys(groupedModelOptions).map((group: string) => (
                     <OptionGroup label={group} key={group}>
-                      {groupedModelNames[group].map((model: string) => (
-                        <Option key={`${group}-${model}`} value={model}>
-                          {model}
-                        </Option>
-                      ))}
+                      {groupedModelOptions[group].map(
+                        (option: { value: string; label: string }) => (
+                          <Option
+                            key={`${group}-${option.label}`}
+                            value={option.label}
+                          >
+                            {option.label}
+                          </Option>
+                        ),
+                      )}
                     </OptionGroup>
                   ))}
                 </Combobox>

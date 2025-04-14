@@ -1,5 +1,3 @@
-// import Debug from 'debug';
-
 import useChatStore from 'stores/useChatStore';
 import useSettingsStore from 'stores/useSettingsStore';
 import { DEFAULT_MAX_TOKENS, NUM_CTX_MESSAGES } from 'consts';
@@ -8,13 +6,20 @@ import { isNil, isNumber, isUndefined } from 'lodash';
 import { isValidMaxTokens, isValidTemperature } from 'intellichat/validators';
 
 import { IChat, IChatContext, IChatMessage, IPrompt } from 'intellichat/types';
-import { IChatModel } from 'providers/types';
-import { getProvider as getChatProvider, getChatModel } from 'providers';
+import {
+  IChatModel,
+  IChatModelConfig,
+} from 'providers/types';
+import useProviderStore from 'stores/useProviderStore';
 
 // const debug = Debug('5ire:hooks:useChatContext');
 
 export default function useChatContext(): IChatContext {
+  const { getAvailableProvider: getChatProvider, getModel: getChatModel } =
+    useProviderStore();
+
   const context = useMemo(() => {
+
     const getActiveChat = () => {
       const { chat } = useChatStore.getState();
       // debug(`Chat(${chat.id}):getActiveChat: ${chat.summary}`);
@@ -33,21 +38,21 @@ export default function useChatContext(): IChatContext {
      */
     const getModel = () => {
       const { api } = useSettingsStore.getState();
-      const defaultModel = { name: api.model, label: api.model } as IChatModel;
+      const defaultModel = { name: api.model, label: api.model } as IChatModelConfig;
       const provider = getChatProvider(api.provider);
-      if (Object.keys(provider.chat.models).length === 0) {
+      if (Object.keys(provider?.models || {}).length === 0) {
         return defaultModel;
       }
-      let model = getChatModel(api.provider, api.model, defaultModel);
+      let model = getChatModel(api.provider, api.model);
       if (api.provider === 'Azure') {
         return model;
       }
       const { chat } = useChatStore.getState();
       if (chat?.model) {
-        model = getChatModel(api.provider, chat.model, model);
+        model = getChatModel(api.provider, chat.model);
       }
       // debug(`Chat(${chat.id}):getModel: ${model.label}`);
-      return model;
+      return model as IChatModelConfig;
     };
 
     const getSystemMessage = () => {
@@ -62,7 +67,7 @@ export default function useChatContext(): IChatContext {
     const getTemperature = (): number => {
       const { chat } = useChatStore.getState();
       const { api } = useSettingsStore.getState();
-      let temperature = getChatProvider(api.provider).chat.temperature
+      let temperature = getChatProvider(api.provider)?.temperature
         .default as number;
       const prompt = chat.prompt as IPrompt | null;
       if (isValidTemperature(prompt?.temperature, api.provider)) {
@@ -80,17 +85,17 @@ export default function useChatContext(): IChatContext {
       const { api } = useSettingsStore.getState();
       const model = getModel();
       let maxTokens =
-        model.defaultMaxTokens || model.maxTokens || DEFAULT_MAX_TOKENS;
+        model?.defaultMaxTokens || model?.maxTokens || DEFAULT_MAX_TOKENS;
       const prompt = chat.prompt as IPrompt | null;
       if (
         prompt?.maxTokens != null &&
-        isValidMaxTokens(prompt?.maxTokens, api.provider, model.name as string)
+        isValidMaxTokens(prompt?.maxTokens, api.provider, model?.name as string)
       ) {
         maxTokens = prompt?.maxTokens || (prompt?.maxTokens as number);
       }
       if (
         chat?.maxTokens != null &&
-        isValidMaxTokens(chat?.maxTokens, api.provider, model.name as string)
+        isValidMaxTokens(chat?.maxTokens, api.provider, model?.name as string)
       ) {
         maxTokens = chat?.maxTokens as number;
       }
@@ -118,9 +123,12 @@ export default function useChatContext(): IChatContext {
     const isToolsEnabled = () => {
       const { getToolState } = useSettingsStore.getState();
       const model = getModel();
-      let toolsEnabled = getToolState(getProvider().name, model.name as string);
+      let toolsEnabled = getToolState(
+        getProvider()?.name || '',
+        model?.name as string,
+      );
       if (isUndefined(toolsEnabled)) {
-        toolsEnabled = model.capabilities?.tools?.enabled || false;
+        toolsEnabled = model?.capabilities?.tools?.enabled || false;
       }
       return toolsEnabled;
     };

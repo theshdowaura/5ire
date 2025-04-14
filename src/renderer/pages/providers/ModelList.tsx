@@ -11,7 +11,7 @@ import {
   AddCircleRegular,
   bundleIcon,
 } from '@fluentui/react-icons';
-import { IChatModel, IChatProviderConfig } from 'providers/types';
+import { IChatModelConfig, IChatProviderConfig } from 'providers/types';
 import { useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import Spinner from 'renderer/components/Spinner';
@@ -31,9 +31,11 @@ export default function ModelList({
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
   const [formOpen, setFormOpen] = useState<boolean>(false);
-  const [selectedModel, setSelectedModel] = useState<IChatModel | null>(null);
+  const [selectedModel, setSelectedModel] = useState<IChatModelConfig | null>(
+    null,
+  );
   const [loading, setLoading] = useState(false);
-  const [models, setModels] = useState<Partial<IChatModel>[]>([]);
+  const [models, setModels] = useState<IChatModelConfig[]>([]);
 
   const onOptionSelect: ComboboxProps['onOptionSelect'] = (e, data) => {
     setQuery(data.optionText ?? '');
@@ -104,7 +106,7 @@ export default function ModelList({
           onChange={(ev) => setQuery(ev.target.value)}
           value={query}
         >
-          {filteredModels.map((model: Partial<IChatModel>) => (
+          {filteredModels.map((model: IChatModelConfig) => (
             <Option key={model.name as string} className="focus-visible:ring-0">
               {model.label || (model.name as string)}
             </Option>
@@ -125,7 +127,7 @@ export default function ModelList({
         </div>
       </div>
       <div className="overflow-y-auto" style={{ height: height - 35 }}>
-        {models.length === 0 ? (
+        {filteredModels.length === 0 ? (
           <div className="flex flex-col justify-center items-center h-96">
             <p className="tips">{t('Common.NoModels')}</p>
           </div>
@@ -137,7 +139,7 @@ export default function ModelList({
                   key={model.name}
                   aria-label={model.name}
                   onAction={() => {
-                    setSelectedModel(model as IChatModel);
+                    setSelectedModel(model as IChatModelConfig);
                     setFormOpen(true);
                   }}
                   className="block hover:bg-stone-100 dark:hover:bg-stone-700"

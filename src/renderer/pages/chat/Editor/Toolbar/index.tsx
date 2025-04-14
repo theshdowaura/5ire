@@ -2,7 +2,7 @@ import { Toolbar } from '@fluentui/react-components';
 import useChatContext from 'hooks/useChatContext';
 import useChatStore from 'stores/useChatStore';
 import { IChat } from 'intellichat/types';
-import ModelCtrl from './ModelCtrl';
+import ModelCtrl from './ModelCtrl.bak';
 import PromptCtrl from './PromptCtrl';
 import TemperatureCtrl from './TemperatureCtrl';
 import MaxTokensCtrl from './MaxTokensCtrl';

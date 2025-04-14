@@ -6,6 +6,7 @@ import {
   IPromptDef,
 } from 'intellichat/types';
 import { isArray, isNull } from 'lodash';
+import { IChatProviderConfig } from 'providers/types';
 
 export function date2unix(date: Date) {
   return Math.floor(date.getTime() / 1000);
@@ -447,15 +448,20 @@ export function urlJoin(part: string, base: string): string {
   }
 }
 
-
-export type JsonValue = string | number | boolean | null | JsonArray | JsonObject;
+export type JsonValue =
+  | string
+  | number
+  | boolean
+  | null
+  | JsonArray
+  | JsonObject;
 export type JsonArray = JsonValue[];
 export type JsonObject = { [key: string]: JsonValue };
 
 export function transformPropertiesType(obj: JsonValue): JsonValue {
   // 如果是数组，遍历处理每个元素
   if (Array.isArray(obj)) {
-    return obj.map(item => transformPropertiesType(item));
+    return obj.map((item) => transformPropertiesType(item));
   }
 
   // 如果不是对象，直接返回
@@ -479,7 +485,9 @@ export function transformPropertiesType(obj: JsonValue): JsonValue {
           // 检查并转换当前层级的 type 属性
           if ('type' in transformed && Array.isArray(transformed.type)) {
             const typeArray = transformed.type as JsonArray;
-            const firstNonNull = typeArray.find(t => t !== null && t !== 'null');
+            const firstNonNull = typeArray.find(
+              (t) => t !== null && t !== 'null',
+            );
             transformed.type = firstNonNull || typeArray[0];
           }
 
@@ -502,7 +510,7 @@ export function transformPropertiesType(obj: JsonValue): JsonValue {
 export function removeAdditionalProperties(schema: any): any {
   if (schema && typeof schema === 'object') {
     delete schema.additionalProperties; // Remove from current level
-    Object.values(schema).forEach(value => {
+    Object.values(schema).forEach((value) => {
       if (typeof value === 'object') {
         removeAdditionalProperties(value); // Apply recursively to nested objects
       }
@@ -510,7 +518,7 @@ export function removeAdditionalProperties(schema: any): any {
   }
 }
 
-export function genDefaultName(pool:string[], prefix: string): string {
+export function genDefaultName(pool: string[], prefix: string): string {
   let i = 1;
   let name = `${prefix}${i}`;
   while (pool.includes(name)) {
@@ -518,4 +526,36 @@ export function genDefaultName(pool:string[], prefix: string): string {
     name = `${prefix}${i}`;
   }
   return name;
+}
+
+export function isProviderReady(provider: IChatProviderConfig) {
+  if (!provider.apiBase) {
+    return false;
+  }
+  if (!provider.apiKey) {
+    return false;
+  }
+  try {
+    if (!provider.apiBase) {
+      return false;
+    }
+    const url = new URL(provider.apiBase);
+    return ['http:', 'https:'].includes(url.protocol);
+  } catch {
+    return false;
+  }
+}
+
+export function isProviderHasReadyModels(provider: IChatProviderConfig) {
+  let models = Object.values(provider.models || {});
+  if (models.length === 0) return false;
+  const extraKeys = Object.keys(provider.modelExtras || {});
+  if (extraKeys.length > 0) {
+    models = models.filter((model) => {
+      return extraKeys.every((key: string) => {
+        return model.extras?.[key] || '' !== '';
+      });
+    });
+  }
+  return models.length > 0;
 }

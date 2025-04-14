@@ -151,6 +151,7 @@ export interface IChatProviderConfig {
   apiBase: string;
   apiKey: string;
   currency: 'USD' | 'CNY';
-  modelsEndpoint: string | null;
+  modelExtras?: string[];
+  modelsEndpoint?: string;
   models: IChatModelConfig[];
 }
