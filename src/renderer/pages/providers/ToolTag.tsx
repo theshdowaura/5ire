@@ -1,31 +1,35 @@
 import { Tooltip } from '@fluentui/react-components';
 import { isUndefined } from 'lodash';
-import { getChatModel } from 'providers';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import useProviderStore from 'stores/useProviderStore';
 import useSettingsStore from 'stores/useSettingsStore';
 
 export default function ToolTag(
   props: {
-    provider: string;
-    model: string;
+    providerName: string;
+    modelName: string;
   } & any,
 ) {
-  const { provider, model, ...rest } = props;
+  const { providerName, modelName, ...rest } = props;
   const { getToolState } = useSettingsStore();
+  const { providers } = useProviderStore();
 
-  const originalSupport = useMemo(
-    () => getChatModel(provider, model).capabilities?.tools?.enabled || false,
-    [provider, model],
-  );
+  const originalSupport = useMemo(() => {
+    const provider = providers[providerName];
+    if (!provider) return false;
+    const model = provider.models.find((m) => m.name === modelName);
+    if (!model) return false;
+    return !!model.capabilities?.tools || false;
+  }, [providerName, modelName]);
 
   const actualSupport = useMemo(() => {
-    let toolState = getToolState(provider, model);
+    let toolState = getToolState(providerName, modelName);
     if (isUndefined(toolState)) {
       toolState = originalSupport;
     }
     return toolState;
-  }, [provider, model, originalSupport]);
+  }, [providerName, modelName, originalSupport]);
 
   const { t } = useTranslation();
   const tip = t(actualSupport ? 'Tool.Supported' : 'Tool.NotSupported');
