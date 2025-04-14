@@ -40,6 +40,37 @@ export type ModelOption = {
   isDefault: boolean;
 };
 
+// for migrating settings from old version
+const migrateSettings = () => {
+  const settings = window.electron.store.get('settings');
+  if (!settings.api) return;
+  const providersSetting = window.electron.store.get('providers');
+  const legacyDefaultProvider = settings.api.activeProvider;
+  const legacyProviders = settings.api.providers;
+  if (Object.keys(providersSetting).length === 0 && legacyProviders) {
+    const newProviders = Object.keys(legacyProviders).reduce(
+      (acc, key) => {
+        const provider = legacyProviders[key];
+        acc[key] = {
+          name: key,
+          description: provider.description,
+          apiKey: provider.key,
+          apiBase: provider.apiBase,
+          models: provider.models || [],
+          isDefault: provider.name === legacyDefaultProvider,
+        };
+        return acc;
+      },
+      {} as { [key: string]: Partial<IChatProviderConfig> },
+    );
+    window.electron.store.set('providers', newProviders);
+    const newSettings = { ...settings };
+    delete newSettings.api;
+    window.electron.store.set('settings', newSettings);
+  }
+};
+migrateSettings();
+
 const builtInToConfig = () => {
   const config: { [key: string]: IChatProviderConfig } = {};
   const builtInProviders = getProviders();
@@ -48,11 +79,11 @@ const builtInToConfig = () => {
     config[key] = {
       name: key,
       apiBase: provider.apiBase,
+      apiKey: provider.apiKey || '',
       temperature: provider.chat.temperature,
       topP: provider.chat.topP,
       presencePenalty: provider.chat.presencePenalty,
       currency: provider.currency,
-      apiKey: provider.apiKey || '',
       isDefault: false, // TODO
       isPremium: provider.isPremium || false,
       disabled: false, // TODO
@@ -91,7 +122,7 @@ export interface IProviderStore {
     modelName: string,
   ) => IChatModelConfig;
   getGroupedModelOptions: () => {
-    [key: string]:  ModelOption[];
+    [key: string]: ModelOption[];
   };
   createProvider: (providerName?: string) => void;
 }
@@ -117,7 +148,7 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
     if (extraKeys.length > 0) {
       models = models.filter((model) => {
         return extraKeys.every((key: string) => {
-          return model.extras?.[key] || '' !== '';
+          return model.extras?.[key] !== '';
         });
       });
     }
@@ -137,7 +168,11 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
   getAvailableProvider: (providerName: string) => {
     const { getProvidersWithModels } = get();
     const providers = getProvidersWithModels();
-    return find(providers, { isDefault: true }) || providers[0];
+    return (
+      find(providers, { name: providerName }) ||
+      find(providers, { isDefault: true }) ||
+      providers[0]
+    );
   },
   createProvider: (providerName = 'Untitled') => {
     const names = Object.keys(get().providers);
