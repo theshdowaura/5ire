@@ -98,21 +98,6 @@ class AppUpdater {
         if (mainWindow) {
           mainWindow.webContents.send('app-upgrade-end');
         }
-        /**
-        const dialogOpts = {
-          type: 'info',
-          buttons: ['Restart', 'Later'],
-          title: 'Application Update',
-          message: process.platform === 'win32' ? releaseNotes : releaseName,
-          detail:
-            'A new version has been downloaded. Restart the application to apply the updates.',
-        } as MessageBoxOptions;
-
-        dialog.showMessageBox(dialogOpts).then((returnValue) => {
-          if (returnValue.response === 0) autoUpdater.quitAndInstall();
-        });
-        */
-
         axiom.ingest([{ app: 'upgrade' }, { version: releaseName }]);
       },
     );

@@ -80,13 +80,13 @@ migrateSettings();
 
 const mergeProvidersSettings = (userSettings?: {
   [key: string]: IChatProviderConfig;
-}) => {
+}): { [key: string]: IChatProviderConfig } => {
   const userDefinedProviders =
     userSettings || window.electron.store.get('providers');
   const config: { [key: string]: IChatProviderConfig } = {};
   const builtInProviders = getProviders();
   Object.keys(builtInProviders).forEach((key) => {
-    const builtInProvider = builtInProviders[key];
+    const builtInProvider = builtInProviders[key] || OpenAI; // fallback to OpenAI
     const userDefinedProvider = userDefinedProviders[key];
     const userDefinedModelsMap = keyBy(
       userDefinedProvider?.models || {},
@@ -152,6 +152,7 @@ export interface IProviderStore {
   hasValidModels: (provider: IChatProviderConfig) => boolean;
   getProvidersWithModels: () => IChatProviderConfig[];
   setProvider: (providerName: string | null) => IChatProviderConfig | null;
+  createProvider: (providerName?: string) => void;
   updateProvider: (
     provider: Partial<IChatProviderConfig> & { name: string },
   ) => void;
@@ -166,7 +167,6 @@ export interface IProviderStore {
   getGroupedModelOptions: () => {
     [key: string]: ModelOption[];
   };
-  createProvider: (providerName?: string) => void;
 }
 
 const useProviderStore = create<IProviderStore>((set, get) => ({
@@ -261,29 +261,23 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
   createProvider: (providerName = 'Untitled') => {
     const names = Object.keys(get().providers);
     const defaultName = genDefaultName(names, providerName);
-    set((state: IProviderStore) => {
-      const newProvider = {
-        name: defaultName,
-        apiBase: '',
-        temperature: OpenAI.chat.temperature,
-        topP: OpenAI.chat.topP,
-        presencePenalty: OpenAI.chat.presencePenalty,
-        currency: 'USD',
-        apiKey: '',
-        isDefault: false,
-        isPremium: false,
-        isBuiltIn: false,
-        models: [],
-        disabled: false,
-      } as IChatProviderConfig;
-      return {
-        providers: {
-          ...state.providers,
-          [defaultName]: newProvider,
-        },
-        provider: newProvider,
-      };
+    const newProvider = {
+      name: defaultName,
+      apiBase: '',
+      currency: 'USD',
+      apiKey: '',
+      isDefault: false,
+      isPremium: false,
+      isBuiltIn: false,
+      models: [],
+      disabled: false,
+    } as Partial<IChatProviderConfig>;
+    window.electron.store.set('providers', {
+      ...window.electron.store.get('providers'),
+      [defaultName]: newProvider,
     });
+    const newProviders = mergeProvidersSettings();
+    set({ providers: newProviders, provider: newProviders[defaultName] });
   },
   getAvailableModel: (providerName: string, modelName: string) => {
     const { getAvailableProvider } = get();

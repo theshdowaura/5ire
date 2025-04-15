@@ -24,7 +24,7 @@ const MoreVerticalIcon = bundleIcon(MoreVerticalFilled, MoreVerticalRegular);
 export default function ProviderList({ height = 400 }: { height: number }) {
   const selectedProvider = useProviderStore((state) => state.provider);
   const providers = useProviderStore((state) => state.providers);
-  const { setProvider: selectProvider } = useProviderStore();
+  const { setProvider } = useProviderStore();
 
   const providerNames = useMemo(
     () =>
@@ -35,9 +35,9 @@ export default function ProviderList({ height = 400 }: { height: number }) {
   useEffect(() => {
     if (!selectedProvider) {
       // If no provider is selected, select the first one
-      selectProvider(providerNames[0]);
+      setProvider(providerNames[0]);
     }
-  }, [selectedProvider, providerNames, selectProvider]);
+  }, [selectedProvider, providerNames, setProvider]);
 
   return (
     <List
@@ -58,7 +58,7 @@ export default function ProviderList({ height = 400 }: { height: number }) {
             >
               <button
                 type="button"
-                onClick={() => selectProvider(providerName)}
+                onClick={() => setProvider(providerName)}
                 className="flex-grow pl-4 py-2 text-left"
               >
                 {providerName}
