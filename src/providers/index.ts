@@ -1,6 +1,5 @@
-import { IChatProviderConfig } from 'providers/types';
 import useAuthStore from 'stores/useAuthStore';
-import { ProviderType, IChatModel, IServiceProvider } from './types';
+import { ProviderType, IServiceProvider } from './types';
 import Azure from './Azure';
 import Baidu from './Baidu';
 import OpenAI from './OpenAI';

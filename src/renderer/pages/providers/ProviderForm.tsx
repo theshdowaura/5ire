@@ -1,4 +1,10 @@
-import { Checkbox, Field, Input, Label, Select } from '@fluentui/react-components';
+import {
+  Checkbox,
+  Field,
+  Input,
+  Label,
+  Select,
+} from '@fluentui/react-components';
 import { IChatProviderConfig } from 'providers/types';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -7,7 +13,7 @@ import MaskableInput from 'renderer/components/MaskableInput';
 export default function ProviderForm({
   provider,
 }: {
-  provider: IChatProviderConfig| null;
+  provider: IChatProviderConfig | null;
 }) {
   const { t } = useTranslation();
   const [name, setName] = useState<string>('');
@@ -15,8 +21,8 @@ export default function ProviderForm({
   const [endpoint, setEndpoint] = useState<string>('');
 
   useEffect(() => {
-    setName(provider?.name||'');
-    setEndpoint(provider?.apiBase||'');
+    setName(provider?.name || '');
+    setEndpoint(provider?.apiBase || '');
     setCurrency(provider?.currency || 'USD');
     return () => {
       setName('');
@@ -50,9 +56,9 @@ export default function ProviderForm({
         </Field>
       </div>
       <div className="mt-2">
-        <Field size="small" className='field-small'>
+        <Field size="small" className="field-small">
           <div className="flex justify-start items-center gap-1">
-            <Label className='w-[50px]'>{t('Common.APIEndpoint')}</Label>
+            <Label className="w-[50px]">{t('Common.APIEndpoint')}</Label>
             <Input
               size="small"
               value={endpoint}
@@ -63,10 +69,10 @@ export default function ProviderForm({
         </Field>
       </div>
       <div className="mt-2">
-        <Field size="small" className='field-small'>
+        <Field size="small" className="field-small">
           <div className="flex justify-start items-center gap-1">
-            <Label className='w-[50px]'>{t('Common.APIKey')}</Label>
-            <MaskableInput className="flex-grow" />
+            <Label className="w-[50px]">{t('Common.APIKey')}</Label>
+            <MaskableInput className="flex-grow" value={provider?.apiBase} />
           </div>
         </Field>
       </div>

@@ -1,4 +1,4 @@
-import { find, isNil } from 'lodash';
+import { find, isNil, keyBy, omit } from 'lodash';
 import { getProviders } from 'providers';
 import { IChatModelConfig, IChatProviderConfig } from 'providers/types';
 import { genDefaultName } from 'utils/util';
@@ -55,9 +55,10 @@ const migrateSettings = () => {
           name: key,
           description: provider.description,
           apiKey: provider.key,
-          apiBase: provider.apiBase,
-          models: provider.models || [],
-          isDefault: provider.name === legacyDefaultProvider,
+          apiBase: provider.base,
+          models: [],
+          isBuiltIn: true,
+          isDefault: key === legacyDefaultProvider,
         };
         return acc;
       },
@@ -71,43 +72,59 @@ const migrateSettings = () => {
 };
 migrateSettings();
 
-const builtInToConfig = () => {
+const mergeSettings = () => {
+  const userSettings = window.electron.store.get('providers');
   const config: { [key: string]: IChatProviderConfig } = {};
   const builtInProviders = getProviders();
   Object.keys(builtInProviders).forEach((key) => {
     const provider = builtInProviders[key];
+    const userProviderSettings = userSettings[key];
+    const userModelsSettings = keyBy(
+      userProviderSettings?.models || {},
+      'name',
+    );
     config[key] = {
       name: key,
-      apiBase: provider.apiBase,
-      apiKey: provider.apiKey || '',
+      apiBase: userProviderSettings?.apiBase || provider.apiBase || '',
+      apiKey: userProviderSettings?.apiKey || provider.apiKey || '',
       temperature: provider.chat.temperature,
       topP: provider.chat.topP,
       presencePenalty: provider.chat.presencePenalty,
       currency: provider.currency,
-      isDefault: false, // TODO
+      isDefault: userProviderSettings?.isDefault || false,
       isPremium: provider.isPremium || false,
-      disabled: false, // TODO
+      disabled: userProviderSettings?.disabled || false,
       isBuiltIn: true,
       modelsEndpoint: provider.options.modelsEndpoint,
-      models: provider.chat.models.map((model) => ({
-        name: model.name,
-        label: model.label || model.name,
-        contextWindow: model.contextWindow,
-        maxTokens: model.maxTokens,
-        defaultMaxTokens: model.defaultMaxTokens,
-        inputPrice: model.inputPrice,
-        outputPrice: model.outputPrice,
-        description: model.description || null,
-        isDefault: model.isDefault || false,
-        isBuiltIn: true,
-        isPremium: provider.isPremium,
-        disabled: false, // TODO
-        capabilities: model.capabilities || {},
-        // extras: model.extras || {},
-      })),
+      models: provider.chat.models.map((model) => {
+        const userModelSetting = userModelsSettings[model.name];
+        return {
+          name: model.name,
+          label: userModelSetting?.label || model.label || model.name,
+          contextWindow: userModelSetting?.contextWindow || model.contextWindow,
+          maxTokens: userModelSetting?.maxTokens || model.maxTokens,
+          defaultMaxTokens:
+            userModelSetting?.defaultMaxTokens || model.defaultMaxTokens,
+          inputPrice: userModelSetting?.inputPrice || model.inputPrice,
+          outputPrice: userModelSetting?.outputPrice || model.outputPrice,
+          description:
+            userModelSetting?.description || model.description || null,
+          isDefault: userModelSetting?.isDefault || model.isDefault || false,
+          isBuiltIn: true,
+          isPremium: provider.isPremium,
+          disabled: userModelSetting?.disabled || false,
+          capabilities:
+            userModelSetting?.capabilities || model.capabilities || {},
+          extras: userModelSetting?.extras || {},
+        };
+      }),
     };
   });
-  return config;
+  const userDefinedProviders = omit(
+    userSettings,
+    Object.keys(builtInProviders),
+  );
+  return { ...config, ...userDefinedProviders };
 };
 
 export interface IProviderStore {
@@ -116,6 +133,7 @@ export interface IProviderStore {
   hasValidModels: (provider: IChatProviderConfig) => boolean;
   getProvidersWithModels: () => IChatProviderConfig[];
   setProvider: (providerName: string | null) => IChatProviderConfig | null;
+  getDefaultProvider: () => IChatProviderConfig;
   getAvailableProvider: (providerName: string) => IChatProviderConfig;
   getAvailableModel: (
     providerName: string,
@@ -128,9 +146,7 @@ export interface IProviderStore {
 }
 
 const useProviderStore = create<IProviderStore>((set, get) => ({
-  providers: {
-    ...builtInToConfig(),
-  },
+  providers: mergeSettings(),
   provider: null,
   setProvider: (providerName: string | null) => {
     if (!providerName) {
@@ -173,6 +189,11 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
       find(providers, { isDefault: true }) ||
       providers[0]
     );
+  },
+  getDefaultProvider: () => {
+    const { getProvidersWithModels } = get();
+    const providers = getProvidersWithModels();
+    return find(providers, { isDefault: true }) || providers[0];
   },
   createProvider: (providerName = 'Untitled') => {
     const names = Object.keys(get().providers);
