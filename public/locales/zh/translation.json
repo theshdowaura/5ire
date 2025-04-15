@@ -282,5 +282,6 @@
   "Provider.Model.Edit": "编辑模型",
   "Provider.Model.New": "添加模型",
   "Provider.Tooltip.NameOfBuiltinProviderIsReadyOnly": "内置服务名称为只读",
-  "Provider.Tooltip.NameOfProviderMustBeUnique": "服务商的名称必须唯一"
+  "Provider.Tooltip.NameOfProviderMustBeUnique": "服务商的名称必须唯一",
+  "Provider.Tooltip.InvalidAPIEndpoint": "API endpoint 必须是合法的 URL 地址"
 }

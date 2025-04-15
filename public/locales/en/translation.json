@@ -291,5 +291,6 @@
   "Provider.Model.Edit": "Edit Model",
   "Provider.Model.New": "New Model",
   "Provider.Tooltip.NameOfBuiltinProviderIsReadyOnly": "The name of the built-in provider is read-only.",
-  "Provider.Tooltip.NameOfProviderMustBeUnique": "The name of the provider must be unique."
+  "Provider.Tooltip.NameOfProviderMustBeUnique": "The name of the provider must be unique.",
+  "Provider.Tooltip.InvalidAPIEndpoint": "The API endpoint must be a valid URL address."
 }

@@ -1,4 +1,3 @@
-import { keyBy } from 'lodash';
 import { IServiceProvider } from './types';
 
 const chatModels = [

@@ -11,6 +11,8 @@ import { IChatProviderConfig } from 'providers/types';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import MaskableInput from 'renderer/components/MaskableInput';
+import useProviderStore from 'stores/useProviderStore';
+import { isValidHttpHRL } from 'utils/validators';
 
 export default function ProviderForm({
   provider,
@@ -21,6 +23,8 @@ export default function ProviderForm({
   const [name, setName] = useState<string>('');
   const [currency, setCurrency] = useState<string>('USD');
   const [endpoint, setEndpoint] = useState<string>('');
+  const [endpointError, setEndpointError] = useState<string>('');
+  const { updateProvider } = useProviderStore();
 
   useEffect(() => {
     setName(provider?.name || '');
@@ -35,8 +39,8 @@ export default function ProviderForm({
 
   return (
     <div className="provider-form w-full bg-stone-50 dark:bg-stone-800 p-4 border-b border-base">
-      <div className="flex justify-around items-center gap-1">
-        <Field className="flex-grow min-w-[185px]" size="small">
+      <div className="flex justify-around items-center gap-1 pb-1">
+        <Field className="flex-grow min-w-[185px] -mb-0.5" size="small">
           <InfoLabel
             size="small"
             info={
@@ -47,7 +51,7 @@ export default function ProviderForm({
           >
             {t('Common.Name')}
           </InfoLabel>
-          <Input value={name} disabled={provider?.isBuiltIn} />
+          <Input value={name} readOnly={provider?.isBuiltIn} />
         </Field>
         <Field
           label={t('Common.Currency')}
@@ -73,13 +77,36 @@ export default function ProviderForm({
         </Field>
       </div>
       <div className="mt-2">
-        <Field size="small" className="field-small">
+        <Field
+          size="small"
+          className="field-small"
+          validationState={endpointError ? 'error' : 'none'}
+          validationMessage={endpointError}
+        >
           <div className="flex justify-start items-center gap-1">
             <Label className="w-[50px]">{t('Common.APIEndpoint')}</Label>
             <Input
               size="small"
               value={endpoint}
               className="flex-grow"
+              onBlur={(ev) => {
+                if (isValidHttpHRL(ev.target.value)) {
+                  updateProvider({
+                    name,
+                    apiBase: ev.target.value,
+                  });
+                } else {
+                  setEndpointError(t('Provider.Tooltip.InvalidAPIEndpoint'));
+                }
+              }}
+              onChange={(ev) => {
+                setEndpoint(ev.target.value);
+                if (isValidHttpHRL(ev.target.value)) {
+                  setEndpointError('');
+                } else {
+                  setEndpointError(t('Provider.Tooltip.InvalidAPIEndpoint'));
+                }
+              }}
               placeholder={provider?.apiBase || ''}
             />
           </div>

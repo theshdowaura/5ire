@@ -1,4 +1,3 @@
-import { keyBy } from 'lodash';
 import { IServiceProvider } from './types';
 
 const chatModels = [
@@ -59,7 +58,7 @@ const chatModels = [
     },
   },
   {
-    label: 'gpt-4-turbo',
+    name: 'gpt-4-turbo',
     contextWindow: 128000,
     maxTokens: 4096,
     defaultMaxTokens: 4000,
