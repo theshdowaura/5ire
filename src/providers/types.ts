@@ -1,5 +1,3 @@
-import { extend } from 'lodash';
-
 export type ProviderType =
   | 'OpenAI'
   | 'Google'
@@ -152,6 +150,8 @@ export interface IChatProviderConfig {
   isReady?: boolean;
   apiBase: string;
   apiKey: string;
+  apiSecret?: string;
+  apiVersion?: string;
   currency: 'USD' | 'CNY';
   modelExtras?: string[];
   modelsEndpoint?: string;

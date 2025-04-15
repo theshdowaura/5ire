@@ -289,5 +289,7 @@
   "Tags.Tools": "tools",
   "Common.Enabled": "Enabled",
   "Provider.Model.Edit": "Edit Model",
-  "Provider.Model.New": "New Model"
+  "Provider.Model.New": "New Model",
+  "Provider.Tooltip.NameOfBuiltinProviderIsReadyOnly": "The name of the built-in provider is read-only.",
+  "Provider.Tooltip.NameOfProviderMustBeUnique": "The name of the provider must be unique."
 }

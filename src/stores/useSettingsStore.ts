@@ -1,6 +1,6 @@
-import Debug from 'debug';
+// import Debug from 'debug';
 import { create } from 'zustand';
-import { isNil, pick, set } from 'lodash';
+import { isNil, pick } from 'lodash';
 import { getProvider } from 'providers';
 import {
   IModelMapping,
@@ -13,7 +13,7 @@ import {
 
 import { FontSize, ThemeType } from '../types/appearance';
 
-const debug = Debug('5ire:stores:useSettingsStore');
+// const debug = Debug('5ire:stores:useSettingsStore');
 
 const defaultTheme = 'system';
 const defaultLanguage = 'system';

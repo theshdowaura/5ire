@@ -32,6 +32,7 @@ export const providers: { [key: string]: IServiceProvider } = {
   '5ire': Fire,
 };
 
+// TODO: about to remove
 export function getProvider(providerName: ProviderType): IServiceProvider {
   return providers[providerName];
 }
@@ -51,4 +52,12 @@ export function getProviders(arg?: { withDisabled: boolean }): {
     },
     {} as { [key: string]: IServiceProvider },
   );
+}
+
+export function getChatAPISchema(providerName: string): string[] {
+  const provider = providers[providerName];
+  if (!provider) {
+    return OpenAI.chat.apiSchema; // Fallback to OpenAI if provider not found
+  }
+  return provider.chat.apiSchema;
 }

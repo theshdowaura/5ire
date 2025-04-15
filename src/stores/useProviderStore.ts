@@ -56,6 +56,8 @@ const migrateSettings = () => {
           description: provider.description,
           apiKey: provider.key,
           apiBase: provider.base,
+          apiSecret: provider.secret,
+          apiVersion: provider.version,
           models: [],
           isBuiltIn: true,
           isDefault: key === legacyDefaultProvider,

@@ -1,10 +1,12 @@
 import {
-  Checkbox,
   Field,
+  InfoLabel,
   Input,
   Label,
   Select,
+  Switch,
 } from '@fluentui/react-components';
+import { getChatAPISchema } from 'providers';
 import { IChatProviderConfig } from 'providers/types';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -34,11 +36,17 @@ export default function ProviderForm({
   return (
     <div className="provider-form w-full bg-stone-50 dark:bg-stone-800 p-4 border-b border-base">
       <div className="flex justify-around items-center gap-1">
-        <Field
-          label={t('Common.Name')}
-          className="flex-grow min-w-[185px]"
-          size="small"
-        >
+        <Field className="flex-grow min-w-[185px]" size="small">
+          <InfoLabel
+            size="small"
+            info={
+              provider?.isBuiltIn
+                ? t('Provider.Tooltip.NameOfBuiltinProviderIsReadyOnly')
+                : t('Provider.Tooltip.NameOfProviderMustBeUnique')
+            }
+          >
+            {t('Common.Name')}
+          </InfoLabel>
           <Input value={name} disabled={provider?.isBuiltIn} />
         </Field>
         <Field
@@ -51,8 +59,17 @@ export default function ProviderForm({
             <option>CNY</option>
           </Select>
         </Field>
-        <Field label={t('Common.Default')} size="small">
-          <Checkbox className="" />
+        <Field size="small" className="-mb-2 ml-1">
+          <Label className="w-[50px] -mb-0.5" size="small">
+            {t('Common.Default')}
+          </Label>
+          <Switch checked={provider?.isDefault || false} className="-ml-1" />
+        </Field>
+        <Field size="small" className="-mb-2">
+          <Label className="w-[50px] -mb-0.5" size="small">
+            {t('Common.Enabled')}
+          </Label>
+          <Switch checked={!provider?.disabled} className="-ml-1" />
         </Field>
       </div>
       <div className="mt-2">
@@ -76,6 +93,19 @@ export default function ProviderForm({
           </div>
         </Field>
       </div>
+      {getChatAPISchema(provider?.name || '').includes('secret') && (
+        <div className="mt-2">
+          <Field size="small" className="field-small">
+            <div className="flex justify-start items-center gap-1">
+              <Label className="w-[50px]">{t('Common.SecretKey')}</Label>
+              <MaskableInput
+                className="flex-grow"
+                value={provider?.apiSecret}
+              />
+            </div>
+          </Field>
+        </div>
+      )}
     </div>
   );
 }
