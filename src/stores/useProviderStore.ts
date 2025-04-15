@@ -155,6 +155,8 @@ export interface IProviderStore {
   updateProvider: (
     provider: Partial<IChatProviderConfig> & { name: string },
   ) => void;
+  isProviderDuplicated: (providerName: string) => boolean;
+  updateProviderName: (oldName: string, newName: string) => void;
   getDefaultProvider: () => IChatProviderConfig;
   getAvailableProvider: (providerName: string) => IChatProviderConfig;
   getAvailableModel: (
@@ -190,8 +192,33 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
         ...provider,
       },
     };
+    // if the provider is set as default, unset all other providers
+    if (provider.isDefault) {
+      Object.keys(updatedProviders).forEach((key) => {
+        if (key !== provider.name) {
+          updatedProviders[key].isDefault = false;
+        }
+      });
+    }
     window.electron.store.set('providers', updatedProviders);
     set({ providers: mergeProvidersSettings(updatedProviders) });
+  },
+  updateProviderName: (oldName: string, newName: string) => {
+    const providers = window.electron.store.get('providers');
+    const updatedProviders = {
+      ...providers,
+      [newName]: {
+        ...providers[oldName],
+        name: newName,
+      },
+    };
+    delete updatedProviders[oldName];
+    window.electron.store.set('providers', updatedProviders);
+    set({ providers: mergeProvidersSettings(updatedProviders) });
+  },
+  isProviderDuplicated: (providerName: string) => {
+    const { providers } = get();
+    return Object.keys(providers).includes(providerName);
   },
   hasValidModels: (provider: IChatProviderConfig) => {
     let models = Object.values(provider.models || {});

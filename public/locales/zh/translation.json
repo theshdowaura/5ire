@@ -14,7 +14,7 @@
   "Common.Premium": "尊享",
   "Azure.DeploymentID": "Deployment ID",
   "Doubao.DeploymentID": "接入点名称",
-  "Common.SecretKey": "Secret Key",
+  "Common.SecretKey": "Secret",
   "Common.Analytics": "统计",
   "Common.Workspace": "空间",
   "Notification.SignOutSuccess": "你已退出登录。",

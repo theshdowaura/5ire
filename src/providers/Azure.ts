@@ -94,8 +94,8 @@ export default {
     apiKeyCustomizable: true,
   },
   chat: {
-    apiSchema: ['base', 'key', 'deploymentId'],
-    modeExtras: ['version'],
+    apiSchema: ['base', 'key', 'version'],
+    modeExtras: ['deploymentId'],
     docs: {
       deploymentId: 'The deployment name you chose when you deployed the model',
       temperature:

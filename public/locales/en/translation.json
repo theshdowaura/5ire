@@ -21,7 +21,7 @@
   "Common.Premium": "Premium",
   "Azure.DeploymentID": "Deployment ID",
   "Doubao.DeploymentID": "Access Point Name",
-  "Common.SecretKey": "Secret Key",
+  "Common.SecretKey": "Secret",
   "Common.Analytics": "Analytics",
   "Common.Workspace": "Workspace",
   "Notification.SignOutSuccess": "You are now signed out.",
