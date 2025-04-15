@@ -24,6 +24,9 @@ const isProviderReady = (provider: IChatProviderConfig) => {
   }
 };
 
+const sortByName = (a: { name: string }, b: { name: string }) =>
+  b.name.localeCompare(a.name);
+
 const isModelReady = (
   provider: IChatProviderConfig,
   model: IChatModelConfig,
@@ -156,6 +159,7 @@ export interface IProviderStore {
   updateProvider: (
     provider: Partial<IChatProviderConfig> & { name: string },
   ) => void;
+  deleteProvider: (providerName: string) => void;
   isProviderDuplicated: (providerName: string) => boolean;
   updateProviderName: (oldName: string, newName: string) => void;
   getDefaultProvider: () => IChatProviderConfig;
@@ -215,6 +219,22 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
     delete updatedProviders[oldName];
     window.electron.store.set('providers', updatedProviders);
     set({ providers: mergeProvidersSettings(updatedProviders) });
+    if (get().provider?.name === oldName) {
+      set({ provider: updatedProviders[newName] });
+    }
+  },
+  deleteProvider: (providerName: string) => {
+    const providers = window.electron.store.get('providers');
+    const updatedProviders = { ...providers };
+    delete updatedProviders[providerName];
+    window.electron.store.set('providers', updatedProviders);
+    const newProviders = mergeProvidersSettings(updatedProviders);
+    set({
+      providers: newProviders,
+    });
+    if (get().provider?.name === providerName) {
+      set({ provider: Object.values(newProviders).sort(sortByName)[0] });
+    }
   },
   isProviderDuplicated: (providerName: string) => {
     const { providers } = get();
