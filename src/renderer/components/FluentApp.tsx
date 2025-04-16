@@ -113,6 +113,7 @@ export default function FluentApp() {
     <FluentProvider
       theme={theme === 'light' ? lightTheme : darkTheme}
       data-theme={theme}
+      className='overflow-hidden'
     >
       <Router>
         <AppHeader />

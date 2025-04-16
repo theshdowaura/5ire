@@ -38,7 +38,7 @@ export default function Sidebar({ chatId }: { chatId: string }) {
 
   return (
     <aside
-      className={`right-sidebar ml-5 -mr-5 z-20 pt-2.5 flex-shrink-0 border-l w-72 ${
+      className={`z-20 pt-2.5 flex-shrink-0 min-w-[180px] ${
         chatSidebar.show ? 'hidden sm:flex' : 'hidden'
       }  inset-y-0 top-0 flex-col duration-300 md:relative pl-2`}
     >

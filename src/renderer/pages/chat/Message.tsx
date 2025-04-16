@@ -216,7 +216,8 @@ export default function Message({ message }: { message: IChatMessage }) {
               </div>
             ) : null}
             <div
-              className={`mt-1 break-word ${
+              lang="en"
+              className={`break-words hyphens-auto mt-1${
                 fontSize === 'large' ? 'font-lg' : ''
               }`}
               dangerouslySetInnerHTML={{
