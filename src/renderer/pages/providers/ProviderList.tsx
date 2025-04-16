@@ -11,6 +11,7 @@ import {
 } from '@fluentui/react-components';
 import {
   bundleIcon,
+  CaretLeft16Filled,
   ChevronRightRegular,
   MoreVerticalFilled,
   MoreVerticalRegular,
@@ -57,17 +58,20 @@ export default function ProviderList({ height = 400 }: { height: number }) {
             <ListItem
               key={provider.name}
               aria-label={provider.name}
-              className="block hover:bg-stone-100 dark:hover:bg-stone-700 group"
+              className="block hover:bg-stone-100 dark:hover:bg-stone-700/25 group"
             >
               <div
-                className={`flex justify-between items-center border-b border-gray-100 dark:border-stone-800 w-full ${selectedProvider?.name === provider.name ? 'bg-stone-100 dark:bg-stone-700' : ''}`}
+                className={`flex justify-between items-center border-b border-gray-100 dark:border-stone-800/25 w-full ${selectedProvider?.name === provider.name ? 'bg-stone-100 dark:bg-stone-700/25' : ''}`}
               >
                 <button
                   type="button"
                   onClick={() => setProvider(provider)}
-                  className="flex-grow pl-4 py-2 text-left"
+                  className="flex justify-start items-center gap-0.5 flex-grow pl-4 py-2 text-left"
                 >
                   {provider.name}
+                  {provider.isDefault && (
+                    <CaretLeft16Filled className="text-gray-500 -mb-1" />
+                  )}
                 </button>
                 <div className="flex justify-center items-center">
                   {selectedProvider?.name === provider.name && (

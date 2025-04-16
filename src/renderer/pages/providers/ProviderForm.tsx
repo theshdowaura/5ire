@@ -59,7 +59,7 @@ export default function ProviderForm({
   }, [provider]);
 
   return (
-    <div className="provider-form w-full bg-stone-50 dark:bg-stone-800 p-4 border-b border-base">
+    <div className="provider-form w-full bg-stone-50 dark:bg-stone-800/20 p-4 border-b border-base">
       <div className="flex justify-around items-center gap-1 pb-1">
         <Field
           className="flex-grow min-w-[185px] -mb-0.5"
