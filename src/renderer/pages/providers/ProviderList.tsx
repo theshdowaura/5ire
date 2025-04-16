@@ -27,10 +27,15 @@ export default function ProviderList({ height = 400 }: { height: number }) {
   const selectedProvider = useProviderStore((state) => state.provider);
   const [targetProvider, setTargetProvider] =
     useState<IChatProviderConfig | null>(null);
-  const { getProviders, setProvider, deleteProvider } = useProviderStore();
+  const providers = useProviderStore((state) => state.providers);
+  const { setProvider, deleteProvider, getAvailableProviders } =
+    useProviderStore();
   const [delConfirmDialogOpen, setDelConfirmDialogOpen] = useState(false);
 
-  const providers = useMemo(() => getProviders(), [getProviders]);
+  const availableProviders = useMemo(
+    () => getAvailableProviders(),
+    [getAvailableProviders, providers],
+  );
 
   useEffect(() => {
     if (!selectedProvider) {
@@ -47,7 +52,7 @@ export default function ProviderList({ height = 400 }: { height: number }) {
           height,
         }}
       >
-        {providers.map((provider: IChatProviderConfig) => {
+        {availableProviders.map((provider: IChatProviderConfig) => {
           return (
             <ListItem
               key={provider.name}

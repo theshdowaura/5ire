@@ -82,5 +82,6 @@ export default function App() {
       subscription.unsubscribe();
     };
   }, [loadAuthData, onAuthStateChange]);
+
   return <FluentApp />;
 }

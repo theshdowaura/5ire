@@ -1,4 +1,3 @@
-import useAuthStore from 'stores/useAuthStore';
 import { ProviderType, IServiceProvider } from './types';
 import Azure from './Azure';
 import Baidu from './Baidu';
@@ -38,10 +37,7 @@ export function getProvider(providerName: ProviderType): IServiceProvider {
 }
 
 export function getBuiltInProviders(): IServiceProvider[] {
-  const { session } = useAuthStore.getState();
-  return Object.values(providers).filter((provider: IServiceProvider) => {
-    return !!session || !provider.isPremium;
-  });
+  return Object.values(providers);
 }
 
 export function getChatAPISchema(providerName: string): string[] {

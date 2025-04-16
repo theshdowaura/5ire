@@ -34,14 +34,15 @@ const useAuthStore = create<IAuthStore>((set, get) => ({
   session: null,
   user: null,
   /**
-   * 加载有下面几种情况
-   * 1. 本地没有 session
-   *  1.1 也没有 user 信息
-   *  1.2 有 User信息， 这种情况比较特殊， 只有一种可能性，就是用户刚注册，还未通过 Email 确认激活。
-   *      这种情况下，我们需要获取本地的 InactiveUser 作为 User信息
-   *  2. 本地有 Session
-   *    2.1 Session 有效，返回
-   *    2.2 Session 过期，返回 null
+   * There are several scenarios for loading:
+   * 1. No session exists locally.
+   *   1.1 No user information is available.
+   *   1.2 User information exists. This is a special case, which can only occur when the user has just registered
+   *       and has not yet confirmed activation via email. In this case, we need to retrieve the local InactiveUser
+   *       as the user information.
+   * 2. A session exists locally.
+   *    2.1 The session is valid. Return it.
+   *    2.2 The session has expired. Return null.
    */
   load: async () => {
     const { data, error } = await supabase.auth.getSession();
