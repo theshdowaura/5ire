@@ -44,12 +44,9 @@ const useAuthStore = create<IAuthStore>((set, get) => ({
    *    2.2 Session 过期，返回 null
    */
   load: async () => {
-    let {
-      data: { session },
-      error,
-    } = await supabase.auth.getSession();
+    const { data, error } = await supabase.auth.getSession();
     let user = null;
-
+    let { session } = data;
     if (error) {
       debug('loadSession error', error);
       return {
@@ -74,8 +71,6 @@ const useAuthStore = create<IAuthStore>((set, get) => ({
         user = JSON.parse(serialized) as User;
       }
     }
-    debug('Set session:', session);
-    debug('Set user:', user);
     set({ session, user });
     return {
       data: {
@@ -103,7 +98,7 @@ const useAuthStore = create<IAuthStore>((set, get) => ({
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session?.user?.id == get().user?.id) return;
+      if (session?.user?.id === get().user?.id) return;
       if (callback) callback(event, session);
       set({ session, user: session?.user });
       debug('onAuthStateChange', event, session);
