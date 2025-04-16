@@ -1,5 +1,5 @@
-import { find, isNil, keyBy, omit } from 'lodash';
-import { getProviders } from 'providers';
+import { find, isNil, keyBy, unionBy } from 'lodash';
+import { getBuiltInProviders } from 'providers';
 import {
   IChatModel,
   IChatModelConfig,
@@ -25,14 +25,13 @@ const isProviderReady = (provider: IChatProviderConfig) => {
 };
 
 const sortByName = (a: { name: string }, b: { name: string }) =>
-  b.name.localeCompare(a.name);
+  a.name.localeCompare(b.name);
 
 const isModelReady = (
-  provider: IChatProviderConfig,
+  modelExtras: string[],
   model: IChatModelConfig,
-) => {
-  const extraKeys = Object.keys(provider.modelExtras || {});
-  return extraKeys.every((key: string) => {
+): boolean => {
+  return modelExtras.every((key: string) => {
     return (
       !isNil(model.extras?.[key]) &&
       (model.extras?.[key] as string).trim() !== ''
@@ -51,110 +50,105 @@ export type ModelOption = {
 const migrateSettings = () => {
   const settings = window.electron.store.get('settings');
   if (!settings.api) return;
-  const providersSetting = window.electron.store.get('providers');
+  const customProviders = window.electron.store.get('providers');
   const legacyDefaultProvider = settings.api.activeProvider;
   const legacyProviders = settings.api.providers;
-  if (Object.keys(providersSetting).length === 0 && legacyProviders) {
-    const newProviders = Object.keys(legacyProviders).reduce(
-      (acc, key) => {
-        const provider = legacyProviders[key];
-        acc[key] = {
-          name: key,
-          description: provider.description,
-          apiKey: provider.key,
-          apiBase: provider.base,
-          apiSecret: provider.secret,
-          apiVersion: provider.version,
-          models: [],
-          isBuiltIn: true,
-          isDefault: key === legacyDefaultProvider,
-        };
-        return acc;
-      },
-      {} as { [key: string]: Partial<IChatProviderConfig> },
+  if ((customProviders?.length || 0) === 0 && legacyProviders) {
+    const newProviders = Object.values(legacyProviders).map(
+      (provider: any) => ({
+        name: provider.provider,
+        description: provider.description,
+        apiKey: provider.key,
+        apiBase: provider.base,
+        apiSecret: provider.secret,
+        apiVersion: provider.version,
+        models: [],
+        isBuiltIn: true,
+        isDefault: provider.provider === legacyDefaultProvider,
+      }),
     );
     window.electron.store.set('providers', newProviders);
-    const newSettings = { ...settings };
-    delete newSettings.api;
-    window.electron.store.set('settings', newSettings);
   }
+  const newSettings = { ...settings };
+  delete newSettings.api;
+  window.electron.store.set('settings', newSettings);
 };
 migrateSettings();
 
-const mergeProvidersSettings = (userSettings?: {
-  [key: string]: IChatProviderConfig;
-}): { [key: string]: IChatProviderConfig } => {
-  const userDefinedProviders =
-    userSettings || window.electron.store.get('providers');
-  const config: { [key: string]: IChatProviderConfig } = {};
-  const builtInProviders = getProviders();
-  Object.keys(builtInProviders).forEach((key) => {
-    const builtInProvider = builtInProviders[key] || OpenAI; // fallback to OpenAI
-    const userDefinedProvider = userDefinedProviders[key];
-    const userDefinedModelsMap = keyBy(
-      userDefinedProvider?.models || {},
-      'name',
-    );
-    const userCreatedModels =
-      userDefinedProvider?.models?.filter((model: IChatModelConfig) => {
-        return builtInProvider.chat.models.some(
-          (builtInModel: IChatModel) => builtInModel.name === model.name,
-        );
-      }) || [];
-    config[key] = {
-      name: key,
-      apiBase: userDefinedProvider?.apiBase || builtInProvider.apiBase || '',
-      apiKey: userDefinedProvider?.apiKey || builtInProvider.apiKey || '',
-      temperature: builtInProvider.chat.temperature,
-      topP: builtInProvider.chat.topP,
-      presencePenalty: builtInProvider.chat.presencePenalty,
-      currency: builtInProvider.currency,
-      isDefault: userDefinedProvider?.isDefault || false,
-      isPremium: builtInProvider.isPremium || false,
-      disabled: userDefinedProvider?.disabled || false,
-      isBuiltIn: true,
-      modelsEndpoint: builtInProvider.options.modelsEndpoint,
-      models: [
-        ...builtInProvider.chat.models.map((model) => {
-          const userDefinedModel = userDefinedModelsMap[model.name];
-          return {
-            name: model.name,
-            label: userDefinedModel?.label || model.label || model.name,
-            contextWindow:
-              userDefinedModel?.contextWindow || model.contextWindow,
-            maxTokens: userDefinedModel?.maxTokens || model.maxTokens,
-            defaultMaxTokens:
-              userDefinedModel?.defaultMaxTokens || model.defaultMaxTokens,
-            inputPrice: userDefinedModel?.inputPrice || model.inputPrice,
-            outputPrice: userDefinedModel?.outputPrice || model.outputPrice,
-            description:
-              userDefinedModel?.description || model.description || null,
-            isDefault: userDefinedModel?.isDefault || model.isDefault || false,
-            isBuiltIn: true,
-            isPremium: builtInProvider.isPremium,
-            disabled: userDefinedModel?.disabled || false,
-            capabilities:
-              userDefinedModel?.capabilities || model.capabilities || {},
-            extras: userDefinedModel?.extras || {},
-          };
-        }),
-        ...userCreatedModels,
-      ].sort((a, b) => b.name.localeCompare(a.name)),
-    };
-  });
-  const userCreatedProviders = omit(
-    userDefinedProviders,
-    Object.keys(builtInProviders),
-  );
-  return { ...config, ...userCreatedProviders };
+const mergeProviders = (
+  custom?: IChatProviderConfig[],
+): IChatProviderConfig[] => {
+  const customProviders = custom || window.electron.store.get('providers');
+  const builtInProviders = getBuiltInProviders();
+  return unionBy([...customProviders, ...builtInProviders], 'name')
+    .map((provider) => {
+      const customProvider = customProviders[provider.name];
+      const builtInProvider = builtInProviders[provider.name] || OpenAI; // fallback to OpenAI
+      const userCreatedModels =
+        customProvider?.models?.filter((model: IChatModelConfig) => {
+          return builtInProvider.chat.models.some(
+            (builtInModel: IChatModel) => builtInModel.name === model.name,
+          );
+        }) || [];
+      const customModels = keyBy(customProvider?.models || [], 'name');
+      const mergedProvider = {
+        name: provider.name,
+        description: customProvider?.description || builtInProvider.description,
+        apiBase: customProvider?.apiBase || builtInProvider.apiBase || '',
+        apiKey: customProvider?.apiKey || builtInProvider.apiKey || '',
+        temperature: builtInProvider.chat.temperature,
+        topP: builtInProvider.chat.topP,
+        presencePenalty: builtInProvider.chat.presencePenalty,
+        currency: builtInProvider.currency,
+        isDefault: customProvider?.isDefault || false,
+        isPremium: !!builtInProvider.isPremium,
+        disabled: customProvider?.disabled || false,
+        isBuiltIn: true,
+        modelExtras: customProvider?.modelExtras || {},
+        modelsEndpoint: builtInProvider.options.modelsEndpoint,
+        models: [
+          ...builtInProvider.chat.models.map((model) => {
+            const customModel = customModels[model.name];
+            const mergedModel = {
+              name: model.name,
+              label: customModel?.label || model.label || model.name,
+              contextWindow: customModel?.contextWindow || model.contextWindow,
+              maxTokens: customModel?.maxTokens || model.maxTokens,
+              defaultMaxTokens:
+                customModel?.defaultMaxTokens || model.defaultMaxTokens,
+              inputPrice: customModel?.inputPrice || model.inputPrice,
+              outputPrice: customModel?.outputPrice || model.outputPrice,
+              description:
+                customModel?.description || model.description || null,
+              isDefault: customModel?.isDefault || model.isDefault || false,
+              isBuiltIn: true,
+              isPremium: builtInProvider.isPremium,
+              disabled: customModel?.disabled || false,
+              capabilities:
+                customModel?.capabilities || model.capabilities || {},
+              extras: customModel?.extras || {},
+            } as IChatModelConfig;
+            mergedModel.isReady = isModelReady(
+              builtInProvider.chat.modeExtras || [],
+              mergedModel,
+            );
+            return mergedModel;
+          }),
+          ...userCreatedModels,
+        ].sort(sortByName),
+      } as IChatProviderConfig;
+      mergedProvider.isReady = isProviderReady(mergedProvider);
+      return mergedProvider;
+    })
+    .sort(sortByName);
 };
 
 export interface IProviderStore {
   provider: IChatProviderConfig | null;
-  providers: { [key: string]: IChatProviderConfig };
+  getProviders: () => IChatProviderConfig[];
   hasValidModels: (provider: IChatProviderConfig) => boolean;
   getProvidersWithModels: () => IChatProviderConfig[];
-  setProvider: (providerName: string | null) => IChatProviderConfig | null;
+  setProvider: (provider: IChatProviderConfig) => IChatProviderConfig;
   createProvider: (providerName?: string) => void;
   updateProvider: (
     provider: Partial<IChatProviderConfig> & { name: string },
@@ -174,71 +168,77 @@ export interface IProviderStore {
 }
 
 const useProviderStore = create<IProviderStore>((set, get) => ({
-  providers: mergeProvidersSettings(),
+  providers: mergeProviders(),
   provider: null,
-  setProvider: (providerName: string | null) => {
-    if (!providerName) {
-      set({ provider: null });
-      return null;
-    }
-    const provider = get().providers[providerName];
+  setProvider: (provider: IChatProviderConfig) => {
     set({ provider });
     return provider;
+  },
+  getProviders: () => {
+    return mergeProviders();
   },
   updateProvider: (
     provider: Partial<IChatProviderConfig> & { name: string },
   ) => {
     const providers = window.electron.store.get('providers');
-    const updatedProviders = {
-      ...providers,
-      [provider.name]: {
-        ...providers[provider.name],
-        ...provider,
-      },
-    };
-    // if the provider is set as default, unset all other providers
-    if (provider.isDefault) {
-      Object.keys(updatedProviders).forEach((key) => {
-        if (key !== provider.name) {
-          updatedProviders[key].isDefault = false;
+    const updatedProviders = providers.map(
+      (providerItem: IChatProviderConfig) => {
+        if (providerItem.name === provider.name) {
+          return {
+            ...providerItem,
+            ...provider,
+          };
         }
-      });
-    }
+        if (provider.isDefault) {
+          providerItem.isDefault = false;
+        }
+        return providerItem;
+      },
+    ) as IChatProviderConfig[];
     window.electron.store.set('providers', updatedProviders);
-    set({ providers: mergeProvidersSettings(updatedProviders) });
   },
   updateProviderName: (oldName: string, newName: string) => {
     const providers = window.electron.store.get('providers');
-    const updatedProviders = {
-      ...providers,
-      [newName]: {
-        ...providers[oldName],
-        name: newName,
+    const updatedProviders = providers.map(
+      (providerItem: IChatProviderConfig) => {
+        if (providerItem.name === oldName) {
+          return {
+            ...providerItem,
+            name: newName,
+          };
+        }
+        return providerItem;
       },
-    };
-    delete updatedProviders[oldName];
+    );
     window.electron.store.set('providers', updatedProviders);
-    set({ providers: mergeProvidersSettings(updatedProviders) });
     if (get().provider?.name === oldName) {
-      set({ provider: updatedProviders[newName] });
+      set(({ provider }) => ({
+        provider: {
+          ...provider,
+          name: newName,
+        } as IChatProviderConfig,
+      }));
     }
   },
   deleteProvider: (providerName: string) => {
     const providers = window.electron.store.get('providers');
-    const updatedProviders = { ...providers };
-    delete updatedProviders[providerName];
+    const updatedProviders = providers.filter(
+      (providerItem: IChatProviderConfig) => {
+        return providerItem.name !== providerName;
+      },
+    ) as IChatProviderConfig[];
     window.electron.store.set('providers', updatedProviders);
-    const newProviders = mergeProvidersSettings(updatedProviders);
-    set({
-      providers: newProviders,
-    });
-    if (get().provider?.name === providerName) {
-      set({ provider: Object.values(newProviders).sort(sortByName)[0] });
+    const { provider } = get();
+    if (provider?.name === providerName) {
+      const $providers = mergeProviders();
+      set({ provider: $providers[0] });
     }
   },
   isProviderDuplicated: (providerName: string) => {
-    const { providers } = get();
-    return Object.keys(providers).includes(providerName);
+    const { getProviders } = get();
+    return getProviders()
+      .map((provider) => provider.name)
+      .includes(providerName);
   },
   hasValidModels: (provider: IChatProviderConfig) => {
     let models = Object.values(provider.models || {});
@@ -254,15 +254,10 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
     return models.length > 0;
   },
   getProvidersWithModels: () => {
-    const { providers } = get();
-    return Object.values(providers)
-      .filter((p) => {
-        return p.models.length > 0;
-      })
-      .map((provider) => {
-        provider.isReady = isProviderReady(provider);
-        return provider;
-      });
+    const { getProviders } = get();
+    return getProviders().filter((p) => {
+      return p.models.length > 0;
+    });
   },
   getAvailableProvider: (providerName: string) => {
     const { getProvidersWithModels } = get();
@@ -279,7 +274,8 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
     return find(providers, { isDefault: true }) || providers[0];
   },
   createProvider: (providerName = 'Untitled') => {
-    const names = Object.keys(get().providers);
+    const providers = get().getProviders();
+    const names = providers.map((provider) => provider.name);
     const defaultName = genDefaultName(names, providerName);
     const newProvider = {
       name: defaultName,
@@ -292,12 +288,14 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
       models: [],
       disabled: false,
     } as Partial<IChatProviderConfig>;
-    window.electron.store.set('providers', {
-      ...window.electron.store.get('providers'),
-      [defaultName]: newProvider,
+    const customProviders = window.electron.store.get('providers');
+    const newCustomProviders = (
+      [...customProviders, newProvider] as IChatProviderConfig[]
+    ).sort(sortByName);
+    window.electron.store.set('providers', newCustomProviders);
+    set({
+      provider: find(mergeProviders(newCustomProviders), { name: defaultName }),
     });
-    const newProviders = mergeProvidersSettings();
-    set({ providers: newProviders, provider: newProviders[defaultName] });
   },
   getAvailableModel: (providerName: string, modelName: string) => {
     const { getAvailableProvider } = get();
@@ -312,7 +310,7 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
       result[provider.name] = provider.models.map((model) => ({
         label: model.label || model.name,
         value: model.name,
-        isReady: isModelReady(provider, model),
+        isReady: model.isReady,
         isDefault: model.isDefault || false,
       }));
     });

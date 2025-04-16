@@ -37,21 +37,11 @@ export function getProvider(providerName: ProviderType): IServiceProvider {
   return providers[providerName];
 }
 
-export function getProviders(arg?: { withDisabled: boolean }): {
-  [key: string]: IServiceProvider;
-} {
+export function getBuiltInProviders(): IServiceProvider[] {
   const { session } = useAuthStore.getState();
-  return Object.values(providers).reduce(
-    (acc: { [key: string]: IServiceProvider }, cur: IServiceProvider) => {
-      cur.isBuiltIn = true;
-      if (!arg?.withDisabled && cur.disabled) return acc;
-      if (!!session || !cur.isPremium) {
-        acc[cur.name] = cur;
-      }
-      return acc;
-    },
-    {} as { [key: string]: IServiceProvider },
-  );
+  return Object.values(providers).filter((provider: IServiceProvider) => {
+    return !!session || !provider.isPremium;
+  });
 }
 
 export function getChatAPISchema(providerName: string): string[] {

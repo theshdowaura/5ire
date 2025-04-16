@@ -123,7 +123,7 @@ export interface IChatModelConfig {
   isDefault?: boolean;
   isBuiltIn?: boolean;
   isPremium?: boolean;
-  isReady?: boolean;
+  isReady: boolean;
   inputPrice: number;
   outputPrice: number;
   capabilities: {
@@ -147,7 +147,7 @@ export interface IChatProviderConfig {
   isBuiltIn: boolean;
   isDefault: boolean;
   isPremium: boolean;
-  isReady?: boolean;
+  isReady: boolean;
   apiBase: string;
   apiKey: string;
   apiSecret?: string;
