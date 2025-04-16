@@ -39,7 +39,7 @@ export default function Header() {
   const folders = useChatStore((state) => state.folders);
   const activeChat = useChatStore((state) => state.chat);
   const collapsed = useAppearanceStore((state) => state.sidebar.collapsed);
-  const chatSidebarHidden = useAppearanceStore(
+  const chatSidebarShow = useAppearanceStore(
     (state) => state.chatSidebar.show,
   );
   const toggleChatSidebarVisibility = useAppearanceStore(
@@ -120,7 +120,7 @@ export default function Header() {
         <div className="hidden sm:block">
           <Button
             icon={
-              chatSidebarHidden ? (
+              chatSidebarShow ? (
                 <PanelRightHideIcon className="text-color-tertiary" />
               ) : (
                 <PanelRightShowIcon className="text-color-tertiary" />
@@ -133,7 +133,7 @@ export default function Header() {
         </div>
         <Button
           icon={<MoreHorizontalIcon className="text-color-tertiary" />}
-          appearance="subtle"
+          appearance="transparent"
           onClick={() => setDrawerOpen(true)}
         />
       </div>
