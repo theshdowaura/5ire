@@ -171,7 +171,7 @@ export default function ChatFolder({
         <AccordionPanel>
           {chats.length > 0 && (
             <div
-              className={`pt-0.5 ${collapsed ? 'ml-0' : 'border-l border-base ml-3'}`}
+              className={`pt-0.5 ${collapsed ? 'ml-0' : 'border-l border-gray-300 dark:border-zinc-700 ml-3'}`}
               style={{ paddingLeft: collapsed ? 0 : 4 }}
             >
               {chats.map((c) => (
