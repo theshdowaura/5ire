@@ -142,9 +142,9 @@ export default function ModelList({
                     setSelectedModel(model as IChatModelConfig);
                     setFormOpen(true);
                   }}
-                  className="block hover:bg-stone-100 dark:hover:bg-stone-700/25"
+                  className="block hover:bg-stone-100 dark:hover:bg-zinc-700/25"
                 >
-                  <div className="px-4 pt-3 pb-2 border-b border-gray-100 dark:border-stone-800/25 w-full">
+                  <div className="px-4 pt-3 pb-2 border-b border-gray-100 dark:border-zinc-800/25 w-full">
                     <div className="font-medium flex justify-between gap-1 items-center mb-1">
                       <div>
                         <span className="-mt-0.5 text-sm" title={model.name}>

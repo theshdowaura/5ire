@@ -58,10 +58,10 @@ export default function ProviderList({ height = 400 }: { height: number }) {
             <ListItem
               key={provider.name}
               aria-label={provider.name}
-              className="block hover:bg-stone-100 dark:hover:bg-stone-700/25 group"
+              className="block hover:bg-stone-100 dark:hover:bg-zinc-700/25 group"
             >
               <div
-                className={`flex justify-between items-center border-b border-gray-100 dark:border-stone-800/25 w-full ${selectedProvider?.name === provider.name ? 'bg-stone-100 dark:bg-stone-700/25' : ''}`}
+                className={`flex justify-between items-center border-b border-gray-100 dark:border-zinc-800/25 w-full ${selectedProvider?.name === provider.name ? 'bg-stone-100 dark:bg-zinc-700/25' : ''}`}
               >
                 <button
                   type="button"
