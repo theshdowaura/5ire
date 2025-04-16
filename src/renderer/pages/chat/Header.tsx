@@ -88,7 +88,7 @@ export default function Header() {
 
   return (
     <div
-      className={`chat-header absolute p-2.5 -mx-2.5 flex justify-between items-center ${
+      className={`chat-header absolute p-2.5 flex justify-between items-center ${
         collapsed
           ? 'left-[12rem] md:left-[5rem]'
           : 'left-[12rem] md:left-0 lg:left-0'
