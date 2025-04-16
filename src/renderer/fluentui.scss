@@ -34,7 +34,9 @@
 .fui-PopoverSurface {
   max-width: 400px;
 }
-
+.fui-Field__validationMessage{
+  @apply flex justify-start items-center;
+}
 .fui-AccordionHeader__button {
   --fontFamilyBase:
     Barlow, -apple-system, BlinkMacSystemFont, PingFang SC, Hiragino Sans GB,
