@@ -27,7 +27,6 @@ export default {
         isDefault: true,
         description: `60 tokens/second, Enhanced capabilities，API compatibility intact`,
         toolEnabled: true,
-        group: 'DeepSeek',
       },
       'deepseek-reasoner': {
         label: 'deepseek-reasoner',
@@ -39,7 +38,6 @@ export default {
         isDefault: true,
         description: `Performance on par with OpenAI-o1`,
         toolEnabled: false,
-        group: 'DeepSeek',
       },
     },
   },

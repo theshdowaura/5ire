@@ -30,7 +30,6 @@ export default {
         },
         toolEnabled: false,
         description: `The o1 reasoning model is designed to solve hard problems across domains`,
-        group: 'O',
       },
       'o1-mini': {
         label: 'o1-mini',
@@ -46,7 +45,6 @@ export default {
         },
         toolEnabled: false,
         description: `o1-mini is a faster and more affordable reasoning model`,
-        group: 'O',
       },
       'o3-mini': {
         label: 'o3-mini',
@@ -58,7 +56,6 @@ export default {
         toolEnabled: true,
         isDefault: false,
         description: `o3-mini is OpenAI's most recent small reasoning model, providing high intelligence at the same cost and latency targets of o1-min`,
-        group: 'O',
       },
       'gpt-4o': {
         label: 'gpt-4o',
@@ -75,7 +72,6 @@ export default {
         toolEnabled: true,
         isDefault: true,
         description: `GPT-4o it's most advanced multimodal model of OpenAI that’s faster and cheaper than GPT-4 Turbo with stronger vision capabilities`,
-        group: 'GPT-4',
       },
       'gpt-4o-mini': {
         label: 'gpt-4o-mini',
@@ -91,7 +87,6 @@ export default {
         },
         toolEnabled: true,
         description: `GPT-4o mini (“o” for “omni”) is OpenAI's advanced model in the small models category, and it's cheapest model yet. It is multimodal (accepting text or image inputs and outputting text), has higher intelligence than gpt-3.5-turbo but is just as fast. It is meant to be used for smaller tasks, including vision tasks.`,
-        group: 'GPT-4',
       },
       'gpt-4-turbo': {
         label: 'gpt-4-turbo',
@@ -110,7 +105,6 @@ export default {
         description: `The latest GPT-4 Turbo model with vision capabilities.
         Vision requests can now use JSON mode and function calling.
         Currently points to gpt-4-turbo-2024-04-09.`,
-        group: 'GPT-4',
       },
       'gpt-4': {
         label: 'gpt-4',
@@ -121,7 +115,6 @@ export default {
         outputPrice: 0.06,
         toolEnabled: true,
         description: `Snapshot of gpt-4 from June 13th 2023 with improved function calling support`,
-        group: 'GPT-4',
       },
       'gpt-3.5-turbo': {
         label: 'gpt-3.5-turbo',
@@ -133,7 +126,6 @@ export default {
         toolEnabled: true,
         description: `The latest GPT-3.5 Turbo model with higher accuracy at responding in requested formats
         and a fix for a bug which caused a text encoding issue for non-English language function calls`,
-        group: 'GPT-3.5',
       },
     },
   },

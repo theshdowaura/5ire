@@ -38,7 +38,6 @@ export default {
         outputPrice: 0.006,
         toolEnabled: true,
         description: `Mistrals's top-tier reasoning model for high-complexity tasks with the lastest version released November 2024`,
-        group: 'Mistral',
       },
       'mistral-small-latest': {
         label: 'mistral-small-latest',
@@ -49,7 +48,6 @@ export default {
         outputPrice: 0.0003,
         toolEnabled: true,
         description: `Mistrals's top-tier reasoning model for high-complexity tasks with the lastest version released November 2024`,
-        group: 'Mistral',
       },
       'pixtral-large-latest': {
         label: 'pixtral-large-latest',
@@ -65,7 +63,6 @@ export default {
         },
         toolEnabled: true,
         description: `Mistrals's frontier-class multimodal model released November 2024.`,
-        group: 'Pixtral',
       },
       'ministral-8b-latest': {
         label: 'ministral-8b-latest',
@@ -77,7 +74,6 @@ export default {
         jsonModelEnabled: true,
         toolEnabled: true,
         description: `Powerful edge model with extremely high performance/price ratio`,
-        group: 'Ministral',
       },
       'ministral-3b-latest': {
         label: 'ministral-3b-latest',
@@ -89,7 +85,6 @@ export default {
         jsonModelEnabled: true,
         toolEnabled: true,
         description: `World’s best edge model`,
-        group: 'Ministral',
       },
     },
   },

@@ -24,9 +24,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import useChatStore from 'stores/useChatStore';
 import useSettingsStore from 'stores/useSettingsStore';
 import useAuthStore from 'stores/useAuthStore';
-import { getChatModel, getProvider } from 'providers';
+import { getChatModel, getChatModels, getProvider } from 'providers';
 import { IChatModel } from 'providers/types';
-import useProvider from 'hooks/useProvider';
 import { DEFAULT_TEMPERATURE, tempChatId } from 'consts';
 import ToolStatusIndicator from './ToolStatusIndicator';
 
@@ -46,7 +45,6 @@ export default function FolderSettingsDialog({
   const [folderModel, setFolderModel] = useState(api.model);
   const [folderSystemMessage, setFolderSystemMessage] = useState('');
   const [folderTemperature, setFolderTemperature] = useState(1);
-  const { getChatModels } = useProvider();
 
   const temperatureConfig = useMemo(() => {
     return getProvider(api.provider).chat.temperature;

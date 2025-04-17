@@ -59,7 +59,6 @@ export default {
         },
         jsonModelEnabled: false,
         description: ``,
-        group: 'GPT-4',
       },
       'gpt-4': {
         label: 'gpt-4',
@@ -68,7 +67,6 @@ export default {
         defaultMaxTokens: 4000,
         inputPrice: 0.03,
         outputPrice: 0.06,
-        group: 'GPT-4',
       },
       'gpt-3.5-turbo': {
         label: 'gpt-35-turbo',
@@ -77,7 +75,6 @@ export default {
         defaultMaxTokens: 4000,
         inputPrice: 0.0015,
         outputPrice: 0.002,
-        group: 'GPT-3.5',
       },
     },
   },

@@ -1,4 +1,4 @@
-import { ChangeEvent, useState, useEffect, useMemo, useCallback } from 'react';
+import { ChangeEvent, useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Dropdown,
@@ -9,20 +9,19 @@ import {
 } from '@fluentui/react-components';
 import { Premium16Regular } from '@fluentui/react-icons';
 import MaskableInput from 'renderer/components/MaskableInput';
-import useProvider from 'hooks/useProvider';
 import useAuthStore from 'stores/useAuthStore';
 import TooltipIcon from 'renderer/components/TooltipIcon';
 import { IServiceProvider } from '../../../providers/types';
 import ModelField from './ModelField';
 import useSettingsStore from '../../../stores/useSettingsStore';
 import ModelMappingButton from './ModelMappingButton';
+import { getProviders, getProvider, getDefaultChatModel } from 'providers';
 
 export default function APISettings() {
   const { t } = useTranslation();
   const api = useSettingsStore((state) => state.api);
   const session = useAuthStore((state) => state.session);
   const setAPI = useSettingsStore((state) => state.setAPI);
-  const { getProviders, getProvider, getDefaultChatModel } = useProvider();
   const providers = useMemo(() => getProviders(), []);
   const [provider, setProvider] = useState<IServiceProvider>(
     Object.values(providers)[0],

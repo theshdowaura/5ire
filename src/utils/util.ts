@@ -446,3 +446,66 @@ export function urlJoin(part: string, base: string): string {
     return '';
   }
 }
+
+
+export type JsonValue = string | number | boolean | null | JsonArray | JsonObject;
+export type JsonArray = JsonValue[];
+export type JsonObject = { [key: string]: JsonValue };
+
+export function transformPropertiesType(obj: JsonValue): JsonValue {
+  // 如果是数组，遍历处理每个元素
+  if (Array.isArray(obj)) {
+    return obj.map(item => transformPropertiesType(item));
+  }
+
+  // 如果不是对象，直接返回
+  if (typeof obj !== 'object' || obj === null) {
+    return obj;
+  }
+
+  // 处理对象
+  const result: JsonObject = {};
+
+  for (const [key, value] of Object.entries(obj)) {
+    if (key === 'properties' && typeof value === 'object' && value !== null) {
+      // 处理 properties 对象
+      const transformedProperties: JsonObject = {};
+
+      for (const [propKey, propValue] of Object.entries(value)) {
+        if (typeof propValue === 'object' && propValue !== null) {
+          // 递归处理嵌套的对象
+          const transformed = transformPropertiesType(propValue) as JsonObject;
+
+          // 检查并转换当前层级的 type 属性
+          if ('type' in transformed && Array.isArray(transformed.type)) {
+            const typeArray = transformed.type as JsonArray;
+            const firstNonNull = typeArray.find(t => t !== null && t !== 'null');
+            transformed.type = firstNonNull || typeArray[0];
+          }
+
+          transformedProperties[propKey] = transformed;
+        } else {
+          transformedProperties[propKey] = propValue;
+        }
+      }
+
+      result[key] = transformedProperties;
+    } else {
+      // 递归处理其他属性
+      result[key] = transformPropertiesType(value);
+    }
+  }
+
+  return result;
+}
+
+export function removeAdditionalProperties(schema: any): any {
+  if (schema && typeof schema === 'object') {
+    delete schema.additionalProperties; // Remove from current level
+    Object.values(schema).forEach(value => {
+      if (typeof value === 'object') {
+        removeAdditionalProperties(value); // Apply recursively to nested objects
+      }
+    });
+  }
+}
