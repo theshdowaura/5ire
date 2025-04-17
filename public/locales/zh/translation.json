@@ -288,5 +288,6 @@
   "Common.Action.Disable": "停用",
   "Provider.Model.BuiltInModelCannotBeDeleted": "内置模型不可删除",
   "Provider.Model.BuiltInModelCannotBeRenamed": "内置模型不可重命名",
-  "Provider.Model.PriceUnit": "每 1k Tokens"
+  "Provider.Model.PriceUnit": "每 1k Tokens",
+  "Provider.Model.NameAlreadyExists": "该模型名称已经存在"
 }

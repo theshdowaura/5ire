@@ -6,10 +6,10 @@ import {
 } from '@fluentui/react-icons';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import useProviderStore from 'stores/useProviderStore';
 import ModelList from './ModelList';
 import ProviderForm from './ProviderForm';
 import ProviderList from './ProviderList';
-import useProviderStore from 'stores/useProviderStore';
 
 const DEFAULT_HEIGHT = 400;
 const HEADER_HEIGHT = 100;
@@ -75,9 +75,8 @@ export default function Providers() {
         <div className="col-span-3 h-full">
           {selectedProvider && (
             <div>
-              <ProviderForm provider={selectedProvider} />
+              <ProviderForm />
               <ModelList
-                provider={selectedProvider}
                 height={contentHeight - (HEADER_HEIGHT + PROVIDER_FORM_HEIGHT)}
               />
             </div>

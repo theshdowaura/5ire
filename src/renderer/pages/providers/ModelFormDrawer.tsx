@@ -19,8 +19,9 @@ import {
 } from 'consts';
 import { t } from 'i18next';
 import { isNil } from 'lodash';
-import { IChatModelConfig } from 'providers/types';
-import { useEffect, useState } from 'react';
+import { IChatModelConfig, IChatProviderConfig } from 'providers/types';
+import { useEffect, useMemo, useState } from 'react';
+import useProviderStore from 'stores/useProviderStore';
 
 export default function ModelFormDrawer({
   open,
@@ -31,7 +32,12 @@ export default function ModelFormDrawer({
   setOpen: (state: boolean) => void;
   model: IChatModelConfig | null;
 }) {
+  const provider = useProviderStore(
+    (state) => state.provider as IChatProviderConfig,
+  );
+  const { createModel, deleteModel } = useProviderStore();
   const [name, setName] = useState<string>('');
+  const [nameError, setNameError] = useState<string | null>(null);
   const [label, setLabel] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [contextWindow, setContextWindow] = useState<number>(
@@ -44,21 +50,79 @@ export default function ModelFormDrawer({
   const [tools, setTools] = useState<boolean>(false);
   const [disabled, setDisabled] = useState<boolean>(true);
 
-  const onSave = () => {};
-  const onDelete = () => {};
+  const modelNames = useMemo(
+    () => provider.models.map((m) => m.name),
+    [provider.models],
+  );
+
+  const reset = () => {
+    setName('');
+    setLabel('');
+    setDescription('');
+    setContextWindow(DEFAULT_CONTEXT_WINDOW);
+    setMaxTokens(DEFAULT_MAX_TOKENS);
+    setDisabled(false);
+    setInputPrice(0);
+    setOutputPrice(0);
+    setVision(false);
+    setTools(false);
+  };
+
+  const onSave = () => {
+    if (nameError) {
+      return;
+    }
+    if (name.trim() === '') {
+      setNameError(t('Common.Required'));
+    } else {
+      setNameError('');
+    }
+    createModel({
+      name,
+      label,
+      description,
+      contextWindow,
+      maxTokens,
+      inputPrice,
+      outputPrice,
+      disabled,
+      isReady: true,
+      capabilities: {
+        tools: {
+          enabled: tools,
+        },
+        vision: {
+          enabled: vision,
+        },
+      },
+    });
+    setOpen(false);
+    reset();
+  };
+
+  const onDelete = () => {
+    if (model) {
+      deleteModel(model.name as string);
+      setOpen(false);
+      reset();
+    }
+  };
 
   useEffect(() => {
-    if (!model) return;
-    setName(model.name);
-    setLabel(model.label || '');
-    setDescription(model.description || '');
-    setContextWindow(model.contextWindow || DEFAULT_CONTEXT_WINDOW);
-    setMaxTokens(model.maxTokens || DEFAULT_MAX_TOKENS);
-    setDisabled(!model.disabled);
-    setInputPrice(model.inputPrice || 0);
-    setOutputPrice(model.outputPrice || 0);
-    setVision(model.capabilities?.vision?.enabled || false);
-    setTools(model.capabilities?.tools?.enabled || false);
+    if (model) {
+      setName(model.name);
+      setLabel(model.label || '');
+      setDescription(model.description || '');
+      setContextWindow(model.contextWindow || DEFAULT_CONTEXT_WINDOW);
+      setMaxTokens(model.maxTokens || DEFAULT_MAX_TOKENS);
+      setDisabled(!model.disabled);
+      setInputPrice(model.inputPrice || 0);
+      setOutputPrice(model.outputPrice || 0);
+      setVision(model.capabilities?.vision?.enabled || false);
+      setTools(model.capabilities?.tools?.enabled || false);
+    } else {
+      reset();
+    }
   }, [model]);
 
   const deleteButton = () => {
@@ -103,19 +167,30 @@ export default function ModelFormDrawer({
         </DrawerHeaderTitle>
       </DrawerHeader>
 
-      <DrawerBody className="flex flex-col gap-3">
-        <Field size="small">
+      <DrawerBody className="flex flex-col gap-4">
+        <Field
+          size="small"
+          validationMessage={nameError}
+          validationState={nameError ? 'error' : undefined}
+        >
           <InfoLabel
             info={t('Provider.Model.BuiltInModelCannotBeRenamed')}
             size="small"
           >
-            {t('Provider.Model.Name')}{' '}
+            {t('Provider.Model.Name')}
           </InfoLabel>
           <Input
             disabled={!!model?.isBuiltIn}
             placeholder={t('Common.Required')}
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => {
+              setName(e.target.value);
+              if (modelNames.includes(e.target.value)) {
+                setNameError(t('Provider.Model.NameAlreadyExists'));
+              } else {
+                setNameError(null);
+              }
+            }}
           />
         </Field>
         <Field label={t('Provider.Model.DisplayName')} size="small">
@@ -177,14 +252,14 @@ export default function ModelFormDrawer({
         </div>
         <div className="grid grid-cols-2 gap-1 field-small">
           <Switch
-            disabled={isNil(model?.capabilities?.vision)}
+            disabled={model ? isNil(model?.capabilities?.vision) : false}
             label={t('Provider.Model.Vision')}
             className="-ml-1.5"
             checked={vision}
             onChange={(e, data) => setVision(data.checked)}
           />
           <Switch
-            disabled={isNil(model?.capabilities?.tools)}
+            disabled={model ? isNil(model?.capabilities?.tools) : false}
             label={t('Provider.Model.Tools')}
             className="-ml-1.5"
             checked={tools}

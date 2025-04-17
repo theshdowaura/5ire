@@ -184,6 +184,7 @@ export interface IProviderStore {
     [key: string]: ModelOption[];
   };
   createModel: (model: IChatModelConfig) => void;
+  deleteModel: (modelName: string) => void;
 }
 
 const useProviderStore = create<IProviderStore>((set, get) => ({
@@ -217,7 +218,13 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
       updatedProviders.push(provider as IChatProviderConfig);
     }
     window.electron.store.set('providers', updatedProviders);
-    set({ providers: mergeProviders(updatedProviders) });
+    const providers = mergeProviders(updatedProviders);
+    set({ providers });
+    if (get().provider?.name === provider.name) {
+      set({
+        provider: providers.find((p) => p.name === provider.name),
+      });
+    }
   },
   updateProviderName: (oldName: string, newName: string) => {
     const customProviders = window.electron.store.get('providers');
@@ -350,13 +357,36 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
   createModel: (model: IChatModelConfig) => {
     const { provider, updateProvider } = get();
     if (!provider) return;
+    const customProviders = window.electron.store.get('providers');
+    const customProvider = customProviders.find(
+      (p: IChatProviderConfig) => p.name === provider.name,
+    ) || {
+      models: [],
+    };
     const newModel = {
       ...model,
       isBuiltIn: false,
     } as IChatModelConfig;
     const updatedProvider = {
-      ...provider,
-      models: [...(provider.models || []), newModel],
+      name: provider.name,
+      models: [...(customProvider.models || []), newModel],
+    };
+    updateProvider(updatedProvider);
+  },
+  deleteModel: (modelName: string) => {
+    const { provider, updateProvider } = get();
+    if (!provider) return;
+    const customProviders = window.electron.store.get('providers');
+    const customProvider = customProviders.find(
+      (p: IChatProviderConfig) => p.name === provider.name,
+    ) || {
+      models: [],
+    };
+    const updatedProvider = {
+      name: provider.name,
+      models: customProvider.models.filter(
+        (model: IChatModelConfig) => model.name !== modelName,
+      ),
     };
     updateProvider(updatedProvider);
   },

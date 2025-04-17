@@ -16,18 +16,16 @@ import { useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import Spinner from 'renderer/components/Spinner';
 import TooltipIcon from 'renderer/components/TooltipIcon';
+import useProviderStore from 'stores/useProviderStore';
 import ModelFormDrawer from './ModelFormDrawer';
 import ToolTag from './ToolTag';
 
 const AddIcon = bundleIcon(AddCircleFilled, AddCircleRegular);
 
-export default function ModelList({
-  provider,
-  height = 400,
-}: {
-  provider: IChatProviderConfig;
-  height?: number;
-}) {
+export default function ModelList({ height = 400 }: { height?: number }) {
+  const provider = useProviderStore(
+    (state) => state.provider as IChatProviderConfig,
+  );
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
   const [formOpen, setFormOpen] = useState<boolean>(false);
@@ -69,7 +67,7 @@ export default function ModelList({
     } else {
       setModels(Object.values(provider.models));
     }
-  }, [provider]);
+  }, [provider.models, provider.modelsEndpoint]);
 
   const filteredModels = models.filter((model) => {
     const label = model.label || (model.name as string);
@@ -77,12 +75,13 @@ export default function ModelList({
   });
 
   useEffect(() => {
+    console.log('loadModels', provider?.name, provider?.models);
     loadModels();
     return () => {
       setLoading(false);
       setModels([]);
     };
-  }, [provider?.name, loadModels]);
+  }, [provider?.name, provider?.models, loadModels]);
 
   if (loading) {
     return (

@@ -14,12 +14,11 @@ import MaskableInput from 'renderer/components/MaskableInput';
 import useProviderStore from 'stores/useProviderStore';
 import { isBlank, isValidHttpHRL } from 'utils/validators';
 
-export default function ProviderForm({
-  provider,
-}: {
-  provider: IChatProviderConfig;
-}) {
+export default function ProviderForm() {
   const { t } = useTranslation();
+  const provider = useProviderStore(
+    (state) => state.provider as IChatProviderConfig,
+  );
   const [oldName, setOldName] = useState<string>('');
   const [name, setName] = useState<string>('');
   const [nameError, setNameError] = useState<string>('');
