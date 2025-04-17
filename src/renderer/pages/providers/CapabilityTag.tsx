@@ -13,7 +13,7 @@ export default function CapabilityTag(
   const {
     provider: providerName,
     model: modelName,
-    capability: capabilityName
+    capability: capabilityName,
   } = props;
   const { providers } = useProviderStore();
 
@@ -26,7 +26,7 @@ export default function CapabilityTag(
       model.capabilities[capabilityName as keyof typeof model.capabilities] ||
       null
     );
-  }, [providerName, modelName]);
+  }, [providerName, providers, modelName]);
 
   const originalSupport = useMemo(() => {
     if (isNil(capability)) return false;

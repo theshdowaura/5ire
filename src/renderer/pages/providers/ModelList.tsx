@@ -80,7 +80,7 @@ export default function ModelList({ height = 400 }: { height?: number }) {
       setLoading(false);
       setModels([]);
     };
-  }, [provider?.name, provider?.models, loadModels]);
+  }, [provider?.name, provider?.models]);
 
   if (loading) {
     return (
@@ -186,6 +186,7 @@ export default function ModelList({ height = 400 }: { height?: number }) {
         open={formOpen}
         setOpen={setFormOpen}
         model={selectedModel}
+        onSaved={() => {}}
       />
     </div>
   );

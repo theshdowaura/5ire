@@ -99,8 +99,8 @@ const mergeProviders = (
       const userCreatedModels =
         customProvider?.models?.filter((model: IChatModelConfig) => {
           return (
-            isBuiltIn ||
-            builtInProvider?.chat?.models?.some(
+            !isBuiltIn ||
+            !builtInProvider?.chat?.models?.some(
               (builtInModel: IChatModel) => builtInModel.name === model.name,
             )
           );
@@ -184,6 +184,7 @@ export interface IProviderStore {
     [key: string]: ModelOption[];
   };
   createModel: (model: IChatModelConfig) => void;
+  updateModel: (name: string, model: Partial<IChatModel>) => void;
   deleteModel: (modelName: string) => void;
 }
 
@@ -373,6 +374,35 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
     };
     updateProvider(updatedProvider);
   },
+
+  updateModel: (name: string, model: Partial<IChatModelConfig>) => {
+    const { provider, updateProvider } = get();
+    if (!provider) return;
+    const customProviders = window.electron.store.get('providers');
+    const customProvider = customProviders.find(
+      (p: IChatProviderConfig) => p.name === provider.name,
+    ) || {
+      models: [],
+    };
+    let found = false;
+    const updatedModels = customProvider.models.map((m: IChatModelConfig) => {
+      if (m.name === name) {
+        found = true;
+        return { ...m, ...model };
+      }
+      return model;
+    });
+    if (!found) {
+      updatedModels.push(model);
+    }
+    const updatedProvider = {
+      name: provider.name,
+      models: updatedModels,
+    };
+    console.log(updatedProvider);
+    updateProvider(updatedProvider);
+  },
+
   deleteModel: (modelName: string) => {
     const { provider, updateProvider } = get();
     if (!provider) return;

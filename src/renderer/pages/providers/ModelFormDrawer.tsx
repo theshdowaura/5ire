@@ -27,15 +27,17 @@ export default function ModelFormDrawer({
   open,
   setOpen,
   model,
+  onSaved,
 }: {
   open: boolean;
   setOpen: (state: boolean) => void;
   model: IChatModelConfig | null;
+  onSaved: () => void;
 }) {
   const provider = useProviderStore(
     (state) => state.provider as IChatProviderConfig,
   );
-  const { createModel, deleteModel } = useProviderStore();
+  const { createModel, updateModel, deleteModel } = useProviderStore();
   const [name, setName] = useState<string>('');
   const [nameError, setNameError] = useState<string | null>(null);
   const [label, setLabel] = useState<string>('');
@@ -77,7 +79,7 @@ export default function ModelFormDrawer({
     } else {
       setNameError('');
     }
-    createModel({
+    const payload = {
       name,
       label,
       description,
@@ -88,14 +90,20 @@ export default function ModelFormDrawer({
       disabled,
       isReady: true,
       capabilities: {
-        tools: {
+        tools: model?.capabilities?.tools && {
           enabled: tools,
         },
-        vision: {
+        vision: model?.capabilities?.vision && {
           enabled: vision,
         },
       },
-    });
+    };
+    if (model) {
+      updateModel(model.name, payload);
+    } else {
+      createModel(payload);
+    }
+    onSaved();
     setOpen(false);
     reset();
   };
