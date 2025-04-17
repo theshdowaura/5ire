@@ -18,7 +18,7 @@ import Spinner from 'renderer/components/Spinner';
 import TooltipIcon from 'renderer/components/TooltipIcon';
 import useProviderStore from 'stores/useProviderStore';
 import ModelFormDrawer from './ModelFormDrawer';
-import ToolTag from './ToolTag';
+import CapabilityTag from './CapabilityTag';
 
 const AddIcon = bundleIcon(AddCircleFilled, AddCircleRegular);
 
@@ -75,7 +75,6 @@ export default function ModelList({ height = 400 }: { height?: number }) {
   });
 
   useEffect(() => {
-    console.log('loadModels', provider?.name, provider?.models);
     loadModels();
     return () => {
       setLoading(false);
@@ -164,17 +163,16 @@ export default function ModelList({ height = 400 }: { height?: number }) {
                         )}
                       </div>
                       <div className="flex justify-end gap-1">
-                        {model.capabilities?.vision && (
-                          <div className="text-xs text-amber-900 dark:text-amber-500 px-1.5 ground bg-amber-100 dark:bg-amber-900 rounded-lg dark:opacity-80">
-                            {t('Tags.Vision')}
-                          </div>
-                        )}
-                        {model.capabilities?.tools && (
-                          <ToolTag
-                            provider={provider.name}
-                            model={model.name}
-                          />
-                        )}
+                        <CapabilityTag
+                          provider={provider.name}
+                          model={model.name}
+                          capability="vision"
+                        />
+                        <CapabilityTag
+                          provider={provider.name}
+                          model={model.name}
+                          capability="tools"
+                        />
                       </div>
                     </div>
                   </div>

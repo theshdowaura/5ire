@@ -1,12 +1,6 @@
 import { tempChatId } from 'consts';
-import {
-  IChat,
-  IChatMessage,
-  IChatResponseMessage,
-  IPromptDef,
-} from 'intellichat/types';
+import { IChat, IPromptDef } from 'intellichat/types';
 import { isArray, isNull } from 'lodash';
-import { IChatProviderConfig } from 'providers/types';
 
 export function date2unix(date: Date) {
   return Math.floor(date.getTime() / 1000);
@@ -241,11 +235,11 @@ export function raiseError(status: number, response: any, message?: string) {
           'Permission denied, please confirm your authority before try again.',
       );
     case 404:
-      new Error(msg || 'Not found');
+      throw new Error(msg || 'Not found');
     case 409:
-      new Error(msg || 'Conflict');
+      throw new Error(msg || 'Conflict');
     case 429:
-      new Error(
+      throw new Error(
         msg ||
           'Rate limit reached for requests, or you exceeded your current quota.',
       );
@@ -527,4 +521,3 @@ export function genDefaultName(pool: string[], prefix: string): string {
   }
   return name;
 }
-
