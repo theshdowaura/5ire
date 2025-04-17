@@ -296,5 +296,7 @@
   "Providers.DeleteProviderConfirmMessage": "Deleting the provider will also delete its models simultaneously. This operation is irreversible. Do you want to continue?",
   "Common.Action.Enable": "Enable",
   "Common.Action.Disable": "Disable",
-  "Provider.Model.BuiltInModelCannotBeDeleted": "BuiltIn Model Cannot be Deleted"
+  "Provider.Model.BuiltInModelCannotBeDeleted": "The built-in model cannot be deleted.",
+  "Provider.Model.BuiltInModelCannotBeRenamed": "The built-in model cannot be renamed.",
+  "Provider.Model.PriceUnit": "per 1k tokens"
 }

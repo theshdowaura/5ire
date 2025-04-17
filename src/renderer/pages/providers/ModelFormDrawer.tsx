@@ -8,6 +8,7 @@ import {
   Input,
   SpinButton,
   Switch,
+  InfoLabel,
 } from '@fluentui/react-components';
 import { Dismiss24Regular } from '@fluentui/react-icons';
 import {
@@ -103,8 +104,15 @@ export default function ModelFormDrawer({
       </DrawerHeader>
 
       <DrawerBody className="flex flex-col gap-3">
-        <Field label={t('Provider.Model.Name')} size="small">
+        <Field size="small">
+          <InfoLabel
+            info={t('Provider.Model.BuiltInModelCannotBeRenamed')}
+            size="small"
+          >
+            {t('Provider.Model.Name')}{' '}
+          </InfoLabel>
           <Input
+            disabled={!!model?.isBuiltIn}
             placeholder={t('Common.Required')}
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -140,19 +148,27 @@ export default function ModelFormDrawer({
           </Field>
         </div>
         <div className="flex justify-evenly items-center gap-1">
-          <Field label={t('Common.InputPrice')} size="small">
+          <Field size="small">
+            <InfoLabel size="small" info={t('Provider.Model.PriceUnit')}>
+              {t('Common.InputPrice')}{' '}
+            </InfoLabel>
             <SpinButton
               value={inputPrice}
               min={0}
+              step={0.000001}
               max={999}
               size="small"
               onChange={(e, data) => setInputPrice(data.value as number)}
             />
           </Field>
-          <Field label={t('Common.OutputPrice')} size="small">
+          <Field size="small">
+            <InfoLabel size="small" info={t('Provider.Model.PriceUnit')}>
+              {t('Common.OutputPrice')}{' '}
+            </InfoLabel>
             <SpinButton
               value={outputPrice}
               min={0}
+              step={0.000001}
               max={999}
               size="small"
               onChange={(e, data) => setOutputPrice(data.value as number)}
