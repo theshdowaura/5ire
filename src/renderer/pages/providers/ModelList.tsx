@@ -71,7 +71,7 @@ export default function ModelList({ height = 400 }: { height?: number }) {
 
   const filteredModels = models.filter((model) => {
     const label = model.label || (model.name as string);
-    return label.toLowerCase().includes(query.toLowerCase());
+    return label.toLowerCase().includes(query.toLowerCase().trim());
   });
 
   useEffect(() => {
@@ -96,6 +96,7 @@ export default function ModelList({ height = 400 }: { height?: number }) {
       <div className="flex justify-start items-center gap-2 pl-4 border-b border-base">
         <Combobox
           size="small"
+          freeform
           clearable
           className="flex-grow w-[100px]"
           appearance="underline"
