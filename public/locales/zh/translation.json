@@ -285,5 +285,6 @@
   "Provider.Tooltip.NameOfProviderMustBeUnique": "服务商的名称必须唯一",
   "Provider.Tooltip.InvalidAPIEndpoint": "API endpoint 必须是合法的 URL 地址",
   "Common.Action.Enable": "启用",
-  "Common.Action.Disable": "停用"
+  "Common.Action.Disable": "停用",
+  "Provider.Model.BuiltInModelCannotBeDeleted": "内置模型不可删除"
 }

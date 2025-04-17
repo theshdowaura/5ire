@@ -295,5 +295,6 @@
   "Provider.Tooltip.InvalidAPIEndpoint": "The API endpoint must be a valid URL address.",
   "Providers.DeleteProviderConfirmMessage": "Deleting the provider will also delete its models simultaneously. This operation is irreversible. Do you want to continue?",
   "Common.Action.Enable": "Enable",
-  "Common.Action.Disable": "Disable"
+  "Common.Action.Disable": "Disable",
+  "Provider.Model.BuiltInModelCannotBeDeleted": "BuiltIn Model Cannot be Deleted"
 }

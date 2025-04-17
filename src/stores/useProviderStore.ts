@@ -183,6 +183,7 @@ export interface IProviderStore {
   getGroupedModelOptions: () => {
     [key: string]: ModelOption[];
   };
+  createModel: (model: IChatModelConfig) => void;
 }
 
 const useProviderStore = create<IProviderStore>((set, get) => ({
@@ -345,6 +346,19 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
       }));
     });
     return result;
+  },
+  createModel: (model: IChatModelConfig) => {
+    const { provider, updateProvider } = get();
+    if (!provider) return;
+    const newModel = {
+      ...model,
+      isBuiltIn: false,
+    } as IChatModelConfig;
+    const updatedProvider = {
+      ...provider,
+      models: [...(provider.models || []), newModel],
+    };
+    updateProvider(updatedProvider);
   },
 }));
 
