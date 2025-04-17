@@ -5,8 +5,10 @@ import MarkdownIt from 'markdown-it';
 //@ts-ignore
 import Token from 'markdown-it/lib/token.mjs';
 
-export default function markdownItEChartsPlugin(md: MarkdownIt) {
 
+
+export default function markdownItEChartsPlugin(md: MarkdownIt) {
+    window.echarts = echarts; // 将 echarts 暴露到全局作用域中，以便在其他地方使用
 
     // 默认渲染函数
     const defaultFence = md.renderer.rules.fence || function (tokens: Token[], idx: number, options: MarkdownIt.Options, env: any, self: MarkdownIt.Renderer) {
@@ -33,6 +35,7 @@ export default function markdownItEChartsPlugin(md: MarkdownIt) {
            id="${chartId}" 
            data-echarts-config="${encodeURIComponent(code)}" 
            style="width: 400px;height:400px;">
+          
       </div>
     `;
     };

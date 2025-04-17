@@ -69,13 +69,23 @@ export default function Message({ message }: { message: IChatMessage }) {
   );
 
   useEffect(() => {
+    const targetNode = document.getElementById(message.id);
+    if (targetNode) {
+      const initChartsTimer = setTimeout(() => {
+        initECharts();
+      }, 100); // 设置 500ms 的延迟
+      return () => {
+        clearTimeout(initChartsTimer);
+        disposeECharts();
+      };
+    }
+  }, [message.id, initECharts, disposeECharts]);
+  
+
+  useEffect(() => {
+
     if (message.isActive) return; // no need to add event listener when message is active
     renderMermaid();
-    
-    const renderEChartsTimer = setTimeout(() => {
-      initECharts();
-    }, 500);
-
     const observer = new MutationObserver(() => {
       const links = document.querySelectorAll(`#${message.id} .msg-reply a`);
       if (links.length > 0) {
@@ -83,23 +93,20 @@ export default function Message({ message }: { message: IChatMessage }) {
           link.addEventListener('click', onCitationClick);
         });
       }
+
     });
 
     const targetNode = document.getElementById(message.id);
-    
 
     if (targetNode) {
       observer.observe(targetNode, {
         childList: true,
         subtree: true,
       });
-      
     }
 
     return () => {
       observer.disconnect();
-      clearTimeout(renderEChartsTimer);
-      disposeECharts();
       const links = document.querySelectorAll(`#${message.id} .msg-reply a`);
       links.forEach((link) => {
         link.removeEventListener('click', onCitationClick);

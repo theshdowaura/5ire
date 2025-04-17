@@ -40,7 +40,7 @@ export default function useECharts({ message }: { message: IChatMessage }) {
 
                 // 初始化图表
                 // 使用类型断言将 container 转换为 HTMLDivElement 类型，以解决类型不匹配问题
-                console.log("echart container:",container);
+                console.debug("echart container:",container);
                 const chart = echarts.init(container as HTMLDivElement, theme);
                 chart.setOption(option);
 
