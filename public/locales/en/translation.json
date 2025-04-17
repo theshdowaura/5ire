@@ -293,5 +293,7 @@
   "Provider.Tooltip.NameOfBuiltinProviderIsReadyOnly": "The name of the built-in provider is read-only.",
   "Provider.Tooltip.NameOfProviderMustBeUnique": "The name of the provider must be unique.",
   "Provider.Tooltip.InvalidAPIEndpoint": "The API endpoint must be a valid URL address.",
-  "Providers.DeleteProviderConfirmMessage": "Deleting the provider will also delete its models simultaneously. This operation is irreversible. Do you want to continue?"
+  "Providers.DeleteProviderConfirmMessage": "Deleting the provider will also delete its models simultaneously. This operation is irreversible. Do you want to continue?",
+  "Common.Action.Enable": "Enable",
+  "Common.Action.Disable": "Disable"
 }

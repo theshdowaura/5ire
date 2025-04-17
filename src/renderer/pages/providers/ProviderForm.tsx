@@ -79,7 +79,7 @@ export default function ProviderForm({
           </InfoLabel>
           <Input
             value={name}
-            readOnly={provider.isBuiltIn}
+            disabled={provider.isBuiltIn}
             onBlur={(ev: React.FocusEvent<HTMLInputElement>) => {
               if (oldName === ev.target.value) {
                 setNameError('');

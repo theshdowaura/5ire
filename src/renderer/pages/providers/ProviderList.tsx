@@ -7,11 +7,12 @@ import {
   MenuList,
   MenuItem,
   Menu,
-  MenuItemSwitch,
+  Switch,
+  Field,
 } from '@fluentui/react-components';
 import {
   bundleIcon,
-  CaretLeft16Filled,
+  CaretRight16Filled,
   ChevronRightRegular,
   MoreVerticalFilled,
   MoreVerticalRegular,
@@ -29,7 +30,7 @@ export default function ProviderList({ height = 400 }: { height: number }) {
   const [targetProvider, setTargetProvider] =
     useState<IChatProviderConfig | null>(null);
   const providers = useProviderStore((state) => state.providers);
-  const { setProvider, deleteProvider, getAvailableProviders } =
+  const { setProvider, deleteProvider, updateProvider, getAvailableProviders } =
     useProviderStore();
   const [delConfirmDialogOpen, setDelConfirmDialogOpen] = useState(false);
 
@@ -66,12 +67,22 @@ export default function ProviderList({ height = 400 }: { height: number }) {
                 <button
                   type="button"
                   onClick={() => setProvider(provider)}
-                  className="flex justify-start items-center gap-0.5 flex-grow pl-4 py-2 text-left"
+                  className="flex justify-start items-center gap-0.5 flex-grow pl-1 py-2 text-left"
                 >
-                  {provider.name}
-                  {provider.isDefault && (
-                    <CaretLeft16Filled className="text-gray-500 -mb-1" />
+                  {provider.isDefault ? (
+                    <CaretRight16Filled className="text-gray-500" />
+                  ) : (
+                    <span className="w-[16px]" />
                   )}
+                  <span
+                    className={
+                      provider.disabled
+                        ? 'text-gray-300 dark:text-gray-500'
+                        : ''
+                    }
+                  >
+                    {provider.name}
+                  </span>
                 </button>
                 <div className="flex justify-center items-center">
                   {selectedProvider?.name === provider.name && (
@@ -104,9 +115,22 @@ export default function ProviderList({ height = 400 }: { height: number }) {
                               {t('Common.Delete')}
                             </MenuItem>
                           )}
-                          <MenuItemSwitch name="enabled" value="enabled">
-                            {t('Common.Enabled')}
-                          </MenuItemSwitch>
+                          <MenuItem style={{ padding: 0 }} persistOnClick>
+                            <Field size="small" className="field-small ">
+                              <Switch
+                                label={t('Common.Enabled')}
+                                className="text-xs"
+                                checked={!provider.disabled}
+                                onChange={() => {
+                                  const updatedProvider = {
+                                    name: provider.name,
+                                    disabled: !provider.disabled,
+                                  };
+                                  updateProvider(updatedProvider);
+                                }}
+                              />
+                            </Field>
+                          </MenuItem>
                         </MenuList>
                       </MenuPopover>
                     </Menu>
