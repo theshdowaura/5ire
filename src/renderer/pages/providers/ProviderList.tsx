@@ -12,7 +12,7 @@ import {
 } from '@fluentui/react-components';
 import {
   bundleIcon,
-  CaretRight16Filled,
+  CaretLeft16Regular,
   ChevronRightRegular,
   MoreVerticalFilled,
   MoreVerticalRegular,
@@ -67,13 +67,8 @@ export default function ProviderList({ height = 400 }: { height: number }) {
                 <button
                   type="button"
                   onClick={() => setProvider(provider)}
-                  className="flex justify-start items-center gap-0.5 flex-grow pl-1 py-2 text-left"
+                  className="flex justify-start items-center gap-0.5 flex-grow pl-4 py-2 text-left"
                 >
-                  {provider.isDefault ? (
-                    <CaretRight16Filled className="text-gray-500" />
-                  ) : (
-                    <span className="w-[16px]" />
-                  )}
                   <span
                     className={
                       provider.disabled
@@ -83,6 +78,9 @@ export default function ProviderList({ height = 400 }: { height: number }) {
                   >
                     {provider.name}
                   </span>
+                  {provider.isDefault && (
+                    <CaretLeft16Regular className="text-gray-500 -mb-1" />
+                  )}
                 </button>
                 <div className="flex justify-center items-center">
                   {selectedProvider?.name === provider.name && (
