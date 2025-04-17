@@ -145,7 +145,10 @@ export default function ModelList({ height = 400 }: { height?: number }) {
                   <div className="px-4 pt-3 pb-2 border-b border-gray-100 dark:border-zinc-800/25 w-full">
                     <div className="font-medium flex justify-between gap-1 items-center mb-1">
                       <div>
-                        <span className="-mt-0.5 text-sm" title={model.name}>
+                        <span
+                          className={`-mt-0.5 text-sm ${model.disabled ? 'text-gray-300 dark:text-gray-500' : ''}`}
+                          title={model.name}
+                        >
                           {model.label || model.name}
                         </span>
                         {model.description && (

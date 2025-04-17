@@ -390,7 +390,7 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
         found = true;
         return { ...m, ...model };
       }
-      return model;
+      return m;
     });
     if (!found) {
       updatedModels.push(model);
@@ -399,7 +399,6 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
       name: provider.name,
       models: updatedModels,
     };
-    console.log(updatedProvider);
     updateProvider(updatedProvider);
   },
 

@@ -9,6 +9,8 @@ import {
   SpinButton,
   Switch,
   InfoLabel,
+  SpinButtonChangeEvent,
+  SpinButtonOnChangeData,
 } from '@fluentui/react-components';
 import { Dismiss24Regular } from '@fluentui/react-icons';
 import {
@@ -50,12 +52,39 @@ export default function ModelFormDrawer({
   const [outputPrice, setOutputPrice] = useState<number>(0);
   const [vision, setVision] = useState<boolean>(false);
   const [tools, setTools] = useState<boolean>(false);
-  const [disabled, setDisabled] = useState<boolean>(true);
+  const [disabled, setDisabled] = useState<boolean>(false);
 
   const modelNames = useMemo(
     () => provider.models.map((m) => m.name),
     [provider.models],
   );
+
+  const formatter = (value: number) => {
+    return `${provider.currency === 'USD' ? '$' : '¥'}${value}`;
+  };
+
+  const parser = (formattedValue: string | null) => {
+    if (formattedValue === null) {
+      return NaN;
+    }
+
+    return parseFloat(formattedValue.replace(/[$¥]/g, ''));
+  };
+
+  const onSpinButtonChange = (setValue: (value: number) => void) => {
+    return (_ev: SpinButtonChangeEvent, data: SpinButtonOnChangeData) => {
+      if (data.value !== undefined) {
+        setValue(data.value as number);
+      } else if (data.displayValue !== undefined) {
+        const newValue = parser(data.displayValue);
+        if (!Number.isNaN(newValue)) {
+          setValue(newValue);
+        } else {
+          console.error(`Cannot parse "${data.displayValue}" as a number.`);
+        }
+      }
+    };
+  };
 
   const reset = () => {
     setName('');
@@ -90,10 +119,10 @@ export default function ModelFormDrawer({
       disabled,
       isReady: true,
       capabilities: {
-        tools: model?.capabilities?.tools && {
+        tools: (!model?.isBuiltIn || model?.capabilities?.tools) && {
           enabled: tools,
         },
-        vision: model?.capabilities?.vision && {
+        vision: (!model?.isBuiltIn || model?.capabilities?.vision) && {
           enabled: vision,
         },
       },
@@ -105,7 +134,7 @@ export default function ModelFormDrawer({
     }
     onSaved();
     setOpen(false);
-    reset();
+    setTimeout(() => reset(), 500);
   };
 
   const onDelete = () => {
@@ -123,7 +152,7 @@ export default function ModelFormDrawer({
       setDescription(model.description || '');
       setContextWindow(model.contextWindow || DEFAULT_CONTEXT_WINDOW);
       setMaxTokens(model.maxTokens || DEFAULT_MAX_TOKENS);
-      setDisabled(!model.disabled);
+      setDisabled(model.disabled || false);
       setInputPrice(model.inputPrice || 0);
       setOutputPrice(model.outputPrice || 0);
       setVision(model.capabilities?.vision?.enabled || false);
@@ -215,9 +244,10 @@ export default function ModelFormDrawer({
             <SpinButton
               placeholder={t('Common.Required')}
               min={0}
+              step={1}
               max={MAX_CONTEXT_WINDOW}
               value={contextWindow}
-              onChange={(e, data) => setContextWindow(data.value as number)}
+              onChange={onSpinButtonChange(setContextWindow)}
               size="small"
             />
           </Field>
@@ -225,7 +255,9 @@ export default function ModelFormDrawer({
             <SpinButton
               value={maxTokens}
               min={0}
+              step={1}
               max={MAX_TOKENS}
+              onChange={onSpinButtonChange(setMaxTokens)}
               size="small"
             />
           </Field>
@@ -241,7 +273,8 @@ export default function ModelFormDrawer({
               step={0.000001}
               max={999}
               size="small"
-              onChange={(e, data) => setInputPrice(data.value as number)}
+              displayValue={formatter(inputPrice)}
+              onChange={onSpinButtonChange(setInputPrice)}
             />
           </Field>
           <Field size="small">
@@ -254,7 +287,8 @@ export default function ModelFormDrawer({
               step={0.000001}
               max={999}
               size="small"
-              onChange={(e, data) => setOutputPrice(data.value as number)}
+              displayValue={formatter(outputPrice)}
+              onChange={onSpinButtonChange(setOutputPrice)}
             />
           </Field>
         </div>
