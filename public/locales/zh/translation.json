@@ -264,5 +264,6 @@
   "Upgrade.Install": "安装",
   "Upgrade.QuitAndInstall": "退出并安装新版本",
   "Folder.Settings.Description": "对话默认继承文件夹设置。修改文件夹设置将覆盖其内部对话的相关配置。",
-  "Common.NumberOfContextMessages": "上下文消息数量"
+  "Common.NumberOfContextMessages": "上下文消息数量",
+  "Message.Error.EChartsRenderFailed": "Echats 图片渲染失败"
 }

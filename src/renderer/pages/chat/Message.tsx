@@ -68,51 +68,50 @@ export default function Message({ message }: { message: IChatMessage }) {
     [citedChunks, showCitation],
   );
 
-  useEffect(() => {
-    const targetNode = document.getElementById(message.id);
-    if (targetNode) {
-      const initChartsTimer = setTimeout(() => {
-        initECharts();
-      }, 100); // 设置 500ms 的延迟
-      return () => {
-        clearTimeout(initChartsTimer);
-        disposeECharts();
-      };
-    }
-  }, [message.id, initECharts, disposeECharts]);
-  
+  const renderECharts = useCallback(
+    (prefix: string, msgDom: Element) => {
+      const charts = msgDom.querySelectorAll('.echarts-container');
+      if (charts.length > 0) {
+        console.log('renderECharts', prefix, msgDom.id);
+        charts.forEach((chart) => {
+          initECharts(prefix, chart.id);
+        });
+      }
+    },
+    [initECharts],
+  );
 
-  useEffect(() => {
-
-    if (message.isActive) return; // no need to add event listener when message is active
-    renderMermaid();
-    const observer = new MutationObserver(() => {
-      const links = document.querySelectorAll(`#${message.id} .msg-reply a`);
+  const replyRender = useCallback(
+    (prefix: string, msgDom: Element) => {
+      const links = msgDom.querySelectorAll('a');
       if (links.length > 0) {
         links.forEach((link) => {
           link.addEventListener('click', onCitationClick);
         });
       }
+      renderECharts(prefix, msgDom);
+      renderMermaid();
+    },
+    [onCitationClick, renderECharts, renderMermaid],
+  );
 
-    });
-
-    const targetNode = document.getElementById(message.id);
-
-    if (targetNode) {
-      observer.observe(targetNode, {
-        childList: true,
-        subtree: true,
-      });
+  useEffect(() => {
+    console.log('Message useEffect', message.id);
+    const promptNode = document.querySelector(`#${message.id} .msg-prompt`);
+    if (promptNode) {
+      renderECharts('prompt', promptNode);
     }
-
+    const replyNode = document.querySelector(`#${message.id} .msg-reply`);
+    if (!replyNode) return;
+    replyRender('reply', replyNode);
     return () => {
-      observer.disconnect();
-      const links = document.querySelectorAll(`#${message.id} .msg-reply a`);
-      links.forEach((link) => {
+      disposeECharts();
+      const links = replyNode?.querySelectorAll('a');
+      links?.forEach((link) => {
         link.removeEventListener('click', onCitationClick);
       });
     };
-  }, [message.id, message.isActive, onCitationClick]);
+  }, [message.id, message.isActive]);
 
   const [isReasoning, setIsReasoning] = useState(true);
   const [reasoningSeconds, setReasoningSeconds] = useState(0);
@@ -189,8 +188,9 @@ export default function Message({ message }: { message: IChatMessage }) {
     const isEmpty =
       (!message.reply || message.reply === '') &&
       (!message.reasoning || message.reasoning === '');
-    const thinkTitle = `${isReasoning ? t('Reasoning.Thinking') : t('Reasoning.Thought')
-      }${reasoningSeconds > 0 ? ` ${reasoningSeconds}s` : ''}`;
+    const thinkTitle = `${
+      isReasoning ? t('Reasoning.Thinking') : t('Reasoning.Thought')
+    }${reasoningSeconds > 0 ? ` ${reasoningSeconds}s` : ''}`;
     return (
       <div className={`w-full mt-1.5 ${isLoading ? 'is-loading' : ''}`}>
         {message.isActive && states.runningTool ? (
@@ -225,7 +225,8 @@ export default function Message({ message }: { message: IChatMessage }) {
                   <div
                     dangerouslySetInnerHTML={{
                       __html: render(
-                        `${highlight(reasoning, keyword) || ''
+                        `${
+                          highlight(reasoning, keyword) || ''
                         }${isReasoning && reasoning ? '<span class="blinking-cursor" /></span>' : ''}`,
                       ),
                     }}
@@ -240,7 +241,8 @@ export default function Message({ message }: { message: IChatMessage }) {
               }`}
               dangerouslySetInnerHTML={{
                 __html: render(
-                  `${highlight(reply, keyword) || ''
+                  `${
+                    highlight(reply, keyword) || ''
                   }${isLoading && reply ? '<span class="blinking-cursor" /></span>' : ''}`,
                 ),
               }}
@@ -265,8 +267,9 @@ export default function Message({ message }: { message: IChatMessage }) {
         >
           <div className="avatar flex-shrink-0 mr-2" />
           <div
-            className={`mt-1 break-word ${fontSize === 'large' ? 'font-lg' : ''
-              }`}
+            className={`mt-1 break-word ${
+              fontSize === 'large' ? 'font-lg' : ''
+            }`}
             dangerouslySetInnerHTML={{
               __html: render(highlight(message.prompt, keyword) || ''),
             }}

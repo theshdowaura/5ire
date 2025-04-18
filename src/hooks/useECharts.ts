@@ -3,73 +3,67 @@ import useAppearanceStore from 'stores/useAppearanceStore';
 import * as echarts from 'echarts';
 import { IChatMessage } from 'intellichat/types';
 import { useMemo, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
+
+const parseOption = (optStr: string) => {
+  try {
+    const match = optStr.match(/\{(.+)\}/s);
+    if (!match) return {};
+    return new Function(`return {${match[1]}}`)();
+  } catch (error) {
+    throw new Error('Invalid ECharts option format');
+  }
+};
 
 export default function useECharts({ message }: { message: IChatMessage }) {
-    const theme = useAppearanceStore((state) => state.theme);
-    const messageId = useMemo(() => message.id, [message]);
-    const containersRef = useRef([]);
+  const { t } = useTranslation();
+  const theme = useAppearanceStore((state) => state.theme);
+  const messageId = useMemo(() => message.id, [message]);
+  const containersRef = useRef<{ [key: string]: echarts.EChartsType }>({});
 
-    const disposeECharts = () => {
-        const chartInstances = containersRef.current;
-        if (chartInstances.length < 1) return;
-        chartInstances.forEach(({ cleanup }: { cleanup: Function }) => {
-            cleanup();
-        });
-        chartInstances.length = 0;
-    };
+  const disposeECharts = () => {
+    const chartInstances = Object.values(containersRef.current);
+    chartInstances.forEach(({ cleanup }: { cleanup: Function }) => {
+      cleanup();
+    });
+    containersRef.current = {};
+  };
 
-    const initECharts = () => {
-
-        // 清理已有实例
-        disposeECharts();
-        const chartInstances = containersRef.current;
-
-        // 查找所有图表容器
-        const containers = document.querySelectorAll(`#${messageId} .echarts-container`);
-
-        containers.forEach(container => {
-            const chartId = container.id;
-            const encodedConfig = container.getAttribute('data-echarts-config');
-
-            if (!encodedConfig) return;
-
-            try {
-                // 解码并解析配置
-                const config = decodeURIComponent(encodedConfig);
-                const option = new Function(`return ${config}`)();
-
-                // 初始化图表
-                // 使用类型断言将 container 转换为 HTMLDivElement 类型，以解决类型不匹配问题
-                console.debug("echart container:",container);
-                const chart = echarts.init(container as HTMLDivElement, theme);
-                chart.setOption(option);
-
-                // 响应式调整
-                const resizeHandler = () => chart.resize();
-                window.addEventListener('resize', resizeHandler);
-
-                // 保存实例
-                chartInstances.push({
-                    chartId,
-                    instance: chart,
-                    cleanup: () => {
-                        window.removeEventListener('resize', resizeHandler);
-                        chart.dispose();
-                    }
-                });
-            } catch (error: any) {
-                console.error('ECharts初始化错误:', error);
-                container.innerHTML = `
-      <div style="color:red;padding:20px;">
-        图表渲染错误: ${error.message}
-      </div>
-    `;
-            }
-        });
-    };
-
-    return {
-        disposeECharts,
-        initECharts,
+  const initECharts = (prefix: string, chartId: string) => {
+    if (containersRef.current[`${prefix}-${chartId}`]) return; // already initialized
+    const chartInstances = containersRef.current;
+    const container = document.querySelector(
+      `#${messageId} .echarts-container#${chartId}`,
+    ) as HTMLDivElement;
+    if (!container) return;
+    const encodedConfig = container.getAttribute('data-echarts-config');
+    if (!encodedConfig) return;
+    try {
+      let config = decodeURIComponent(encodedConfig);
+      const option = parseOption(config);
+      const chart = echarts.init(container, theme);
+      chart.setOption(option);
+      const resizeHandler = () => chart.resize();
+      window.addEventListener('resize', resizeHandler);
+      chartInstances[`${prefix}-${chartId}`] = {
+        chartId,
+        instance: chart,
+        cleanup: () => {
+          window.removeEventListener('resize', resizeHandler);
+          chart.dispose();
+        },
+      };
+    } catch (error: any) {
+      container.innerHTML = `
+        <div class="text-gray-400">
+          ${t('Message.Error.EChartsRenderFailed')}
+        </div>
+      `;
     }
+  };
+
+  return {
+    disposeECharts,
+    initECharts,
+  };
 }
