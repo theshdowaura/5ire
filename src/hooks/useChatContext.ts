@@ -2,57 +2,47 @@ import useChatStore from 'stores/useChatStore';
 import useSettingsStore from 'stores/useSettingsStore';
 import { DEFAULT_MAX_TOKENS, NUM_CTX_MESSAGES } from 'consts';
 import { useMemo } from 'react';
-import { isNil, isNumber, isUndefined } from 'lodash';
+import { find, isNil, isNumber } from 'lodash';
 import { isValidMaxTokens, isValidTemperature } from 'intellichat/validators';
 
 import { IChat, IChatContext, IChatMessage, IPrompt } from 'intellichat/types';
 import {
   IChatModel,
   IChatModelConfig,
+  IChatProviderConfig,
 } from 'providers/types';
 import useProviderStore from 'stores/useProviderStore';
 
 // const debug = Debug('5ire:hooks:useChatContext');
 
 export default function useChatContext(): IChatContext {
-  const { getAvailableProvider, getAvailableModel } =
+  const { getAvailableProvider, getDefaultProvider, getAvailableModel } =
     useProviderStore();
 
   const context = useMemo(() => {
-
     const getActiveChat = () => {
       const { chat } = useChatStore.getState();
-      // debug(`Chat(${chat.id}):getActiveChat: ${chat.summary}`);
       return chat as IChat;
     };
 
     const getProvider = () => {
-      const { api } = useSettingsStore.getState();
-      return getAvailableProvider(api.provider);
+      const { chat } = useChatStore.getState();
+      if (chat.provider) {
+        return getAvailableProvider(chat.provider);
+      }
+      return getDefaultProvider();
     };
 
-    /**
-     * Notice: 用户在切换服务商后，chat 使用的模型可能不再被支持
-     * 因此要判断当前模型是否在支持的模型列表中，
-     * 如果不在，则使用设置的模型
-     */
     const getModel = () => {
-      const { api } = useSettingsStore.getState();
-      const defaultModel = { name: api.model, label: api.model } as IChatModelConfig;
-      const provider = getAvailableProvider(api.provider);
-      if (Object.keys(provider?.models || {}).length === 0) {
-        return defaultModel;
-      }
-      let model = getAvailableModel(api.provider, api.model);
-      if (api.provider === 'Azure') {
-        return model;
-      }
       const { chat } = useChatStore.getState();
-      if (chat?.model) {
-        model = getAvailableModel(api.provider, chat.model);
+      if (chat.provider && chat.model) {
+        return getAvailableModel(chat.provider, chat.model);
       }
-      // debug(`Chat(${chat.id}):getModel: ${model.label}`);
-      return model as IChatModelConfig;
+      const provider = getProvider();
+      return (
+        (find(provider.models, { default: true }) as IChatModelConfig) ||
+        provider.models[0]
+      );
     };
 
     const getSystemMessage = () => {
@@ -82,20 +72,24 @@ export default function useChatContext(): IChatContext {
 
     const getMaxTokens = () => {
       const { chat } = useChatStore.getState();
-      const { api } = useSettingsStore.getState();
-      const model = getModel();
+      const provider = getProvider() as IChatProviderConfig;
+      const model = getModel() as IChatModelConfig;
       let maxTokens =
         model?.defaultMaxTokens || model?.maxTokens || DEFAULT_MAX_TOKENS;
       const prompt = chat.prompt as IPrompt | null;
       if (
         prompt?.maxTokens != null &&
-        isValidMaxTokens(prompt?.maxTokens, api.provider, model?.name as string)
+        isValidMaxTokens(
+          prompt?.maxTokens,
+          provider.name,
+          model?.name as string,
+        )
       ) {
         maxTokens = prompt?.maxTokens || (prompt?.maxTokens as number);
       }
       if (
         chat?.maxTokens != null &&
-        isValidMaxTokens(chat?.maxTokens, api.provider, model?.name as string)
+        isValidMaxTokens(chat?.maxTokens, provider.name, model.name as string)
       ) {
         maxTokens = chat?.maxTokens as number;
       }
@@ -121,16 +115,8 @@ export default function useChatContext(): IChatContext {
     };
 
     const isToolsEnabled = () => {
-      const { getToolState } = useSettingsStore.getState();
-      const model = getModel();
-      let toolsEnabled = getToolState(
-        getProvider()?.name || '',
-        model?.name as string,
-      );
-      if (isUndefined(toolsEnabled)) {
-        toolsEnabled = model?.capabilities?.tools?.enabled || false;
-      }
-      return toolsEnabled;
+      const model = getModel() as IChatModel;
+      return model?.capabilities?.tools?.enabled || false;
     };
 
     const getCtxMessages = (msgId?: string) => {

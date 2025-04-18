@@ -1,12 +1,11 @@
 import useProviderStore from 'stores/useProviderStore';
 import { isNull, isNumber } from 'lodash';
 import { isBlank } from 'utils/validators';
-import { ProviderType } from '../providers/types';
 import { DEFAULT_MAX_TOKENS } from '../consts';
 
 export function isValidMaxTokens(
   maxTokens: number | null | undefined,
-  providerName: ProviderType,
+  providerName: string,
   modelName: string,
 ): maxTokens is number | null {
   if (isNull(maxTokens)) return true;
@@ -21,7 +20,7 @@ export function isValidMaxTokens(
 
 export function isValidTemperature(
   temperature: number | null | undefined,
-  providerName: ProviderType,
+  providerName: string,
 ): boolean {
   if (isBlank(providerName)) {
     return false;
