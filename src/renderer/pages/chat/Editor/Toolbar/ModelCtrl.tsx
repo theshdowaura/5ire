@@ -9,7 +9,7 @@ import {
 import { ChevronDownRegular } from '@fluentui/react-icons';
 import { IChat, IChatContext } from 'intellichat/types';
 import { IChatModelConfig, IChatProviderConfig } from 'providers/types';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import useProviderStore, { ModelOption } from 'stores/useProviderStore';
 
 export default function ModelCtrl({
@@ -24,7 +24,9 @@ export default function ModelCtrl({
     ctx.getProvider(),
   );
   const [curModel, setCurModel] = useState<IChatModelConfig>(ctx.getModel());
-  const providers = getProvidersWithModels();
+  const providers = useMemo(() => {
+    return getProvidersWithModels().filter((provider) => !provider.disabled);
+  }, [getProvidersWithModels]);
   const groupedOptions = getGroupedModelOptions();
 
   return (

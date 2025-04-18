@@ -13,6 +13,7 @@ export interface IChat {
   id: string;
   summary: string;
   folderId: string | null;
+  provider?: string;
   model?: string;
   systemMessage?: string | null;
   maxCtxMessages?: number;

@@ -37,6 +37,7 @@ function createTableChats() {
     "id" text(31) NOT NULL,
     "folderId" text(31),
     "summary" text,
+    "provider" text,
     "model" text,
     "systemMessage" text,
     "temperature" real,
@@ -219,6 +220,15 @@ function alertTableChats() {
     logging.debug('Added [folderId] column to [chats] table');
   } else {
     logging.debug('[folderId] column already exists in [chats] table');
+  }
+  const hasProviderColumn = columns.some(
+    (column: any) => column.name === 'provider',
+  );
+  if (!hasProviderColumn) {
+    database.prepare(`ALTER TABLE chats ADD COLUMN provider TEXT`).run();
+    logging.debug('Added [provider] column to [chats] table');
+  } else {
+    logging.debug('[provider column already exists in [chats] table');
   }
 }
 
