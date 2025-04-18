@@ -146,7 +146,7 @@ const mergeProviders = (
               extras: customModel?.extras || {},
             } as IChatModelConfig;
             mergedModel.isReady = isModelReady(
-              builtInProvider.chat.modeExtras || [],
+              builtInProvider.chat.modelExtras || [],
               mergedModel,
             );
             return mergedModel;

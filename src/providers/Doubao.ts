@@ -129,7 +129,7 @@ export default {
       model: '用于统计用量和控制上下文长度，请选择与部署一致的模型',
     },
     apiSchema: ['base', 'key'],
-    modeExtras: ['deploymentId'],
+    modelExtras: ['deploymentId'],
     frequencyPenalty: { min: -2, max: 2, default: 0 },
     topP: { min: 0, max: 1, default: 0.7 },
     presencePenalty: { min: -2, max: 2, default: 0 },

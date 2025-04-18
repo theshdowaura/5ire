@@ -48,7 +48,7 @@ export interface IChatModel {
 
 export interface IChatConfig {
   apiSchema: string[];
-  modeExtras?: string[];
+  modelExtras?: string[];
   /**
    *  Positive values penalize new tokens based on whether they appear
    *  in the text so far, increasing the model's likelihood to talk about new topics.
