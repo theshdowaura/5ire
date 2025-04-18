@@ -43,11 +43,14 @@ import CitationDialog from './CitationDialog';
 
 import './Chat.scss';
 import 'split-pane-react/esm/themes/default.css';
-import eventBus, { RetryEvent } from 'utils/bus';
+import eventBus from 'utils/bus';
+import useAppearanceStore from 'stores/useAppearanceStore';
 
 const debug = Debug('5ire:pages:chat');
 
 const MemoizedMessages = React.memo(Messages);
+
+const DEFAULT_SIDEBAR_WIDTH=250
 
 export default function Chat() {
   const { t } = useTranslation();
@@ -59,7 +62,8 @@ export default function Chat() {
     setActiveChatId(id);
     debug('Set chat id:', id);
   }
-  const [sizes, setSizes] = useState(['auto', 200]);
+  const [verticalSizes, setVerticalSizes] = useState(['auto', 200]);
+  const [horizontalSizes, setHorizontalSizes] = useState(['auto', 0]);
   const ref = useRef<HTMLDivElement>(null);
   const navigate = useNav();
   const folder = useChatStore((state) => state.folder);
@@ -78,6 +82,7 @@ export default function Chat() {
   } = useChatStore();
   const clearTrace = useInspectorStore((state) => state.clearTrace);
   const modelMapping = useSettingsStore((state) => state.modelMapping);
+  const chatSidebarShow = useAppearanceStore((state) => state.chatSidebar.show);
   const chatService = useRef<INextChatService>(useChatService());
 
   const { notifyError } = useToast();
@@ -97,7 +102,6 @@ export default function Chat() {
     ),
   ).current;
 
-  // 监听滚动事件
   const handleScroll = useRef(
     debounce(
       () => {
@@ -185,7 +189,16 @@ export default function Chat() {
     };
   }, [messages]);
 
-  const sashRender = () => <div className="border-t border-base" />;
+  useEffect(() => {
+    if (chatSidebarShow) {
+      setHorizontalSizes(['auto', DEFAULT_SIDEBAR_WIDTH]);
+    } else {
+      setHorizontalSizes(['auto', 0]);
+    }
+  }, [chatSidebarShow]);
+
+  const verticalSashRender = () => <div className="border-t border-base" />;
+  const horizontalSashRender = () => <div className="border-l border-base" />;
 
   const { createMessage, createChat, deleteStage, updateMessage, appendReply } =
     useChatStore();
@@ -406,48 +419,65 @@ ${prompt}
   );
 
   return (
-    <div id="chat" className="relative h-screen flex flex-start">
-      <div className="flex-grow relative">
-        <Header />
-        <div className="h-screen -mx-5 mt-10">
-          <SplitPane
-            split="horizontal"
-            sizes={sizes}
-            onChange={setSizes}
-            performanceMode
-            sashRender={sashRender}
-          >
-            <Pane className="chat-content flex-grow">
-              <div id="messages" ref={ref} className="overflow-y-auto h-full">
-                {messages.length ? (
-                  <div className="mx-auto max-w-screen-md px-5">
-                    <MemoizedMessages messages={messages} />
-                  </div>
-                ) : (
-                  chatService.current.isReady() || (
-                    <Empty image="hint" text={t('Notification.APINotReady')} />
-                  )
-                )}
-              </div>
-            </Pane>
-            <Pane minSize={180} maxSize="60%">
-              {chatService.current.isReady() ? (
-                <Editor
-                  onSubmit={onSubmit}
-                  onAbort={() => {
-                    chatService.current.abort();
-                  }}
-                />
-              ) : (
-                <div className="flex flex-col justify-center h-3/4 text-center text-sm text-gray-400">
-                  {id === tempChatId ? '' : t('Notification.APINotReady')}
+    <div id="chat" className="relative h-screen flex flex-start -mx-5 ">
+      <SplitPane
+        split="vertical"
+        sizes={horizontalSizes}
+        onChange={setHorizontalSizes}
+        performanceMode
+        sashRender={horizontalSashRender}
+      >
+        <div>
+          <Header />
+          <div className="h-screen mt-10">
+            <SplitPane
+              split="horizontal"
+              sizes={verticalSizes}
+              onChange={setVerticalSizes}
+              performanceMode
+              sashRender={verticalSashRender}
+            >
+              <Pane className="chat-content flex-grow">
+                <div id="messages" ref={ref} className="overflow-y-auto h-full">
+                  {messages.length ? (
+                    <div className="mx-auto max-w-screen-md px-5">
+                      <MemoizedMessages messages={messages} />
+                    </div>
+                  ) : (
+                    chatService.current.isReady() || (
+                      <Empty
+                        image="hint"
+                        text={t('Notification.APINotReady')}
+                      />
+                    )
+                  )}
                 </div>
-              )}
-            </Pane>
-          </SplitPane>
+              </Pane>
+              <Pane minSize={180} maxSize="60%">
+                {chatService.current.isReady() ? (
+                  <Editor
+                    onSubmit={onSubmit}
+                    onAbort={() => {
+                      chatService.current.abort();
+                    }}
+                  />
+                ) : (
+                  <div className="flex flex-col justify-center h-3/4 text-center text-sm text-gray-400">
+                    {id === tempChatId ? '' : t('Notification.APINotReady')}
+                  </div>
+                )}
+              </Pane>
+            </SplitPane>
+          </div>
         </div>
-      </div>
-      <Sidebar chatId={activeChatId} />
+        <Pane
+          className="right-sidebar border-l -mr-5"
+          maxSize="45%"
+          minSize={200}
+        >
+          <Sidebar chatId={activeChatId} />
+        </Pane>
+      </SplitPane>
       <CitationDialog />
     </div>
   );

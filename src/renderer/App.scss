@@ -69,6 +69,7 @@ body {
   position: relative;
   height: 100vh;
   overflow-x: hidden;
+  overflow-y: hidden;
   -webkit-font-smoothing: antialiased;
   background: transparent;
 }
@@ -83,6 +84,7 @@ samp,
 pre {
   font-size: 12px;
   max-width: 768px;
+  min-width: 200px;
 }
 ol,
 ul {
@@ -113,6 +115,9 @@ pre {
 .message pre {
   margin-top: 4px;
   margin-bottom: 4px;
+}
+.message code{
+  @apply break-all;
 }
 pre.ghost,
 .ghost pre {
