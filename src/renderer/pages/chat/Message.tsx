@@ -23,6 +23,8 @@ import {
 import MessageToolbar from './MessageToolbar';
 import useMermaid from '../../../hooks/useMermaid';
 
+import useECharts from 'hooks/useECharts';
+
 const debug = Debug('5ire:pages:chat:Message');
 
 export default function Message({ message }: { message: IChatMessage }) {
@@ -33,6 +35,7 @@ export default function Message({ message }: { message: IChatMessage }) {
   const states = useChatStore().getCurState();
   const { showCitation } = useKnowledgeStore();
   const { renderMermaid } = useMermaid();
+  const { initECharts, disposeECharts } = useECharts({ message });
   const keyword = useMemo(
     () => keywords[message.chatId],
     [keywords, message.chatId],
@@ -66,18 +69,35 @@ export default function Message({ message }: { message: IChatMessage }) {
   );
 
   useEffect(() => {
+    const targetNode = document.getElementById(message.id);
+    if (targetNode) {
+      const initChartsTimer = setTimeout(() => {
+        initECharts();
+      }, 100); // 设置 500ms 的延迟
+      return () => {
+        clearTimeout(initChartsTimer);
+        disposeECharts();
+      };
+    }
+  }, [message.id, initECharts, disposeECharts]);
+  
+
+  useEffect(() => {
+
     if (message.isActive) return; // no need to add event listener when message is active
     renderMermaid();
-    const observer = new MutationObserver((mutations) => {
+    const observer = new MutationObserver(() => {
       const links = document.querySelectorAll(`#${message.id} .msg-reply a`);
       if (links.length > 0) {
         links.forEach((link) => {
           link.addEventListener('click', onCitationClick);
         });
       }
+
     });
 
     const targetNode = document.getElementById(message.id);
+
     if (targetNode) {
       observer.observe(targetNode, {
         childList: true,
@@ -169,9 +189,8 @@ export default function Message({ message }: { message: IChatMessage }) {
     const isEmpty =
       (!message.reply || message.reply === '') &&
       (!message.reasoning || message.reasoning === '');
-    const thinkTitle = `${
-      isReasoning ? t('Reasoning.Thinking') : t('Reasoning.Thought')
-    }${reasoningSeconds > 0 ? ` ${reasoningSeconds}s` : ''}`;
+    const thinkTitle = `${isReasoning ? t('Reasoning.Thinking') : t('Reasoning.Thought')
+      }${reasoningSeconds > 0 ? ` ${reasoningSeconds}s` : ''}`;
     return (
       <div className={`w-full mt-1.5 ${isLoading ? 'is-loading' : ''}`}>
         {message.isActive && states.runningTool ? (
@@ -206,8 +225,7 @@ export default function Message({ message }: { message: IChatMessage }) {
                   <div
                     dangerouslySetInnerHTML={{
                       __html: render(
-                        `${
-                          highlight(reasoning, keyword) || ''
+                        `${highlight(reasoning, keyword) || ''
                         }${isReasoning && reasoning ? '<span class="blinking-cursor" /></span>' : ''}`,
                       ),
                     }}
@@ -222,8 +240,7 @@ export default function Message({ message }: { message: IChatMessage }) {
               }`}
               dangerouslySetInnerHTML={{
                 __html: render(
-                  `${
-                    highlight(reply, keyword) || ''
+                  `${highlight(reply, keyword) || ''
                   }${isLoading && reply ? '<span class="blinking-cursor" /></span>' : ''}`,
                 ),
               }}
@@ -248,9 +265,8 @@ export default function Message({ message }: { message: IChatMessage }) {
         >
           <div className="avatar flex-shrink-0 mr-2" />
           <div
-            className={`mt-1 break-word ${
-              fontSize === 'large' ? 'font-lg' : ''
-            }`}
+            className={`mt-1 break-word ${fontSize === 'large' ? 'font-lg' : ''
+              }`}
             dangerouslySetInnerHTML={{
               __html: render(highlight(message.prompt, keyword) || ''),
             }}
