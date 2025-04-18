@@ -63,11 +63,15 @@ export default function Editor({
   };
 
   const insertText = useCallback((text: string) => {
-    const selection = window.getSelection();
-    if (!selection?.rangeCount) return;
-    selection.deleteFromDocument(); // 删除选中的内容
-    selection.getRangeAt(0).insertNode(document.createTextNode(text));
-    selection.collapseToEnd();
+    if (text === '\n') {
+      document.execCommand('insertLineBreak');
+    } else {
+      const selection = window.getSelection();
+      if (!selection?.rangeCount) return;
+      selection.deleteFromDocument();
+      selection.getRangeAt(0).insertNode(document.createTextNode(text));
+      selection.collapseToEnd();
+    }
   }, []);
 
   const onKeyDown = useCallback(
@@ -78,7 +82,8 @@ export default function Editor({
           // void submit when shiftKey, ctrlKey or metaKey is pressed.
           if (event.shiftKey || event.ctrlKey || event.metaKey) {
             event.preventDefault();
-            insertText('\n');
+            // even execCommand is deprecated, it seems to be the only way to insert a line break in contentEditable.
+            document.execCommand('insertLineBreak');
           } else {
             event.preventDefault();
             setSubmitted(true);
@@ -90,7 +95,7 @@ export default function Editor({
         }
       }
     },
-    [insertText, onSubmit, chat.id, editStage],
+    [onSubmit, chat.id, editStage],
   );
 
   const pasteWithoutStyle = useCallback((e: ClipboardEvent) => {
