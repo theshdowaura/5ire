@@ -23,6 +23,8 @@ import {
 import MessageToolbar from './MessageToolbar';
 import useMermaid from '../../../hooks/useMermaid';
 
+import useECharts from 'hooks/useECharts';
+
 const debug = Debug('5ire:pages:chat:Message');
 
 export default function Message({ message }: { message: IChatMessage }) {
@@ -33,6 +35,7 @@ export default function Message({ message }: { message: IChatMessage }) {
   const states = useChatStore().getCurState();
   const { showCitation } = useKnowledgeStore();
   const { renderMermaid } = useMermaid();
+  const { initECharts, disposeECharts } = useECharts({ message });
   const keyword = useMemo(
     () => keywords[message.chatId],
     [keywords, message.chatId],
@@ -65,34 +68,49 @@ export default function Message({ message }: { message: IChatMessage }) {
     [citedChunks, showCitation],
   );
 
-  useEffect(() => {
-    if (message.isActive) return; // no need to add event listener when message is active
-    renderMermaid();
-    const observer = new MutationObserver((mutations) => {
-      const links = document.querySelectorAll(`#${message.id} .msg-reply a`);
+  const renderECharts = useCallback(
+    (prefix: string, msgDom: Element) => {
+      const charts = msgDom.querySelectorAll('.echarts-container');
+      if (charts.length > 0) {
+        charts.forEach((chart) => {
+          initECharts(prefix, chart.id);
+        });
+      }
+    },
+    [initECharts],
+  );
+
+  const replyRender = useCallback(
+    (prefix: string, msgDom: Element) => {
+      const links = msgDom.querySelectorAll('a');
       if (links.length > 0) {
         links.forEach((link) => {
           link.addEventListener('click', onCitationClick);
         });
       }
-    });
+      renderECharts(prefix, msgDom);
+      renderMermaid();
+    },
+    [onCitationClick, renderECharts, renderMermaid],
+  );
 
-    const targetNode = document.getElementById(message.id);
-    if (targetNode) {
-      observer.observe(targetNode, {
-        childList: true,
-        subtree: true,
-      });
+  useEffect(() => {
+    console.log('Message useEffect', message.id);
+    const promptNode = document.querySelector(`#${message.id} .msg-prompt`);
+    if (promptNode) {
+      renderECharts('prompt', promptNode);
     }
-
+    const replyNode = document.querySelector(`#${message.id} .msg-reply`);
+    if (!replyNode) return;
+    replyRender('reply', replyNode);
     return () => {
-      observer.disconnect();
-      const links = document.querySelectorAll(`#${message.id} .msg-reply a`);
-      links.forEach((link) => {
+      disposeECharts();
+      const links = replyNode?.querySelectorAll('a');
+      links?.forEach((link) => {
         link.removeEventListener('click', onCitationClick);
       });
     };
-  }, [message.id, message.isActive, onCitationClick]);
+  }, [message.id, message.isActive]);
 
   const [isReasoning, setIsReasoning] = useState(true);
   const [reasoningSeconds, setReasoningSeconds] = useState(0);

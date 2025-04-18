@@ -299,5 +299,6 @@
   "Provider.Model.BuiltInModelCannotBeDeleted": "The built-in model cannot be deleted.",
   "Provider.Model.BuiltInModelCannotBeRenamed": "The built-in model cannot be renamed.",
   "Provider.Model.PriceUnit": "per 1k tokens",
-  "Provider.Model.NameAlreadyExists": "The model name already exists."
+  "Provider.Model.NameAlreadyExists": "The model name already exists.",
+  "Message.Error.EChartsRenderFailed": "The chart render failed."
 }
