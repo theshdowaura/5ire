@@ -104,6 +104,24 @@ export default function useMarkdown() {
     // Pass the token to the default renderer.
     return defaultRender(tokens, idx, options, env, self);
   };
+
+  const defaultImageRender = md.renderer.rules.image || function(tokens: any, idx: any, options: any, env: any, self: any) {
+    return self.renderToken(tokens, idx, options);
+  };
+
+  md.renderer.rules.image = function(tokens: any, idx: any, options: any, env: any, self: any) {
+    const token = tokens[idx];
+    const srcIndex = token.attrIndex('src');
+    if (srcIndex >= 0) {
+      const src = token.attrs[srcIndex][1];
+      if (!src.startsWith('http') && !src.startsWith('file://')) {
+        token.attrs[srcIndex][1] = `file://${src}`;
+      }
+    }
+    return defaultImageRender(tokens, idx, options, env, self);
+  };
+
+
   return {
     render: (str: string): string => md.render(str),
   };
