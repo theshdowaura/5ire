@@ -51,7 +51,7 @@ export default function markdownItEChartsPlugin(md: MarkdownIt) {
            id="${chartId}"
            data-echarts-config="${encodeURIComponent(code)}"
            style="width:100%;height:400px;">
-           <pre><code>${code}</code></pre>
+           <pre class="overflow-y-auto" style="height:400px;max-width:100%;"><code>${code}</code></pre>
         </div>
       `;
   };

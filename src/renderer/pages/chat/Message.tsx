@@ -72,7 +72,6 @@ export default function Message({ message }: { message: IChatMessage }) {
     (prefix: string, msgDom: Element) => {
       const charts = msgDom.querySelectorAll('.echarts-container');
       if (charts.length > 0) {
-        console.log('renderECharts', prefix, msgDom.id);
         charts.forEach((chart) => {
           initECharts(prefix, chart.id);
         });

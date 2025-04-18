@@ -15,7 +15,7 @@ const parseOption = (optStr: string) => {
   }
 };
 
-export default function useECharts({ message }: { message: IChatMessage }) {
+export default function useECharts({ message }: { message: { id: string } }) {
   const { t } = useTranslation();
   const theme = useAppearanceStore((state) => state.theme);
   const messageId = useMemo(() => message.id, [message]);
