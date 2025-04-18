@@ -39,6 +39,7 @@ export default function ProviderForm() {
     setOldName(provider.name || '');
     setName(provider.name || '');
     setEndpoint(provider.apiBase || '');
+    setApiKey(provider.apiKey || '');
     setCurrency(provider.currency || 'USD');
     setSecret(provider.apiSecret || '');
     setVersion(provider.apiVersion || '');
