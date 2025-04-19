@@ -255,13 +255,13 @@ export default class OpenAIChatService
   ): Promise<Response> {
     const payload = await this.makePayload(messages, msgId);
     debug('About to make a request, payload:\r\n', payload);
-    const { base, key } = this.apiSettings;
-    const url = urlJoin('/chat/completions', base);
+    const provider = this.context.getProvider();
+    const url = urlJoin('/chat/completions', provider.apiBase.trim());
     const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${key}`,
+        Authorization: `Bearer ${provider.apiKey.trim()}`,
       },
       body: JSON.stringify(payload),
       signal: this.abortController.signal,

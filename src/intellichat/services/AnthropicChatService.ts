@@ -227,14 +227,14 @@ export default class AnthropicChatService
   ): Promise<Response> {
     const payload = await this.makePayload(messages, msgId);
     debug('About to make a request, payload:\r\n', payload);
-    const { base, key } = this.apiSettings;
-    const url = urlJoin('/messages', base);
+    const provider = this.context.getProvider();
+    const url = urlJoin('/messages', provider.apiBase.trim());
     const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'anthropic-version': '2023-06-01',
-        'x-api-key': key,
+        'x-api-key': provider.apiKey.trim(),
       },
       body: JSON.stringify(payload),
       signal: this.abortController.signal,
