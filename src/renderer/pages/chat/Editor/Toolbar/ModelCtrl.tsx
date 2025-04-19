@@ -1,8 +1,6 @@
 import {
   Button,
   Menu,
-  MenuCheckedValueChangeData,
-  MenuCheckedValueChangeEvent,
   MenuItem,
   MenuList,
   MenuPopover,
@@ -10,13 +8,19 @@ import {
 } from '@fluentui/react-components';
 import { ChevronDownRegular } from '@fluentui/react-icons';
 import { IChat, IChatContext } from 'intellichat/types';
-import { find } from 'lodash';
+import { find, set } from 'lodash';
 import { IChatModelConfig, IChatProviderConfig } from 'providers/types';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import useChatStore from 'stores/useChatStore';
 import useProviderStore, { ModelOption } from 'stores/useProviderStore';
 
-export default function ModelCtrl({ ctx }: { ctx: IChatContext }) {
+export default function ModelCtrl({
+  chat,
+  ctx,
+}: {
+  chat: IChat;
+  ctx: IChatContext;
+}) {
   const editStage = useChatStore((state) => state.editStage);
   const { getProvidersWithModels, getGroupedModelOptions } = useProviderStore();
   const [curProvider, setCurProvider] = useState<IChatProviderConfig>(
@@ -33,6 +37,11 @@ export default function ModelCtrl({ ctx }: { ctx: IChatContext }) {
     () => groupedOptions[curProvider.name],
     [groupedOptions, curProvider.name],
   );
+
+  useEffect(() => {
+    setCurProvider(ctx.getProvider());
+    setCurModel(ctx.getModel());
+  }, [chat.id]);
 
   return (
     <div className="flex flex-start items-center">

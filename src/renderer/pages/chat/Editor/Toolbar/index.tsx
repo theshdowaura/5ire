@@ -26,7 +26,7 @@ export default function EditorToolbar({
         size="small"
         className="flex items-center gap-3 ml-2 editor-toolbar"
       >
-        <ModelCtrl ctx={ctx} />
+        <ModelCtrl ctx={ctx} chat={chat} />
         <PromptCtrl ctx={ctx} chat={chat} />
         <KnowledgeCtrl ctx={ctx} chat={chat} />
         <MaxTokensCtrl ctx={ctx} chat={chat} onConfirm={onConfirm} />

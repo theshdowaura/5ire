@@ -3,6 +3,7 @@ import { create } from 'zustand';
 import { typeid } from 'typeid-js';
 import { produce } from 'immer';
 import {
+  find,
   isNil,
   isNull,
   isNumber,
@@ -11,7 +12,12 @@ import {
   isUndefined,
   pick,
 } from 'lodash';
-import { DEFAULT_MAX_TOKENS, NUM_CTX_MESSAGES, tempChatId } from 'consts';
+import {
+  DEFAULT_MAX_TOKENS,
+  DEFAULT_TEMPERATURE,
+  NUM_CTX_MESSAGES,
+  tempChatId,
+} from 'consts';
 import { date2unix } from 'utils/util';
 import { isBlank, isNotBlank } from 'utils/validators';
 import {
@@ -22,14 +28,15 @@ import {
   IStage,
 } from 'intellichat/types';
 import { isValidTemperature } from 'intellichat/validators';
-import { getProvider } from 'providers';
 import useSettingsStore from './useSettingsStore';
 import { captureException } from '../renderer/logging';
+import { IChatModelConfig, IChatProviderConfig } from 'providers/types';
+import useProviderStore from './useProviderStore';
 
 const debug = Debug('5ire:stores:useChatStore');
 
 const defaultTempStage = {
-  provider:'',
+  provider: '',
   model: '',
   systemMessage: '',
   prompt: null,
@@ -303,10 +310,10 @@ const useChatStore = create<IChatStore>((set, get) => ({
     );
   },
   initChat: (chat: Partial<IChat>) => {
-    const { api } = useSettingsStore.getState();
     const $chat = {
-      model: api.model,
-      temperature: getProvider(api.provider).chat.temperature.default,
+      provider: '',
+      model: '',
+      temperature: DEFAULT_TEMPERATURE,
       maxTokens: null,
       maxCtxMessages: NUM_CTX_MESSAGES,
       id: tempChatId,
@@ -494,7 +501,7 @@ const useChatStore = create<IChatStore>((set, get) => ({
   },
   getChat: async (id: string) => {
     const chat = (await window.electron.db.get(
-      'SELECT id, summary, model, systemMessage, maxTokens, temperature, context, maxCtxMessages, stream, prompt, input, folderId, createdAt FROM chats where id = ?',
+      'SELECT id, summary, provider, model, systemMessage, maxTokens, temperature, context, maxCtxMessages, stream, prompt, input, folderId, createdAt FROM chats where id = ?',
       id,
     )) as IChat;
     if (chat) {
@@ -739,6 +746,9 @@ const useChatStore = create<IChatStore>((set, get) => ({
             } else {
               state.tempStage.prompt = stage.prompt;
             }
+          }
+          if (!isUndefined(stage.provider)) {
+            state.tempStage.provider = stage.provider || '';
           }
           if (!isUndefined(stage.model)) {
             state.tempStage.model = stage.model || '';

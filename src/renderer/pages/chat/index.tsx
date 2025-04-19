@@ -28,7 +28,7 @@ import Empty from 'renderer/components/Empty';
 
 import useUsageStore from 'stores/useUsageStore';
 import useNav from 'hooks/useNav';
-import { debounce } from 'lodash';
+import { debounce, max } from 'lodash';
 import { isBlank } from 'utils/validators';
 import {
   extractCitationIds,
@@ -50,7 +50,7 @@ const debug = Debug('5ire:pages:chat');
 
 const MemoizedMessages = React.memo(Messages);
 
-const DEFAULT_SIDEBAR_WIDTH=250
+const DEFAULT_SIDEBAR_WIDTH = 250;
 
 export default function Chat() {
   const { t } = useTranslation();
@@ -213,12 +213,18 @@ export default function Chat() {
       if (prompt.trim() === '') {
         return;
       }
+      const provider = chatService.current.context.getProvider();
       const model = chatService.current.context.getModel();
+      const temperature = chatService.current.context.getTemperature();
+      const maxTokens = chatService.current.context.getMaxTokens();
       let $chatId = activeChatId;
       if (activeChatId === tempChatId) {
         const $chat = await createChat(
           {
             summary: prompt.substring(0, 50),
+            provider: provider.name,
+            model: model.name,
+            temperature,
             folderId: folder?.id || null,
           },
           async (newChat: IChat) => {
@@ -240,6 +246,9 @@ export default function Chat() {
         if (!msgId) {
           await updateChat({
             id: activeChatId,
+            provider: provider.name,
+            model: model.name,
+            temperature,
             summary: prompt.substring(0, 50),
           });
         }
@@ -253,9 +262,9 @@ export default function Chat() {
             prompt,
             reply: '',
             chatId: $chatId,
-            model: modelMapping[model.label || ''] || model.label,
-            temperature: chatService.current.context.getTemperature(),
-            maxTokens: chatService.current.context.getMaxTokens(),
+            model: model.label,
+            temperature: temperature,
+            maxTokens,
             isActive: 1,
           });
 
@@ -264,9 +273,9 @@ export default function Chat() {
           id: msgId,
           reply: '',
           reasoning: '',
-          model: modelMapping[model.label || ''] || model.label,
-          temperature: chatService.current.context.getTemperature(),
-          maxTokens: chatService.current.context.getMaxTokens(),
+          model: model.label,
+          temperature,
+          maxTokens,
           isActive: 1,
           citedFiles: '[]',
           citedChunks: '[]',
