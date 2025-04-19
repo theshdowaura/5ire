@@ -79,7 +79,7 @@ export default function ProviderList({ height = 400 }: { height: number }) {
                     {provider.name}
                   </span>
                   {provider.isDefault && (
-                    <CaretLeft16Regular className="text-gray-500 -mb-1" />
+                    <CaretLeft16Regular className="text-gray-500 -mb-0.5" />
                   )}
                 </button>
                 <div className="flex justify-center items-center">

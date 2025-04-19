@@ -52,6 +52,7 @@ export default function ModelFormDrawer({
   const [outputPrice, setOutputPrice] = useState<number>(0);
   const [vision, setVision] = useState<boolean>(false);
   const [tools, setTools] = useState<boolean>(false);
+  const [isDefault, setIsDefault] = useState<boolean>(false);
   const [disabled, setDisabled] = useState<boolean>(false);
 
   const modelNames = useMemo(
@@ -92,11 +93,12 @@ export default function ModelFormDrawer({
     setDescription('');
     setContextWindow(DEFAULT_CONTEXT_WINDOW);
     setMaxTokens(DEFAULT_MAX_TOKENS);
-    setDisabled(false);
     setInputPrice(0);
     setOutputPrice(0);
     setVision(false);
     setTools(false);
+    setIsDefault(false);
+    setDisabled(false);
   };
 
   const onSave = () => {
@@ -116,6 +118,7 @@ export default function ModelFormDrawer({
       maxTokens,
       inputPrice,
       outputPrice,
+      isDefault,
       disabled,
       isReady: true,
       capabilities: {
@@ -152,6 +155,7 @@ export default function ModelFormDrawer({
       setDescription(model.description || '');
       setContextWindow(model.contextWindow || DEFAULT_CONTEXT_WINDOW);
       setMaxTokens(model.maxTokens || DEFAULT_MAX_TOKENS);
+      setIsDefault(model.isDefault || false);
       setDisabled(model.disabled || false);
       setInputPrice(model.inputPrice || 0);
       setOutputPrice(model.outputPrice || 0);
@@ -298,23 +302,30 @@ export default function ModelFormDrawer({
             label={t('Provider.Model.Vision')}
             className="-ml-1.5"
             checked={vision}
-            onChange={(e, data) => setVision(data.checked)}
+            onChange={(_, data) => setVision(data.checked)}
           />
           <Switch
             disabled={model ? isNil(model?.capabilities?.tools) : false}
             label={t('Provider.Model.Tools')}
             className="-ml-1.5"
             checked={tools}
-            onChange={(e, data) => setTools(data.checked)}
+            onChange={(_, data) => setTools(data.checked)}
           />
         </div>
-        <Switch
-          label={t('Common.Enabled')}
-          className="-ml-1.5 -mt-2 field-small"
-          checked={!disabled}
-          onChange={(e, data) => setDisabled(!data.checked)}
-        />
-
+        <div className="grid grid-cols-2 gap-1 field-small">
+          <Switch
+            label={t('Common.Default')}
+            className="-ml-1.5 -mt-2 field-small"
+            checked={isDefault}
+            onChange={(_, data) => setIsDefault(data.checked)}
+          />
+          <Switch
+            label={t('Common.Enabled')}
+            className="-ml-1.5 -mt-2 field-small"
+            checked={!disabled}
+            onChange={(_, data) => setDisabled(!data.checked)}
+          />
+        </div>
         <div className="py-2">
           <Button appearance="primary" className="w-full" onClick={onSave}>
             {t('Common.Save')}

@@ -10,6 +10,7 @@ import {
   AddCircleFilled,
   AddCircleRegular,
   bundleIcon,
+  CaretRight16Regular,
 } from '@fluentui/react-icons';
 import { IChatModelConfig, IChatProviderConfig } from 'providers/types';
 import { useState, useCallback, useEffect } from 'react';
@@ -143,27 +144,35 @@ export default function ModelList({ height = 400 }: { height?: number }) {
                   }}
                   className="block hover:bg-stone-100 dark:hover:bg-zinc-700/25"
                 >
-                  <div className="px-4 pt-3 pb-2 border-b border-gray-100 dark:border-zinc-800/25 w-full">
+                  <div className="pl-2 pr-4 pt-3 pb-2 border-b border-gray-100 dark:border-zinc-800/25 w-full">
                     <div className="font-medium flex justify-between gap-1 items-center mb-1">
-                      <div>
+                      <div className="flex justify-start items-center">
+                        {model.isDefault ? (
+                          <CaretRight16Regular className="text-gray-500 -mb-1" />
+                        ) : (
+                          <div className="w-[18px]" />
+                        )}
                         <span
-                          className={`-mt-0.5 text-sm ${model.disabled ? 'text-gray-300 dark:text-gray-500' : ''}`}
+                          className={`text-sm ${model.disabled ? 'text-gray-300 dark:text-gray-500' : ''}`}
                           title={model.name}
                         >
                           {model.label || model.name}
                         </span>
+
                         {model.description && (
-                          <TooltipIcon
-                            positioning="after"
-                            tip={
-                              <div>
-                                <p className="font-bold mb-1 text-base">
-                                  {model.name}
-                                </p>
-                                <p>{model.description}</p>
-                              </div>
-                            }
-                          />
+                          <div className="-mt-0.5">
+                            <TooltipIcon
+                              positioning="after"
+                              tip={
+                                <div>
+                                  <p className="font-bold mb-1 text-base">
+                                    {model.name}
+                                  </p>
+                                  <p>{model.description}</p>
+                                </div>
+                              }
+                            />
+                          </div>
                         )}
                       </div>
                       <div className="flex justify-end gap-1">
