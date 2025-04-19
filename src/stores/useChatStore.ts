@@ -29,6 +29,7 @@ import { captureException } from '../renderer/logging';
 const debug = Debug('5ire:stores:useChatStore');
 
 const defaultTempStage = {
+  provider:'',
   model: '',
   systemMessage: '',
   prompt: null,

@@ -7,7 +7,6 @@ import PromptCtrl from './PromptCtrl';
 import TemperatureCtrl from './TemperatureCtrl';
 import MaxTokensCtrl from './MaxTokensCtrl';
 import ImgCtrl from './ImgCtrl';
-import StreamCtrl from './StreamCtrl';
 import KnowledgeCtrl from './KnowledgeCtrl';
 import CtxNumCtrl from './CtxNumCtrl';
 
@@ -27,7 +26,7 @@ export default function EditorToolbar({
         size="small"
         className="flex items-center gap-3 ml-2 editor-toolbar"
       >
-        <ModelCtrl ctx={ctx} chat={chat} />
+        <ModelCtrl ctx={ctx} />
         <PromptCtrl ctx={ctx} chat={chat} />
         <KnowledgeCtrl ctx={ctx} chat={chat} />
         <MaxTokensCtrl ctx={ctx} chat={chat} onConfirm={onConfirm} />

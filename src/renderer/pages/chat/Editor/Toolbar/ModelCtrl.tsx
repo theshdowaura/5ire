@@ -1,6 +1,8 @@
 import {
   Button,
   Menu,
+  MenuCheckedValueChangeData,
+  MenuCheckedValueChangeEvent,
   MenuItem,
   MenuList,
   MenuPopover,
@@ -8,26 +10,29 @@ import {
 } from '@fluentui/react-components';
 import { ChevronDownRegular } from '@fluentui/react-icons';
 import { IChat, IChatContext } from 'intellichat/types';
+import { find } from 'lodash';
 import { IChatModelConfig, IChatProviderConfig } from 'providers/types';
 import { useMemo, useState } from 'react';
+import useChatStore from 'stores/useChatStore';
 import useProviderStore, { ModelOption } from 'stores/useProviderStore';
 
-export default function ModelCtrl({
-  ctx,
-  chat,
-}: {
-  ctx: IChatContext;
-  chat: IChat;
-}) {
+export default function ModelCtrl({ ctx }: { ctx: IChatContext }) {
+  const editStage = useChatStore((state) => state.editStage);
   const { getProvidersWithModels, getGroupedModelOptions } = useProviderStore();
   const [curProvider, setCurProvider] = useState<IChatProviderConfig>(
     ctx.getProvider(),
   );
-  const [curModel, setCurModel] = useState<IChatModelConfig>(ctx.getModel());
+  const [curModel, setCurModel] = useState<IChatModelConfig | ModelOption>(
+    ctx.getModel(),
+  );
   const providers = useMemo(() => {
     return getProvidersWithModels().filter((provider) => !provider.disabled);
   }, [getProvidersWithModels]);
   const groupedOptions = getGroupedModelOptions();
+  const options = useMemo(
+    () => groupedOptions[curProvider.name],
+    [groupedOptions, curProvider.name],
+  );
 
   return (
     <div className="flex flex-start items-center">
@@ -45,7 +50,21 @@ export default function ModelCtrl({
         <MenuPopover>
           <MenuList>
             {providers.map((provider) => (
-              <MenuItem key={provider.name} disabled={!provider.isReady}>
+              <MenuItem
+                key={provider.name}
+                disabled={!provider.isReady}
+                onClick={() => {
+                  setCurProvider(provider);
+                  const model =
+                    find(provider.models, { isDefault: true }) ||
+                    provider.models[0];
+                  setCurModel(model);
+                  editStage(chat.id, {
+                    provider: curProvider.name,
+                    model: model.name,
+                  });
+                }}
+              >
                 {provider.name}
               </MenuItem>
             ))}
@@ -68,8 +87,18 @@ export default function ModelCtrl({
         </MenuTrigger>
         <MenuPopover>
           <MenuList>
-            {groupedOptions[curProvider.name].map((model: ModelOption) => (
-              <MenuItem key={model.value} disabled={!model.isReady}>
+            {options.map((model: ModelOption) => (
+              <MenuItem
+                key={model.value}
+                disabled={!model.isReady}
+                onClick={() => {
+                  setCurModel(model);
+                  editStage(chat.id, {
+                    provider: curProvider.name,
+                    model: model.value,
+                  });
+                }}
+              >
                 {model.label}
               </MenuItem>
             ))}

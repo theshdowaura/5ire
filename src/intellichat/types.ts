@@ -239,6 +239,7 @@ export interface IPromptDef {
 
 export interface IStage {
   chatId: string;
+  provider: string;
   model: string;
   systemMessage?: string | null;
   prompt?: IPrompt | null;
