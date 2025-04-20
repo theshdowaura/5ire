@@ -35,7 +35,6 @@ export default function useChatContext(): IChatContext {
 
     const getModel = () => {
       const { chat } = useChatStore.getState();
-      console.log('getModel', chat);
       if (chat.provider && chat.model) {
         return getAvailableModel(chat.provider, chat.model);
       }

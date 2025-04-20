@@ -15,6 +15,7 @@ function createTableFolders() {
   CREATE TABLE IF NOT EXISTS "folders" (
     "id" text(31) NOT NULL,
     "name" text,
+    "provider" text,
     "model" text,
     "systemMessage" text,
     "temperature" real,
@@ -258,6 +259,19 @@ function alertTableBookmarks() {
   }
 }
 
+function alertTableFolders() {
+  const columns = database.prepare(`PRAGMA table_info(folders)`).all();
+  const hasProviderColumn = columns.some(
+    (column: any) => column.name === 'provider',
+  );
+  if (!hasProviderColumn) {
+    database.prepare(`ALTER TABLE folders ADD COLUMN provider TEXT`).run();
+    logging.debug('Added [provider] column to [folders] table');
+  } else {
+    logging.debug('[provider] column already exists in [folders] table');
+  }
+}
+
 const initDatabase = database.transaction(() => {
   logging.debug('Init database...');
 
@@ -276,6 +290,8 @@ const initDatabase = database.transaction(() => {
   // v.0.9.7
   alertTableMessages();
   alertTableBookmarks();
+  // v1.0.0
+  alertTableFolders();
   logging.info('Database initialized.');
 });
 
@@ -289,6 +305,7 @@ ipcMain.handle('db-all', (event, data) => {
     return database.prepare(sql).all(params);
   } catch (err: any) {
     logging.captureException(err);
+    return [];
   }
 });
 
@@ -307,24 +324,24 @@ ipcMain.handle('db-run', (_, data) => {
 ipcMain.handle('db-transaction', (_, data: any[]) => {
   logging.debug('db-transaction', JSON.stringify(data, null, 2));
   const tasks: { statement: Statement; params: any[] }[] = [];
-  for (const { sql, params } of data) {
+  data.forEach(({ sql, params }) => {
     tasks.push({
       statement: database.prepare(sql),
       params,
     });
-  }
+  });
   return new Promise((resolve) => {
     try {
       database.transaction(() => {
-        for (const { statement, params } of tasks) {
+        tasks.forEach(({ statement, params }) => {
           if (isOneDimensionalArray(params)) {
             statement.run(params);
           } else {
-            for (const param of params) {
+            params.forEach((param: any) => {
               statement.run(param);
-            }
+            });
           }
-        }
+        });
       })();
       resolve(true);
     } catch (err: any) {
@@ -341,5 +358,6 @@ ipcMain.handle('db-get', (_, data) => {
     return database.prepare(sql).get(id);
   } catch (err: any) {
     logging.captureException(err);
+    return null;
   }
 });
