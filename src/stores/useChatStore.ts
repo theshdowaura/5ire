@@ -3,7 +3,6 @@ import { create } from 'zustand';
 import { typeid } from 'typeid-js';
 import { produce } from 'immer';
 import {
-  find,
   isNil,
   isNull,
   isNumber,
@@ -30,8 +29,6 @@ import {
 import { isValidTemperature } from 'intellichat/validators';
 import useSettingsStore from './useSettingsStore';
 import { captureException } from '../renderer/logging';
-import { IChatModelConfig, IChatProviderConfig } from 'providers/types';
-import useProviderStore from './useProviderStore';
 
 const debug = Debug('5ire:stores:useChatStore');
 
@@ -160,9 +157,10 @@ const useChatStore = create<IChatStore>((set, get) => ({
   },
   selectFolder: (id: string | null) => {
     if (!id) {
-      return set({ folder: null });
+      set({ folder: null });
+    } else {
+      set((state) => ({ folder: state.folders[id] || null }));
     }
-    set((state) => ({ folder: state.folders[id] || null }));
   },
   markFolderAsOld: (id: string) => {
     set(
@@ -375,6 +373,10 @@ const useChatStore = create<IChatStore>((set, get) => ({
     } catch (err: any) {
       captureException(err);
     }
+    let stream = 1;
+    if (!chat.stream) {
+      stream = 0;
+    }
     const ok = await window.electron.db.run(
       `INSERT INTO chats (id, summary, model, systemMessage, temperature, maxCtxMessages, maxTokens, stream, prompt, input, folderId, createdAt)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?)`,
@@ -386,7 +388,7 @@ const useChatStore = create<IChatStore>((set, get) => ({
         $chat.temperature || null,
         $chat.maxCtxMessages || null,
         $chat.maxTokens || null,
-        isNil($chat.stream) ? 1 : $chat.stream ? 1 : 0,
+        stream,
         prompt,
         $chat.input,
         $chat.folderId || null,
@@ -416,6 +418,11 @@ const useChatStore = create<IChatStore>((set, get) => ({
       stats.push('summary = ?');
       $chat.summary = chat.summary as string;
       params.push($chat.summary);
+    }
+    if (isNotBlank(chat.provider)) {
+      stats.push('provider = ?');
+      $chat.provider = chat.provider as string;
+      params.push($chat.provider);
     }
     if (isNotBlank(chat.model)) {
       stats.push('model = ?');
@@ -479,8 +486,8 @@ const useChatStore = create<IChatStore>((set, get) => ({
         `UPDATE chats SET ${stats.join(', ')} WHERE id = ?`,
         params,
       );
-      const chat = get().chats.find((c) => c.id === $chat.id);
-      const updatedChat = { ...chat, ...$chat } as IChat;
+      const curChat = get().chats.find((c) => c.id === $chat.id);
+      const updatedChat = { ...curChat, ...$chat } as IChat;
       set(
         produce((state: IChatStore) => {
           if (updatedChat.id === state.chat.id) {
