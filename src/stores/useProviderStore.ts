@@ -64,6 +64,50 @@ const mergeRemoteModel = (
   } as IChatModelConfig;
 };
 
+const getMergedLocalModels = (provider: IChatProviderConfig) => {
+  const builtInProviders = getBuiltInProviders();
+  const builtinModels =
+    builtInProviders.find((p) => p.name === provider.name)?.chat.models || [];
+  const userCreatedModels =
+    provider?.models?.filter((model: IChatModelConfig) => {
+      return (
+        !provider.isBuiltIn ||
+        !builtinModels?.some(
+          (builtInModel: IChatModel) => builtInModel.name === model.name,
+        )
+      );
+    }) || [];
+  const customModels = keyBy(provider?.models || [], 'name');
+  return [
+    ...(builtinModels?.map((model) => {
+      const customModel = customModels[model.name];
+      const mergedModel = {
+        name: model.name,
+        label: customModel?.label || model.label || model.name,
+        contextWindow: customModel?.contextWindow || model.contextWindow,
+        maxTokens: customModel?.maxTokens || model.maxTokens,
+        defaultMaxTokens:
+          customModel?.defaultMaxTokens || model.defaultMaxTokens,
+        inputPrice: customModel?.inputPrice || model.inputPrice,
+        outputPrice: customModel?.outputPrice || model.outputPrice,
+        description: customModel?.description || model.description || null,
+        isDefault: customModel?.isDefault || model.isDefault || false,
+        isBuiltIn: true,
+        isPremium: provider.isPremium,
+        disabled: customModel?.disabled || false,
+        capabilities: customModel?.capabilities || model.capabilities || {},
+        extras: customModel?.extras || {},
+      } as IChatModelConfig;
+      mergedModel.isReady = isModelReady(
+        provider.modelExtras || [],
+        mergedModel,
+      );
+      return mergedModel;
+    }) || []),
+    ...userCreatedModels,
+  ].sort(sortByName);
+};
+
 export type ModelOption = {
   label: string;
   name: string;
@@ -146,7 +190,6 @@ const mergeProviders = (
 export interface IProviderStore {
   providers: IChatProviderConfig[];
   provider: IChatProviderConfig | null;
-  getProvidersWithModels: () => IChatProviderConfig[];
   setProvider: (provider: IChatProviderConfig) => IChatProviderConfig;
   createProvider: (providerName?: string) => void;
   updateProvider: (
@@ -162,6 +205,7 @@ export interface IProviderStore {
     providerName: string,
     modelName: string,
   ) => IChatModelConfig;
+  getModelsSync: (provider: IChatProviderConfig) => IChatModelConfig[];
   getModels: (provider: IChatProviderConfig) => Promise<IChatModelConfig[]>;
   getGroupedModelOptions: () => Promise<{
     [key: string]: ModelOption[];
@@ -252,13 +296,6 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
     const { providers } = get();
     return providers.map((provider) => provider.name).includes(providerName);
   },
-  getProvidersWithModels: () => {
-    const { getAvailableProviders } = get();
-    const providers = getAvailableProviders();
-    return providers.filter((p) => {
-      return p.models.length > 0 || p.modelsEndpoint; // provider has models or modelsEndpoint
-    });
-  },
   getAvailableProviders: () => {
     const { providers } = get();
     const { session } = useAuthStore.getState();
@@ -266,8 +303,8 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
     return providers.filter((p) => !p.isPremium);
   },
   getAvailableProvider: (providerName: string) => {
-    const { getProvidersWithModels } = get();
-    const providers = getProvidersWithModels();
+    const { getAvailableProviders } = get();
+    const providers = getAvailableProviders();
     return (
       find(providers, { name: providerName }) ||
       find(providers, { isDefault: true }) ||
@@ -275,8 +312,8 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
     );
   },
   getDefaultProvider: () => {
-    const { getProvidersWithModels } = get();
-    const providers = getProvidersWithModels();
+    const { getAvailableProviders } = get();
+    const providers = getAvailableProviders();
     return find(providers, { isDefault: true }) || providers[0];
   },
   createProvider: (providerName = 'Untitled') => {
@@ -306,15 +343,24 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
     });
   },
   getAvailableModel: (providerName: string, modelName: string) => {
-    const { getAvailableProvider } = get();
-    const provider = getAvailableProvider(providerName);
+    const { getModelsSync, getAvailableProvider } = get();
+    const models = getModelsSync(getAvailableProvider(providerName));
+    return (
+      find(models, { name: modelName }) ||
+      find(models, { isDefault: true }) ||
+      models[0]
+    );
+  },
+  getModelsSync: (provider: IChatProviderConfig) => {
     if (provider.modelsEndpoint) {
-      return mergeRemoteModel(
-        modelName,
-        find(provider.models, { name: modelName }),
-      );
+      return provider.models.map((model) => {
+        const customModel = provider.models.find(
+          (m: IChatModelConfig) => m.name === model.name,
+        );
+        return mergeRemoteModel(model.name, customModel);
+      });
     }
-    return find(provider.models, { name: modelName }) || provider.models[0];
+    return getMergedLocalModels(provider);
   },
   getModels: async (provider: IChatProviderConfig) => {
     const modelsMap = keyBy(provider.models || [], 'name');
@@ -339,57 +385,15 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
       } catch (e) {
         return [];
       }
-    } else {
-      const builtInProviders = getBuiltInProviders();
-      const builtinModels =
-        builtInProviders.find((p) => p.name === provider.name)?.chat.models ||
-        [];
-      const userCreatedModels =
-        provider?.models?.filter((model: IChatModelConfig) => {
-          return (
-            !provider.isBuiltIn ||
-            !builtinModels?.some(
-              (builtInModel: IChatModel) => builtInModel.name === model.name,
-            )
-          );
-        }) || [];
-      const customModels = keyBy(provider?.models || [], 'name');
-      return [
-        ...(builtinModels?.map((model) => {
-          const customModel = customModels[model.name];
-          const mergedModel = {
-            name: model.name,
-            label: customModel?.label || model.label || model.name,
-            contextWindow: customModel?.contextWindow || model.contextWindow,
-            maxTokens: customModel?.maxTokens || model.maxTokens,
-            defaultMaxTokens:
-              customModel?.defaultMaxTokens || model.defaultMaxTokens,
-            inputPrice: customModel?.inputPrice || model.inputPrice,
-            outputPrice: customModel?.outputPrice || model.outputPrice,
-            description: customModel?.description || model.description || null,
-            isDefault: customModel?.isDefault || model.isDefault || false,
-            isBuiltIn: true,
-            isPremium: provider.isPremium,
-            disabled: customModel?.disabled || false,
-            capabilities: customModel?.capabilities || model.capabilities || {},
-            extras: customModel?.extras || {},
-          } as IChatModelConfig;
-          mergedModel.isReady = isModelReady(
-            provider.modelExtras || [],
-            mergedModel,
-          );
-          return mergedModel;
-        }) || []),
-        ...userCreatedModels,
-      ].sort(sortByName);
     }
+    return getMergedLocalModels(provider);
   },
   getGroupedModelOptions: async () => {
-    const { getProvidersWithModels, getModels } = get();
+    const { getAvailableProviders, getModels } = get();
     const result: { [key: string]: ModelOption[] } = {};
-    const providersWithModels = getProvidersWithModels();
+    const providers = getAvailableProviders();
     await Promise.all(
-      providersWithModels.map(async (provider) => {
+      providers.map(async (provider) => {
         const models = await getModels(provider);
         result[provider.name] = models.map((model) => ({
           label: model.label || model.name,
