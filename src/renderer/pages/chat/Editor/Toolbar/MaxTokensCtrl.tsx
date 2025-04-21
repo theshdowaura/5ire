@@ -15,7 +15,7 @@ import {
   NumberSymbolSquare20Filled,
   NumberSymbolSquare20Regular,
 } from '@fluentui/react-icons';
-import Debug from 'debug';
+// import Debug from 'debug';
 import { IChat, IChatContext } from 'intellichat/types';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -23,7 +23,7 @@ import useChatStore from 'stores/useChatStore';
 import { str2int } from 'utils/util';
 import { MAX_TOKENS } from 'consts';
 
-const debug = Debug('5ire:pages:chat:Editor:Toolbar:MaxTokensCtrl');
+// const debug = Debug('5ire:pages:chat:Editor:Toolbar:MaxTokensCtrl');
 
 const NumberSymbolSquareIcon = bundleIcon(
   NumberSymbolSquare20Filled,
@@ -44,7 +44,7 @@ export default function MaxTokens({
   const editStage = useChatStore((state) => state.editStage);
 
   const modelMaxTokens = useMemo<number>(() => {
-    return (ctx.getModel().maxTokens as number) || MAX_TOKENS;
+    return (ctx.getModel()?.maxTokens as number) || MAX_TOKENS;
   }, [chat.model]);
 
   const [maxTokens, setMaxTokens] = useState<number>(1);
@@ -83,10 +83,10 @@ export default function MaxTokens({
       <PopoverTrigger>
         <Button
           size="small"
-          title={t('Common.MaxTokens') + '(Mod+Shift+4)'}
+          title={`${t('Common.MaxTokens')}(Mod+Shift+4)`}
           aria-label={t('Common.MaxTokens')}
           appearance="subtle"
-          onClick={(e) => setOpen((prevOpen) => !prevOpen)}
+          onClick={() => setOpen((prevOpen) => !prevOpen)}
           icon={<NumberSymbolSquareIcon />}
           className="justify-start text-color-secondary flex-shrink-0"
           style={{
