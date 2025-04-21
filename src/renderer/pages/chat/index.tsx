@@ -80,10 +80,12 @@ export default function Chat() {
     getCurFolderSettings,
     openFolder,
   } = useChatStore();
+
   const clearTrace = useInspectorStore((state) => state.clearTrace);
   const modelMapping = useSettingsStore((state) => state.modelMapping);
   const chatSidebarShow = useAppearanceStore((state) => state.chatSidebar.show);
   const chatService = useRef<INextChatService>(useChatService());
+  const isServiceReady = useRef(chatService.current.isReady());
 
   const { notifyError } = useToast();
 
@@ -136,7 +138,7 @@ export default function Chat() {
   useEffect(() => {
     if (activeChatId !== tempChatId) {
       getChat(activeChatId);
-    } else if (chatService.current?.isReady()) {
+    } else if (isServiceReady.current) {
       if (folder) {
         initChat(getCurFolderSettings());
       } else {
@@ -180,6 +182,7 @@ export default function Chat() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeChatId, debouncedFetchMessages, keywords]);
 
+  //TODO: why depends on messages?
   useEffect(() => {
     bus.current.on('retry', async (event: any) => {
       await onSubmit(event.prompt, event.msgId);
@@ -453,7 +456,7 @@ ${prompt}
                       <MemoizedMessages messages={messages} />
                     </div>
                   ) : (
-                    chatService.current.isReady() || (
+                    isServiceReady.current || (
                       <Empty
                         image="hint"
                         text={t('Notification.APINotReady')}
@@ -463,7 +466,7 @@ ${prompt}
                 </div>
               </Pane>
               <Pane minSize={180} maxSize="60%">
-                {chatService.current.isReady() ? (
+                {isServiceReady.current ? (
                   <Editor
                     onSubmit={onSubmit}
                     onAbort={() => {
