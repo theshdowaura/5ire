@@ -1,4 +1,4 @@
-import { IChatModel, IChatModelConfig, IChatProviderConfig, IServiceProvider } from 'providers/types';
+import { IChatModelConfig, IChatProviderConfig } from 'providers/types';
 
 export interface IPrompt {
   id: string;
@@ -210,6 +210,7 @@ export interface IChatContext {
 export interface IChatFolder {
   id: string;
   name: string;
+  provider?: string;
   model?: string;
   systemMessage?: string | null;
   maxCtxMessages?: number;
