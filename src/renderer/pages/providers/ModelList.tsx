@@ -27,6 +27,7 @@ export default function ModelList({ height = 400 }: { height?: number }) {
   const provider = useProviderStore(
     (state) => state.provider as IChatProviderConfig,
   );
+  const { getModels } = useProviderStore();
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
   const [formOpen, setFormOpen] = useState<boolean>(false);
@@ -41,34 +42,13 @@ export default function ModelList({ height = 400 }: { height?: number }) {
   };
 
   const loadModels = useCallback(async () => {
-    if (provider.modelsEndpoint) {
+    try {
       setLoading(true);
-      try {
-        const resp = await fetch(
-          `${provider.apiBase}${provider.modelsEndpoint}`,
-          {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          },
-        );
-        const data = await resp.json();
-        setModels(
-          data.models.map((model: { name: string }) => ({
-            name: model.name,
-            label: model.name,
-          })),
-        );
-      } catch (e) {
-        setModels([]);
-      } finally {
-        setLoading(false);
-      }
-    } else {
-      setModels(Object.values(provider.models));
+      setModels(await getModels(provider));
+    } finally {
+      setLoading(false);
     }
-  }, [provider.models, provider.modelsEndpoint]);
+  }, [provider.name, provider.models]);
 
   const filteredModels = models.filter((model) => {
     const label = model.label || (model.name as string);
@@ -150,7 +130,7 @@ export default function ModelList({ height = 400 }: { height?: number }) {
                         {model.isDefault ? (
                           <CaretRight16Regular className="text-gray-500 -mb-1" />
                         ) : (
-                          <div className="w-[18px]" />
+                          <div className="w-[16px]" />
                         )}
                         <span
                           className={`text-sm ${model.disabled ? 'text-gray-300 dark:text-gray-500' : ''}`}
