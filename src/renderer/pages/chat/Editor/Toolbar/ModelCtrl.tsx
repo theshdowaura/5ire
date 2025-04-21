@@ -8,11 +8,11 @@ import {
 } from '@fluentui/react-components';
 import { ChevronDownRegular } from '@fluentui/react-icons';
 import { IChat, IChatContext } from 'intellichat/types';
-import { find, set } from 'lodash';
+import { find } from 'lodash';
 import { IChatModelConfig, IChatProviderConfig } from 'providers/types';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import useChatStore from 'stores/useChatStore';
-import useProviderStore, { ModelOption } from 'stores/useProviderStore';
+import useProviderStore from 'stores/useProviderStore';
 
 export default function ModelCtrl({
   chat,
@@ -22,26 +22,55 @@ export default function ModelCtrl({
   ctx: IChatContext;
 }) {
   const editStage = useChatStore((state) => state.editStage);
-  const { getProvidersWithModels, getGroupedModelOptions } = useProviderStore();
-  const [curProvider, setCurProvider] = useState<IChatProviderConfig>(
-    ctx.getProvider(),
-  );
-  const [curModel, setCurModel] = useState<IChatModelConfig | ModelOption>(
-    ctx.getModel(),
-  );
+  const { getAvailableProviders, getModels } = useProviderStore();
   const providers = useMemo(() => {
-    return getProvidersWithModels().filter((provider) => !provider.disabled);
-  }, [getProvidersWithModels]);
-  const groupedOptions = getGroupedModelOptions();
-  const options = useMemo(
-    () => groupedOptions[curProvider.name],
-    [groupedOptions, curProvider.name],
-  );
+    return getAvailableProviders().filter((provider) => !provider.disabled);
+  }, [getAvailableProviders]);
+  const [curProvider, setCurProvider] = useState<IChatProviderConfig>();
+  const [curModel, setCurModel] = useState<IChatModelConfig>();
+  const [models, setModels] = useState<IChatModelConfig[]>([]);
+  const isChanged = useRef(false);
+
+  const loadModels = async (provider: IChatProviderConfig) => {
+    const $models = await getModels(provider);
+    setModels($models);
+    const ctxModel = ctx.getModel();
+    const defaultModel = find($models, { isDefault: true }) || $models[0];
+    if (curProvider?.name === provider?.name) {
+      setCurModel(find($models, { name: ctxModel?.name }) || defaultModel);
+    } else {
+      setCurModel(defaultModel);
+    }
+  };
 
   useEffect(() => {
-    setCurProvider(ctx.getProvider());
+    const ctxProvider = ctx.getProvider();
+    setCurProvider(ctxProvider);
     setCurModel(ctx.getModel());
+    loadModels(ctxProvider);
+    return () => {
+      setCurProvider(undefined);
+      setCurModel(undefined);
+      setModels([]);
+      isChanged.current = false;
+    };
   }, [chat.id]);
+
+  useEffect(() => {
+    if (curProvider) {
+      loadModels(curProvider);
+    }
+  }, [curProvider?.name]);
+
+  useEffect(() => {
+    if (isChanged.current) {
+      editStage(chat.id, {
+        provider: curProvider?.name || '',
+        model: curModel?.name || '',
+      });
+      isChanged.current = false;
+    }
+  }, [curModel?.name]);
 
   return (
     <div className="flex flex-start items-center">
@@ -53,7 +82,7 @@ export default function ModelCtrl({
             iconPosition="after"
             icon={<ChevronDownRegular className="ml-2" />}
           >
-            {curProvider.name}
+            {curProvider?.name}
           </Button>
         </MenuTrigger>
         <MenuPopover>
@@ -64,14 +93,7 @@ export default function ModelCtrl({
                 disabled={!provider.isReady}
                 onClick={() => {
                   setCurProvider(provider);
-                  const model =
-                    find(provider.models, { isDefault: true }) ||
-                    provider.models[0];
-                  setCurModel(model);
-                  editStage(chat.id, {
-                    provider: curProvider.name,
-                    model: model.name,
-                  });
+                  isChanged.current = true;
                 }}
               >
                 {provider.name}
@@ -91,21 +113,18 @@ export default function ModelCtrl({
             className="flex justify-start items-center"
             style={{ minWidth: '10px' }}
           >
-            {curModel.label}
+            {curModel?.label}
           </Button>
         </MenuTrigger>
         <MenuPopover>
           <MenuList>
-            {options.map((model: ModelOption) => (
+            {models.map((model: IChatModelConfig) => (
               <MenuItem
-                key={model.value}
+                key={model.name}
                 disabled={!model.isReady}
                 onClick={() => {
                   setCurModel(model);
-                  editStage(chat.id, {
-                    provider: curProvider.name,
-                    model: model.value,
-                  });
+                  isChanged.current = true;
                 }}
               >
                 {model.label}
