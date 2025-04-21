@@ -142,7 +142,7 @@ const useChatStore = create<IChatStore>((set, get) => ({
   fetchFolder: async (limit = 100) => {
     const offset = 0;
     const rows = (await window.electron.db.all(
-      'SELECT id, name, model, systemMessage, temperature, maxTokens, knowledgeCollectionIds, maxCtxMessages FROM folders ORDER BY name ASC  limit ? offset ?',
+      'SELECT id, name, provider, model, systemMessage, temperature, maxTokens, knowledgeCollectionIds, maxCtxMessages FROM folders ORDER BY name ASC  limit ? offset ?',
       [limit, offset],
     )) as IChatFolder[];
     const folders = rows.reduce(
@@ -222,6 +222,11 @@ const useChatStore = create<IChatStore>((set, get) => ({
       $folder.name = folder.name as string;
       params.push($folder.name);
     }
+    if (isNotBlank(folder.provider)) {
+      stats.push('provider = ?');
+      $folder.provider = folder.provider as string;
+      params.push($folder.provider);
+    }
     if (isNotBlank(folder.model)) {
       stats.push('model = ?');
       $folder.model = folder.model as string;
@@ -269,6 +274,9 @@ const useChatStore = create<IChatStore>((set, get) => ({
   getCurFolderSettings: () => {
     const { folder } = get();
     const settings: any = { folderId: folder?.id || null };
+    if (folder?.provider) {
+      settings.provider = folder.provider;
+    }
     if (folder?.model) {
       settings.model = folder.model;
     }
