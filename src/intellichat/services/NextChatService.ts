@@ -11,7 +11,6 @@ import {
   IMCPTool,
   IOpenAITool,
 } from 'intellichat/types';
-import { isNil } from 'lodash';
 import { IServiceProvider } from 'providers/types';
 import useInspectorStore from 'stores/useInspectorStore';
 import useSettingsStore from 'stores/useSettingsStore';
@@ -151,26 +150,15 @@ export default abstract class NextCharService {
   }
 
   public isReady(): boolean {
-    const { apiSchema } = this.provider.chat;
     const $provider = this.context.getProvider();
-    if (apiSchema.includes('base') && !$provider.apiBase) {
+    if ($provider.schema.includes('base') && !$provider.apiBase) {
       return false;
     }
-    if (apiSchema.includes('key') && !$provider.apiKey) {
+    if ($provider.schema.includes('key') && !$provider.apiKey) {
       return false;
     }
-    if (apiSchema.includes('secret') && !$provider) {
+    if ($provider.schema.includes('secret') && !$provider) {
       return false;
-    }
-    const $model = this.context.getModel();
-    const { modelExtras } = this.provider.chat;
-    if (modelExtras) {
-      const hasMissingExtras = modelExtras.some((extra) =>
-        isNil($model.extras?.[extra]),
-      );
-      if (hasMissingExtras) {
-        return false;
-      }
     }
     return true;
   }
