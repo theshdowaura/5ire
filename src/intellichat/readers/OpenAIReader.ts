@@ -49,7 +49,7 @@ export default class OpenAIReader extends BaseReader implements IChatReader {
       const toolCalls = respMsg.toolCalls[0];
       return {
         index: toolCalls.index || 0,
-        args: toolCalls.function.arguments,
+        args: toolCalls.function?.arguments || '',
       };
     } catch (err) {
       console.error('parseToolArgs', err);
