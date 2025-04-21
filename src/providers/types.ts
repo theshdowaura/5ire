@@ -139,6 +139,7 @@ export interface IChatModelConfig {
 
 export interface IChatProviderConfig {
   name: string;
+  schema: string[];
   description?: string;
   temperature: INumberRange;
   topP: INumberRange;
