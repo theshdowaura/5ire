@@ -50,6 +50,6 @@ export default function createService(
     case 'LMStudio':
       return new LMStudioChatService(chatCtx);
     default:
-      throw new Error(`Invalid provider:${providerName}`);
+      return new OpenAIChatService(chatCtx);
   }
 }
