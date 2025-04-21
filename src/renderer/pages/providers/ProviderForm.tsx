@@ -32,8 +32,7 @@ export default function ProviderForm() {
   const [version, setVersion] = useState<string>('');
   const [versionError, setVersionError] = useState<string>('');
   const [isDefault, setIsDefault] = useState<boolean>(false);
-  const { updateProvider, updateProviderName, isProviderDuplicated } =
-    useProviderStore();
+  const { updateProvider, isProviderDuplicated } = useProviderStore();
 
   useEffect(() => {
     setOldName(provider.name || '');
@@ -91,7 +90,7 @@ export default function ProviderForm() {
                 setNameError(t('Provider.Tooltip.NameOfProviderMustBeUnique'));
               } else {
                 setNameError('');
-                updateProviderName(oldName, ev.target.value);
+                updateProvider(oldName, { name: ev.target.value });
                 setName(ev.target.value);
                 setOldName(ev.target.value);
               }
@@ -121,8 +120,7 @@ export default function ProviderForm() {
             value={currency}
             onChange={(ev) => {
               setCurrency(ev.target.value);
-              updateProvider({
-                name,
+              updateProvider(name, {
                 currency: ev.target.value as 'USD' | 'CNY',
               });
             }}
@@ -141,8 +139,7 @@ export default function ProviderForm() {
             onChange={(ev) => {
               const isChecked = ev.target.checked;
               setIsDefault(isChecked);
-              updateProvider({
-                name,
+              updateProvider(name, {
                 isDefault: isChecked,
               });
             }}
@@ -165,8 +162,7 @@ export default function ProviderForm() {
             className="flex-grow"
             onBlur={(ev: React.FocusEvent<HTMLInputElement>) => {
               if (isValidHttpHRL(ev.target.value)) {
-                updateProvider({
-                  name,
+                updateProvider(name, {
                   apiBase: ev.target.value,
                 });
               } else {
@@ -203,8 +199,7 @@ export default function ProviderForm() {
                 setApiKeyError(t('Common.Required'));
               } else {
                 setApiKeyError('');
-                updateProvider({
-                  name,
+                updateProvider(name, {
                   apiKey: ev.target.value,
                 });
               }
@@ -238,8 +233,7 @@ export default function ProviderForm() {
                   setSecretError(t('Common.Required'));
                 } else {
                   setSecretError('');
-                  updateProvider({
-                    name,
+                  updateProvider(name, {
                     apiSecret: ev.target.value,
                   });
                 }
@@ -274,8 +268,7 @@ export default function ProviderForm() {
                   setVersionError(t('Common.Required'));
                 } else {
                   setVersionError('');
-                  updateProvider({
-                    name,
+                  updateProvider(name, {
                     apiVersion: ev.target.value,
                   });
                 }
