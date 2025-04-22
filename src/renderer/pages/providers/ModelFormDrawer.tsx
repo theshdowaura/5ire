@@ -122,10 +122,14 @@ export default function ModelFormDrawer({
       disabled,
       isReady: true,
       capabilities: {
-        tools: (!model?.isBuiltIn || model?.capabilities?.tools) && {
+        tools: (!!provider.modelsEndpoint ||
+          !model?.isBuiltIn ||
+          model?.capabilities?.tools) && {
           enabled: tools,
         },
-        vision: (!model?.isBuiltIn || model?.capabilities?.vision) && {
+        vision: (!!provider.modelsEndpoint ||
+          !model?.isBuiltIn ||
+          model?.capabilities?.vision) && {
           enabled: vision,
         },
       },
@@ -298,14 +302,22 @@ export default function ModelFormDrawer({
         </div>
         <div className="grid grid-cols-2 gap-1 field-small">
           <Switch
-            disabled={model ? isNil(model?.capabilities?.vision) : false}
+            disabled={
+              !provider.modelsEndpoint && model
+                ? isNil(model?.capabilities?.vision)
+                : false
+            }
             label={t('Provider.Model.Vision')}
             className="-ml-1.5"
             checked={vision}
             onChange={(_, data) => setVision(data.checked)}
           />
           <Switch
-            disabled={model ? isNil(model?.capabilities?.tools) : false}
+            disabled={
+              !provider.modelsEndpoint && model
+                ? isNil(model?.capabilities?.tools)
+                : false
+            }
             label={t('Provider.Model.Tools')}
             className="-ml-1.5"
             checked={tools}
