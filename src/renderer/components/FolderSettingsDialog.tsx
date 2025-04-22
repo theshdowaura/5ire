@@ -21,12 +21,12 @@ import Mousetrap from 'mousetrap';
 import { useTranslation } from 'react-i18next';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import useChatStore from 'stores/useChatStore';
-import useSettingsStore from 'stores/useSettingsStore';
 import useAuthStore from 'stores/useAuthStore';
-import { IChatModel } from 'providers/types';
-import { DEFAULT_TEMPERATURE, tempChatId } from 'consts';
-import ToolStatusIndicator from './ToolStatusIndicator';
+import { IChatModelConfig, IChatProviderConfig } from 'providers/types';
+import { DEFAULT_TEMPERATURE, ERROR_MODEL, tempChatId } from 'consts';
 import useProviderStore from 'stores/useProviderStore';
+import { find } from 'lodash';
+import ToolStatusIndicator from './ToolStatusIndicator';
 
 export default function FolderSettingsDialog({
   open,
@@ -37,64 +37,72 @@ export default function FolderSettingsDialog({
 }) {
   const chat = useChatStore((state) => state.chat);
   const chats = useChatStore((state) => state.chats);
-  const { updateFolder, updateChat, editStage } = useChatStore();
   const folder = useChatStore((state) => state.folder);
-  const api = useSettingsStore((state) => state.api);
   const session = useAuthStore((state) => state.session);
-  const [folderModel, setFolderModel] = useState(api.model);
+  const {
+    getDefaultProvider,
+    getAvailableProvider,
+    getAvailableProviders,
+    getModels,
+  } = useProviderStore();
+  const providers = useMemo(
+    () => getAvailableProviders(),
+    [folder?.id, session],
+  );
+  const [models, setModels] = useState<IChatModelConfig[]>([]);
+  const { updateFolder, updateChat, editStage } = useChatStore();
+  const [folderProvider, setFolderProvider] = useState('');
+  const [folderModel, setFolderModel] = useState('');
   const [folderSystemMessage, setFolderSystemMessage] = useState('');
   const [folderTemperature, setFolderTemperature] = useState(1);
-  const {getAvailableProvider, getAvailableModel} = useProviderStore();
 
-  const temperatureConfig = useMemo(() => {
-    return getAvailableProvider(api.provider).temperature;
-  }, [api.provider]);
+  const provider = useMemo(
+    () => getAvailableProvider(folderProvider),
+    [folderProvider],
+  );
 
-  const models = useMemo<IChatModel[]>(() => {
-    // TODO: 这里需要根据当前的 provider 来获取模型列表
-    return [];
-  }, [api.provider, session]);
+  const loadModels = useCallback(
+    async (providerName: string) => {
+      const $models = await getModels(getAvailableProvider(providerName));
+      setModels($models);
+      const $model = find($models, { isDefault: true }) || $models[0];
+      setFolderModel($model.name);
+    },
+    [folderProvider],
+  );
 
   const subChats = useMemo(() => {
     if (!folder) return [];
     return chats.filter((c) => c.folderId === folder.id);
   }, [chats, folder]);
 
-  const curModel = useMemo(() => {
-    let curModel = models.find((m) => m.name === folderModel);
-    if (!curModel) {
-      curModel = getAvailableModel(api.provider, folderModel);
-    }
-    return curModel || {};
-  }, [folderModel, models]);
-
-  const curModelLabel = useMemo(() => {
-    return curModel?.label || curModel?.name || '';
-  }, [curModel]);
-
   const { t } = useTranslation();
   const onConfirm = useCallback(async () => {
     await updateFolder({
       id: folder?.id as string,
+      provider: folderProvider,
       model: folderModel,
       temperature: folderTemperature,
       systemMessage: folderSystemMessage,
     });
     if (chat.id === tempChatId) {
       editStage(chat.id, {
+        provider: folderProvider,
         model: folderModel,
         temperature: folderTemperature,
         systemMessage: folderSystemMessage,
       });
     }
     await Promise.all(
-      subChats.map((chat) => {
-        updateChat({
-          id: chat.id,
+      subChats.map(async (c) => {
+        await updateChat({
+          id: c.id,
+          provider: folderProvider,
           model: folderModel,
           temperature: folderTemperature,
           systemMessage: folderSystemMessage,
         });
+        return c;
       }),
     );
     setOpen(false);
@@ -113,28 +121,34 @@ export default function FolderSettingsDialog({
         ? Math.round(data.value * 10) / 10
         : Math.round(parseFloat(data.displayValue as string) * 10) / 10;
       const $temperature = Math.max(
-        Math.min(value as number, temperatureConfig.max),
-        temperatureConfig.min,
+        Math.min(value as number, provider.temperature.max),
+        provider.temperature.min,
       );
       setFolderTemperature($temperature);
     },
-    [api.provider],
+    [folderProvider],
   );
 
   useEffect(() => {
     if (open) {
-      const model = getAvailableModel(api.provider, folder?.model || api.model);
-      setFolderModel(model.name || api.model);
+      let $provider = null;
+      if (folder?.provider) {
+        $provider = getAvailableProvider(folder.provider);
+      } else {
+        $provider = getDefaultProvider();
+      }
+      setFolderProvider($provider.name);
       setFolderSystemMessage(folder?.systemMessage || '');
       let temperature =
-        folder?.temperature || temperatureConfig.default || DEFAULT_TEMPERATURE;
+        folder?.temperature ||
+        $provider.temperature.default ||
+        DEFAULT_TEMPERATURE;
       if (
-        temperature < temperatureConfig.min ||
-        temperature > temperatureConfig.max
+        temperature < $provider.temperature.min ||
+        temperature > $provider.temperature.max
       ) {
-        temperature = temperatureConfig.default || DEFAULT_TEMPERATURE;
+        temperature = $provider.temperature.default || DEFAULT_TEMPERATURE;
       }
-      console.log('temperature', temperature);
       setFolderTemperature(temperature);
       Mousetrap.bind('esc', () => setOpen(false));
     }
@@ -142,6 +156,12 @@ export default function FolderSettingsDialog({
       Mousetrap.unbind('esc');
     };
   }, [open]);
+
+  useEffect(() => {
+    if (folderProvider) {
+      loadModels(folderProvider);
+    }
+  }, [folderProvider]);
 
   return (
     <Dialog open={open}>
@@ -151,61 +171,76 @@ export default function FolderSettingsDialog({
           <DialogContent>
             <div className="tips mb-4">{t('Folder.Settings.Description')}</div>
             <div className="flex flex-col gap-4 w-full">
-              <div className="flex justify-evenly gap-2">
-                <Field label={t('Common.Model')} className="w-full">
-                  {models.length > 0 ? (
-                    <Dropdown
-                      className="w-full"
-                      placeholder="Select an model"
-                      value={curModelLabel}
-                      onOptionSelect={(
-                        _: SelectionEvents,
-                        data: OptionOnSelectData,
-                      ) => {
-                        setFolderModel(data.optionValue as string);
-                      }}
-                    >
-                      {models.map((model: IChatModel) => (
-                        <Option
-                          key={model.name as string}
-                          value={model.name as string}
-                          text={(model.label || model.name) as string}
-                        >
-                          <div className="flex justify-start items-center gap-1">
-                            <ToolStatusIndicator
-                              provider={api.provider}
-                              model={model.name}
-                              withTooltip
-                            />
-                            <span> {model.label || model.name}</span>
-                          </div>
-                        </Option>
-                      ))}
-                    </Dropdown>
-                  ) : (
-                    <div
-                      className="flex justify-start items-center gap-2 border border-gray-400 dark:border-gray-500 px-2 rounded flex-grow w-full"
-                      style={{ height: 33 }}
-                    >
-                      <ToolStatusIndicator
-                        provider={api.provider}
-                        model={api.model}
-                        withTooltip
-                      />
-                      <span>{api.model}</span>
-                    </div>
-                  )}
+              <div className="flex justify-start gap-2">
+                <Field label={t('Common.Provider')} size="small">
+                  <Dropdown
+                    placeholder="Select a provider"
+                    style={{ minWidth: 160 }}
+                    value={folderProvider}
+                    onOptionSelect={(
+                      _: SelectionEvents,
+                      data: OptionOnSelectData,
+                    ) => {
+                      setFolderProvider(data.optionValue as string);
+                    }}
+                  >
+                    {providers.map((p: IChatProviderConfig) => (
+                      <Option
+                        disabled={!p.isReady}
+                        key={p.name as string}
+                        value={p.name as string}
+                        text={p.name as string}
+                      >
+                        <div className="flex justify-start items-center gap-1">
+                          <span className="text-xs"> {p.name}</span>
+                        </div>
+                      </Option>
+                    ))}
+                  </Dropdown>
                 </Field>
-                <div className="w-full">
+                <Field label={t('Common.Model')} size="small">
+                  <Dropdown
+                    className="w-full"
+                    style={{ minWidth: 260 }}
+                    placeholder="Select a model"
+                    value={folderModel}
+                    onOptionSelect={(
+                      _: SelectionEvents,
+                      data: OptionOnSelectData,
+                    ) => {
+                      setFolderModel(data.optionValue as string);
+                    }}
+                  >
+                    {models.map((m: IChatModelConfig) => (
+                      <Option
+                        disabled={!m.isReady}
+                        key={m.name as string}
+                        value={m.name as string}
+                        text={(m.label || m.name) as string}
+                      >
+                        <div className="flex justify-start items-center gap-1 text-xs">
+                          <ToolStatusIndicator
+                            provider={folderProvider}
+                            model={m.name}
+                            withTooltip
+                          />
+                          <span> {m.label || m.name}</span>
+                        </div>
+                      </Option>
+                    ))}
+                  </Dropdown>
+                </Field>
+                <div>
                   <Field
-                    label={`${t('Common.Temperature')}[${temperatureConfig.min},${temperatureConfig.max}]`}
+                    size="small"
+                    label={`${t('Common.Temperature')}[${provider.temperature.min},${provider.temperature.max}]`}
                   >
                     <SpinButton
                       precision={1}
                       step={0.1}
                       value={folderTemperature || DEFAULT_TEMPERATURE}
-                      max={temperatureConfig.max}
-                      min={temperatureConfig.min}
+                      max={provider.temperature.max}
+                      min={provider.temperature.min}
                       onChange={onTemperatureChange}
                       id="temperature"
                     />
@@ -213,7 +248,7 @@ export default function FolderSettingsDialog({
                 </div>
               </div>
               <div>
-                <Field label={t('Common.SystemMessage')}>
+                <Field label={t('Common.SystemMessage')} size="small">
                   <Textarea
                     value={folderSystemMessage}
                     rows={10}
@@ -230,7 +265,11 @@ export default function FolderSettingsDialog({
               </Button>
             </DialogTrigger>
             <DialogTrigger disableButtonEnhancement>
-              <Button appearance="primary" onClick={() => onConfirm()}>
+              <Button
+                appearance="primary"
+                onClick={() => onConfirm()}
+                disabled={folderModel === ERROR_MODEL}
+              >
                 {t('Common.Save')}
               </Button>
             </DialogTrigger>
