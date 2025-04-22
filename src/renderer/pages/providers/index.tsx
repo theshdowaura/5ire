@@ -1,28 +1,64 @@
-import { Button } from '@fluentui/react-components';
+import Debug from 'debug';
+import {
+  Button,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  MenuPopover,
+  MenuTrigger,
+} from '@fluentui/react-components';
 import {
   AddCircleFilled,
   AddCircleRegular,
   bundleIcon,
+  CloudArrowDown20Filled,
+  CloudArrowDown20Regular,
+  CloudArrowUp24Filled,
+  CloudArrowUp24Regular,
+  MoreHorizontal24Filled,
 } from '@fluentui/react-icons';
+import supabase from 'vendors/supa';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import useProviderStore from 'stores/useProviderStore';
+import useToast from 'hooks/useToast';
+import useAuthStore from 'stores/useAuthStore';
+import StateButton from 'renderer/components/StateButton';
 import ModelList from './ModelList';
 import ProviderForm from './ProviderForm';
 import ProviderList from './ProviderList';
+import { captureException } from '../../logging';
+
+const debug = Debug('5ire:pages:providers:index');
 
 const DEFAULT_HEIGHT = 400;
 const HEADER_HEIGHT = 100;
-const LIST_ITEM_HEIGHT = 50;
+const LIST_ITEM_HEIGHT = 42;
 const PROVIDER_FORM_HEIGHT = 189;
 
 const AddIcon = bundleIcon(AddCircleFilled, AddCircleRegular);
+const CloudArrowUpIcon = bundleIcon(
+  CloudArrowUp24Filled,
+  CloudArrowUp24Regular,
+);
+
+const CloudArrowDownIcon = bundleIcon(
+  CloudArrowDown20Filled,
+  CloudArrowDown20Regular,
+);
 
 export default function Providers() {
   const { t } = useTranslation();
+  const user = useAuthStore((state) => state.user);
+  const { overwrite } = useProviderStore();
+  const { notifyInfo, notifyError, notifySuccess } = useToast();
+  const [updated, setUpdated] = useState(true);
+  const [loading, setLoading] = useState(false);
   const selectedProvider = useProviderStore((state) => state.provider);
   const { createProvider } = useProviderStore();
   const [contentHeight, setContentHeight] = useState(DEFAULT_HEIGHT);
+  const [updatedAtCloud, setUpdatedAtCloud] = useState<string>();
 
   useEffect(() => {
     const handleResize = () => {
@@ -35,6 +71,99 @@ export default function Providers() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!user || !updated) {
+      return;
+    }
+    (async () => {
+      try {
+        const { data, error } = await supabase
+          .from('settings')
+          .select('updated_at')
+          .eq('id', user.id)
+          .maybeSingle();
+        if (error) {
+          notifyError(error.message);
+        } else if (data?.updated_at) {
+          const dt = new Date(data.updated_at);
+          setUpdatedAtCloud(dt.toLocaleString());
+          setUpdated(false);
+        } else {
+          setUpdatedAtCloud(undefined);
+        }
+      } catch (error) {
+        debug(error);
+        captureException(error as Error);
+      }
+    })();
+  }, [user, updated, notifyError]);
+
+  const restoreFromCloud = async () => {
+    if (!user) {
+      notifyInfo(t('Auth.Notification.SignInRequired'));
+      return;
+    }
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('settings')
+        .select('data')
+        .eq('id', user.id)
+        .maybeSingle();
+      if (error) {
+        notifyError(error.message);
+      } else if (data?.data) {
+        const { iv, encrypted } = data.data;
+        const decrypted = await window.electron.crypto.decrypt(
+          encrypted,
+          user.id,
+          iv,
+        );
+        const { providers } = JSON.parse(decrypted);
+        if (providers) {
+          overwrite(providers);
+        }
+        notifySuccess(t('Settings.Notification.RestoreFromCloudSuccess'));
+      } else {
+        notifyError(t('Settings.Notification.RestoreFromCloudFailed'));
+      }
+    } catch (error: any) {
+      debug(error);
+      captureException(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const saveToCloud = async () => {
+    if (!user) {
+      notifyInfo(t('Auth.Notification.SignInRequired'));
+      return;
+    }
+    setLoading(true);
+    try {
+      const providers = window.electron.store.get('providers');
+      const encrypted = await window.electron.crypto.encrypt(
+        JSON.stringify({ providers }),
+        user.id,
+      );
+      const { error } = await supabase
+        .from('settings')
+        .upsert({ data: encrypted, id: user.id });
+      if (error) {
+        notifyError(error.message);
+      } else {
+        notifySuccess(t('Settings.Notification.SaveToCloudSuccess'));
+        setUpdated(true);
+      }
+    } catch (error: any) {
+      debug(error);
+      captureException(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div
       className="page h-full"
@@ -42,9 +171,44 @@ export default function Providers() {
       style={{ paddingBottom: 0 }}
     >
       <div className="page-top-bar" />
-      <div className="page-header border-b border-base -mx-5 px-5">
-        <div className="flex justify-between items-center">
+      {updatedAtCloud && (
+        <div className="flex justify-between items-center text-xs py-1 px-10 bg-green-100 dark:bg-green-500/10 border-b border-green-600/10 -mx-5 absolute top-0 right-0 left-0 z-10">
+          <span className="latin">
+            {t('Settings.Info.UpdatedAtCloud')}&nbsp;{updatedAtCloud}
+          </span>
+          <StateButton
+            size="small"
+            loading={loading}
+            appearance="subtle"
+            icon={<CloudArrowDownIcon />}
+            onClick={restoreFromCloud}
+          >
+            {t('Settings.Action.DownloadFromCloud')}
+          </StateButton>
+        </div>
+      )}
+      <div
+        className="page-header border-b border-base -mx-5 px-5"
+        style={{ paddingBottom: 0 }}
+      >
+        <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl">{t('Common.Providers')}</h1>
+          <Menu>
+            <MenuTrigger disableButtonEnhancement>
+              <MenuButton
+                appearance="transparent"
+                icon={<MoreHorizontal24Filled />}
+              />
+            </MenuTrigger>
+            <MenuPopover>
+              <MenuList>
+                <MenuItem icon={<CloudArrowUpIcon />} onClick={saveToCloud}>
+                  {' '}
+                  {t('Settings.Action.SaveToCloud')}
+                </MenuItem>
+              </MenuList>
+            </MenuPopover>
+          </Menu>
         </div>
       </div>
       <div

@@ -28,7 +28,6 @@ import {
   IStage,
 } from 'intellichat/types';
 import { isValidTemperature } from 'intellichat/validators';
-import useSettingsStore from './useSettingsStore';
 import { captureException } from '../renderer/logging';
 
 const debug = Debug('5ire:stores:useChatStore');
@@ -388,15 +387,16 @@ const useChatStore = create<IChatStore>((set, get) => ({
       captureException(err);
     }
     let stream = 1;
-    if (!chat.stream) {
+    if (!isNil(chat.stream) && !chat.stream) {
       stream = 0;
     }
     const ok = await window.electron.db.run(
-      `INSERT INTO chats (id, summary, model, systemMessage, temperature, maxCtxMessages, maxTokens, stream, prompt, input, folderId, createdAt)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?)`,
+      `INSERT INTO chats (id, summary, provider, model, systemMessage, temperature, maxCtxMessages, maxTokens, stream, prompt, input, folderId, createdAt)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?)`,
       [
         $chat.id,
         $chat.summary,
+        $chat.provider || null,
         $chat.model || null,
         $chat.systemMessage || null,
         $chat.temperature || null,

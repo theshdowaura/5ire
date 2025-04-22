@@ -39,7 +39,7 @@ export default class OpenAIChatService
   protected async convertPromptContent(
     content: string,
   ): Promise<string | IChatRequestMessageContent[]> {
-    if (this.context.getModel().vision?.enabled) {
+    if (this.context.getModel().capabilities.vision?.enabled) {
       const items = splitByImg(content);
       const result: IChatRequestMessageContent[] = [];
       items.forEach((item: any) => {
@@ -254,8 +254,15 @@ export default class OpenAIChatService
     msgId?: string,
   ): Promise<Response> {
     const payload = await this.makePayload(messages, msgId);
-    debug('About to make a request, payload:\r\n', payload);
     const provider = this.context.getProvider();
+    debug(
+      'provider:',
+      provider.name,
+      ', apiBase:',
+      provider.apiBase,
+      ',payload:\r\n',
+      payload,
+    );
     const url = urlJoin('/chat/completions', provider.apiBase.trim());
     const response = await fetch(url, {
       method: 'POST',
