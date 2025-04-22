@@ -134,6 +134,7 @@ export default function ModelFormDrawer({
         },
       },
     };
+    console.log('payload', payload);
     if (model) {
       updateModel(model.name, payload);
     } else {
