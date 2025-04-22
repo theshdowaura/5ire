@@ -35,7 +35,7 @@ export default function ProviderList({ height = 400 }: { height: number }) {
   const [delConfirmDialogOpen, setDelConfirmDialogOpen] = useState(false);
 
   const availableProviders = useMemo(
-    () => getAvailableProviders(),
+    () => getAvailableProviders({ withDisabled: true }),
     [getAvailableProviders, providers],
   );
 
@@ -124,7 +124,10 @@ export default function ProviderList({ height = 400 }: { height: number }) {
                                     name: provider.name,
                                     disabled: !provider.disabled,
                                   };
-                                  updateProvider(provider.name, updatedProvider);
+                                  updateProvider(
+                                    provider.name,
+                                    updatedProvider,
+                                  );
                                 }}
                               />
                             </Field>

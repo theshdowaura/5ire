@@ -219,7 +219,9 @@ export interface IProviderStore {
   deleteProvider: (providerName: string) => void;
   isProviderDuplicated: (providerName: string) => boolean;
   getDefaultProvider: () => IChatProviderConfig;
-  getAvailableProviders: () => IChatProviderConfig[];
+  getAvailableProviders: (options?: {
+    withDisabled?: boolean;
+  }) => IChatProviderConfig[];
   getAvailableProvider: (providerName: string) => IChatProviderConfig;
   getAvailableModel: (
     providerName: string,
@@ -306,11 +308,16 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
     const { providers } = get();
     return providers.map((provider) => provider.name).includes(providerName);
   },
-  getAvailableProviders: () => {
+  getAvailableProviders: ({
+    withDisabled,
+  }: { withDisabled?: boolean } = {}) => {
     const { providers } = get();
+    const enabledProviders = providers.filter(
+      (p) => withDisabled || !p.disabled,
+    );
     const { session } = useAuthStore.getState();
-    if (session) return providers;
-    return providers.filter((p) => !p.isPremium);
+    if (session) return enabledProviders;
+    return enabledProviders.filter((p) => !p.isPremium);
   },
   getAvailableProvider: (providerName: string) => {
     const { getAvailableProviders } = get();
