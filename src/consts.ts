@@ -1,6 +1,8 @@
 export const tempChatId = 'temp';
 
 export const EARLIEST_DATE = new Date('2023-08-01');
+export const DEFAULT_PROVIDER = 'OpenAI';
+export const ERROR_MODEL = 'ERROR_MODEL';
 
 export const DEFAULT_TEMPERATURE = 0.9;
 

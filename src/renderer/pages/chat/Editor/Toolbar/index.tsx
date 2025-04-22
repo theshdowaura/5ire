@@ -1,5 +1,5 @@
 import { Toolbar } from '@fluentui/react-components';
-import useChatContext from 'hooks/useChatContext';
+import ChatContext from '../../../../ChatContext';
 import useChatStore from 'stores/useChatStore';
 import { IChat } from 'intellichat/types';
 import ModelCtrl from './ModelCtrl';
@@ -15,10 +15,7 @@ export default function EditorToolbar({
 }: {
   onConfirm: () => void;
 }) {
-  const ctx = useChatContext();
-  const provider = ctx.getProvider();
   const chat = useChatStore((state) => state.chat) as IChat;
-
   return (
     <div className="py-1.5 bg-brand-surface-1 relative">
       <Toolbar
@@ -26,13 +23,13 @@ export default function EditorToolbar({
         size="small"
         className="flex items-center gap-3 ml-2 editor-toolbar"
       >
-        <ModelCtrl ctx={ctx} chat={chat} />
-        <PromptCtrl ctx={ctx} chat={chat} />
-        <KnowledgeCtrl ctx={ctx} chat={chat} />
-        <MaxTokensCtrl ctx={ctx} chat={chat} onConfirm={onConfirm} />
-        <TemperatureCtrl ctx={ctx} chat={chat} />
-        <CtxNumCtrl ctx={ctx} chat={chat} />
-        <ImgCtrl ctx={ctx} chat={chat} />
+        <ModelCtrl ctx={ChatContext} chat={chat} />
+        <PromptCtrl ctx={ChatContext} chat={chat} />
+        <KnowledgeCtrl ctx={ChatContext} chat={chat} />
+        <MaxTokensCtrl ctx={ChatContext} chat={chat} onConfirm={onConfirm} />
+        <TemperatureCtrl ctx={ChatContext} chat={chat} />
+        <CtxNumCtrl ctx={ChatContext} chat={chat} />
+        <ImgCtrl ctx={ChatContext} chat={chat} />
       </Toolbar>
     </div>
   );

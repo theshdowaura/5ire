@@ -8,9 +8,29 @@ import {
 import { genDefaultName } from 'utils/util';
 import { create } from 'zustand';
 import OpenAI from 'providers/OpenAI';
-import { DEFAULT_CONTEXT_WINDOW, DEFAULT_MAX_TOKENS, MAX_TOKENS } from 'consts';
+import {
+  DEFAULT_CONTEXT_WINDOW,
+  DEFAULT_MAX_TOKENS,
+  ERROR_MODEL,
+  MAX_TOKENS,
+} from 'consts';
 import { isBlank } from 'utils/validators';
 import useAuthStore from './useAuthStore';
+
+const ErrorModel = {
+  name: ERROR_MODEL,
+  label: 'Invalid Model',
+  isReady: false,
+  isDefault: false,
+  contextWindow: DEFAULT_CONTEXT_WINDOW,
+  capabilities: {},
+  maxTokens: MAX_TOKENS,
+  defaultMaxTokens: DEFAULT_MAX_TOKENS,
+  inputPrice: 0,
+  outputPrice: 0,
+  description: 'Error fetching models',
+  isBuiltIn: true,
+} as IChatModelConfig;
 
 const isProviderReady = (provider: IChatProviderConfig) => {
   if (!provider.apiBase) {
@@ -348,7 +368,8 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
     return (
       find(models, { name: modelName }) ||
       find(models, { isDefault: true }) ||
-      models[0]
+      models[0] ||
+      ErrorModel
     );
   },
   getModelsSync: (provider: IChatProviderConfig) => {
@@ -383,7 +404,7 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
             return mergeRemoteModel(model.name, customModel);
           });
       } catch (e) {
-        return [];
+        return [ErrorModel];
       }
     }
     return getMergedLocalModels(provider);

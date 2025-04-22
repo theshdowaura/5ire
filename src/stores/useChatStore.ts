@@ -13,6 +13,7 @@ import {
 } from 'lodash';
 import {
   DEFAULT_MAX_TOKENS,
+  DEFAULT_PROVIDER,
   DEFAULT_TEMPERATURE,
   NUM_CTX_MESSAGES,
   tempChatId,
@@ -331,10 +332,12 @@ const useChatStore = create<IChatStore>((set, get) => ({
     return $chat;
   },
   editChat: (chat: Partial<IChat>) => {
-    const { api } = useSettingsStore.getState();
     const $chat = { ...get().chat } as IChat;
     if (isString(chat.summary)) {
       $chat.summary = chat.summary as string;
+    }
+    if (isNotBlank(chat.provider)) {
+      $chat.provider = chat.provider as string;
     }
     if (isNotBlank(chat.model)) {
       $chat.model = chat.model as string;
@@ -345,7 +348,9 @@ const useChatStore = create<IChatStore>((set, get) => ({
     if (isNumber(chat.maxCtxMessages) && chat.maxCtxMessages >= 0) {
       $chat.maxCtxMessages = chat.maxCtxMessages;
     }
-    if (isValidTemperature(chat.temperature, api.provider)) {
+    if (
+      isValidTemperature(chat.temperature, chat.provider || DEFAULT_PROVIDER)
+    ) {
       $chat.temperature = chat.temperature;
     }
     if (isNumber(chat.maxTokens) && chat.maxTokens > 0) {
@@ -361,6 +366,7 @@ const useChatStore = create<IChatStore>((set, get) => ({
         state.chat = { ...state.chat, ...$chat };
       }),
     );
+    console.log('Edit chat', $chat);
     return $chat;
   },
   createChat: async (

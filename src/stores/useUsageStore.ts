@@ -1,5 +1,4 @@
 import Debug from 'debug';
-import { ProviderType } from 'providers/types';
 import { typeid } from 'typeid-js';
 import { IUsage, IUsageStatistics } from 'types/usage';
 import { date2unix } from 'utils/util';
@@ -17,7 +16,7 @@ export interface IUsageStore {
 }
 const { getAvailableModel } = useProviderStore.getState();
 const getModelPrice = (
-  providerName: ProviderType,
+  providerName: string,
   modelName: string,
   type: 'input' | 'output',
 ) => {

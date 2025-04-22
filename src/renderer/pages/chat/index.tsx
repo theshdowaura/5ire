@@ -10,7 +10,6 @@ import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { tempChatId } from 'consts';
 import useToast from 'hooks/useToast';
-import useChatService from 'hooks/useChatService';
 import useToken from 'hooks/useToken';
 
 import { IChat, IChatMessage, IChatResponseMessage } from 'intellichat/types';
@@ -20,7 +19,6 @@ import { ICollectionFile } from 'types/knowledge';
 import useChatStore from 'stores/useChatStore';
 import useChatKnowledgeStore from 'stores/useChatKnowledgeStore';
 import useKnowledgeStore from 'stores/useKnowledgeStore';
-import useSettingsStore from 'stores/useSettingsStore';
 import useInspectorStore from 'stores/useInspectorStore';
 
 import SplitPane, { Pane } from 'split-pane-react';
@@ -28,7 +26,7 @@ import Empty from 'renderer/components/Empty';
 
 import useUsageStore from 'stores/useUsageStore';
 import useNav from 'hooks/useNav';
-import { debounce, max } from 'lodash';
+import { debounce } from 'lodash';
 import { isBlank } from 'utils/validators';
 import {
   extractCitationIds,
@@ -45,6 +43,8 @@ import './Chat.scss';
 import 'split-pane-react/esm/themes/default.css';
 import eventBus from 'utils/bus';
 import useAppearanceStore from 'stores/useAppearanceStore';
+import ChatContext from '../../ChatContext';
+import createService from 'intellichat/services';
 
 const debug = Debug('5ire:pages:chat');
 
@@ -57,6 +57,7 @@ export default function Chat() {
   const id = useParams().id || tempChatId;
   const anchor = useParams().anchor || null;
   const bus = useRef(eventBus);
+  const navigate = useNav();
   const [activeChatId, setActiveChatId] = useState(id);
   if (activeChatId !== id) {
     setActiveChatId(id);
@@ -65,7 +66,6 @@ export default function Chat() {
   const [verticalSizes, setVerticalSizes] = useState(['auto', 200]);
   const [horizontalSizes, setHorizontalSizes] = useState(['auto', 0]);
   const ref = useRef<HTMLDivElement>(null);
-  const navigate = useNav();
   const folder = useChatStore((state) => state.folder);
   const keywords = useChatStore((state) => state.keywords);
   const messages = useChatStore((state) => state.messages);
@@ -82,10 +82,14 @@ export default function Chat() {
   } = useChatStore();
 
   const clearTrace = useInspectorStore((state) => state.clearTrace);
-  const modelMapping = useSettingsStore((state) => state.modelMapping);
   const chatSidebarShow = useAppearanceStore((state) => state.chatSidebar.show);
-  const chatService = useRef<INextChatService>(useChatService());
-  const isServiceReady = useRef(chatService.current.isReady());
+  const chatService = useRef<INextChatService>(
+    useMemo(() => createService(ChatContext), []),
+  );
+  const isServiceReady = useMemo(
+    () => chatService.current.isReady(),
+    [chatService],
+  );
 
   const { notifyError } = useToast();
 
@@ -129,6 +133,7 @@ export default function Chat() {
   useEffect(() => {
     const currentRef = ref.current;
     currentRef?.addEventListener('scroll', handleScroll);
+
     return () => {
       currentRef?.removeEventListener('scroll', handleScroll);
       isUserScrollingRef.current = false;
@@ -136,9 +141,13 @@ export default function Chat() {
   }, []);
 
   useEffect(() => {
+    bus.current.on('providerChanged', (event: any) => {
+      debug('Provider changed:', event.provider);
+      chatService.current = createService(ChatContext);
+    });
     if (activeChatId !== tempChatId) {
       getChat(activeChatId);
-    } else if (isServiceReady.current) {
+    } else if (isServiceReady) {
       if (folder) {
         initChat(getCurFolderSettings());
       } else {
@@ -147,6 +156,7 @@ export default function Chat() {
     }
     return () => {
       isUserScrollingRef.current = false;
+      bus.current.off('providerChanged');
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeChatId]);
@@ -182,7 +192,7 @@ export default function Chat() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeChatId, debouncedFetchMessages, keywords]);
 
-  //TODO: why depends on messages?
+
   useEffect(() => {
     bus.current.on('retry', async (event: any) => {
       await onSubmit(event.prompt, event.msgId);
@@ -216,10 +226,10 @@ export default function Chat() {
       if (prompt.trim() === '') {
         return;
       }
-      const provider = chatService.current.context.getProvider();
-      const model = chatService.current.context.getModel();
-      const temperature = chatService.current.context.getTemperature();
-      const maxTokens = chatService.current.context.getMaxTokens();
+      const provider = ChatContext.getProvider();
+      const model = ChatContext.getModel();
+      const temperature = ChatContext.getTemperature();
+      const maxTokens = ChatContext.getMaxTokens();
       let $chatId = activeChatId;
       if (activeChatId === tempChatId) {
         const $chat = await createChat(
@@ -376,8 +386,8 @@ ${prompt}
             ),
           });
           useUsageStore.getState().create({
-            provider: chatService.current.provider.name,
-            model: modelMapping[model.label || ''] || model.label,
+            provider: provider.name,
+            model: model.label,
             inputTokens,
             outputTokens,
           });
@@ -456,7 +466,7 @@ ${prompt}
                       <MemoizedMessages messages={messages} />
                     </div>
                   ) : (
-                    isServiceReady.current || (
+                    isServiceReady || (
                       <Empty
                         image="hint"
                         text={t('Notification.APINotReady')}
@@ -466,7 +476,7 @@ ${prompt}
                 </div>
               </Pane>
               <Pane minSize={180} maxSize="60%">
-                {isServiceReady.current ? (
+                {isServiceReady ? (
                   <Editor
                     onSubmit={onSubmit}
                     onAbort={() => {

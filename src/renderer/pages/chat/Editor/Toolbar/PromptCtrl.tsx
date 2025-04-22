@@ -52,8 +52,11 @@ export default function PromptCtrl({
   const editStage = useChatStore((state) => state.editStage);
 
   const curModelLabel = useMemo(() => {
-    const model = ctx.getModel();
-    return model.label || (model.name as string);
+    if (open) {
+      const model = ctx.getModel();
+      return model.label || (model.name as string);
+    }
+    return ''
   }, [open]);
 
   const closeDialog = () => {

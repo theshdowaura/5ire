@@ -55,8 +55,8 @@ export default class OllamaChatService
   ): Promise<Response> {
     const payload = await this.makePayload(messages, msgId);
     debug('Send Request, payload:\r\n', payload);
-    const { base } = this.apiSettings;
-    const url = urlJoin('/api/chat', base);
+    const provider = this.context.getProvider();
+    const url = urlJoin('/api/chat', provider.apiBase.trim());
     const response = await fetch(url, {
       method: 'POST',
       headers: {

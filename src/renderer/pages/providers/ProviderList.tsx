@@ -124,7 +124,7 @@ export default function ProviderList({ height = 400 }: { height: number }) {
                                     name: provider.name,
                                     disabled: !provider.disabled,
                                   };
-                                  updateProvider(updatedProvider);
+                                  updateProvider(provider.name, updatedProvider);
                                 }}
                               />
                             </Field>

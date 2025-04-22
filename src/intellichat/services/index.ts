@@ -1,5 +1,5 @@
+import Debug from 'debug';
 import { IChatContext } from '../types';
-import { ProviderType } from '../../providers/types';
 import AnthropicChatService from './AnthropicChatService';
 import AzureChatService from './AzureChatService';
 import OllamaChatService from './OllamaChatService';
@@ -16,11 +16,12 @@ import GrokChatService from './GrokChatService';
 import DeepSeekChatService from './DeepSeekChatService';
 import INextChatService from './INextCharService';
 
-export default function createService(
-  providerName: ProviderType,
-  chatCtx: IChatContext,
-): INextChatService {
-  switch (providerName) {
+const debug = Debug('5ire:intellichat:service');
+
+export default function createService(chatCtx: IChatContext): INextChatService {
+  const provider = chatCtx.getProvider();
+  debug('Create a service for provider: ', provider.name);
+  switch (provider.name) {
     case 'Anthropic':
       return new AnthropicChatService(chatCtx);
     case 'OpenAI':

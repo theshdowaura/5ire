@@ -95,7 +95,6 @@ export default function Message({ message }: { message: IChatMessage }) {
   );
 
   useEffect(() => {
-    console.log('Message useEffect', message.id);
     const promptNode = document.querySelector(`#${message.id} .msg-prompt`);
     if (promptNode) {
       renderECharts('prompt', promptNode);

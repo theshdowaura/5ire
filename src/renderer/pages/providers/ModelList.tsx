@@ -20,6 +20,7 @@ import TooltipIcon from 'renderer/components/TooltipIcon';
 import useProviderStore from 'stores/useProviderStore';
 import ModelFormDrawer from './ModelFormDrawer';
 import CapabilityTag from './CapabilityTag';
+import { ERROR_MODEL } from 'consts';
 
 const AddIcon = bundleIcon(AddCircleFilled, AddCircleRegular);
 
@@ -52,7 +53,10 @@ export default function ModelList({ height = 400 }: { height?: number }) {
 
   const filteredModels = models.filter((model) => {
     const label = model.label || (model.name as string);
-    return label.toLowerCase().includes(query.toLowerCase().trim());
+    return (
+      model.name !== ERROR_MODEL &&
+      label.toLowerCase().includes(query.toLowerCase().trim())
+    );
   });
 
   useEffect(() => {

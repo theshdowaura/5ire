@@ -23,7 +23,7 @@ import {
 } from '@fluentui/react-icons';
 
 import { IChat, IChatContext } from 'intellichat/types';
-import { ChangeEvent, useEffect, useMemo, useState } from 'react';
+import { ChangeEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { isBlank } from 'utils/validators';
 import { isWebUri } from 'valid-url';
@@ -49,7 +49,6 @@ export default function ImgCtrl({
   const [imgBase64, setImgBase64] = useState<string>('');
   const [errMsg, setErrMsg] = useState<string>('');
   const [open, setOpen] = useState<boolean>(false);
-  const model = ctx.getModel();
 
   const openDialog = () => {
     setOpen(true);
@@ -71,8 +70,8 @@ export default function ImgCtrl({
   };
 
   const vision = useMemo<IVersionCapability>(() => {
-    return model?.capabilities?.vision || { enabled: false };
-  }, [model]);
+    return ctx.getModel()?.capabilities?.vision || { enabled: false };
+  }, []);
 
   useEffect(() => {
     Mousetrap.bind('mod+shift+7', openDialog);
