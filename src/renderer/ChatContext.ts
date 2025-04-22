@@ -40,7 +40,8 @@ const getModel = () => {
   }
   const provider = getProvider();
   const models = getModelsSync(provider);
-  const model= (find(models, { isDefault: true }) as IChatModelConfig) || models[0];
+  const model =
+    (find(models, { isDefault: true }) as IChatModelConfig) || models[0];
   debug(`getModel by default`, model);
   return model;
 };
@@ -72,7 +73,6 @@ const getMaxTokens = () => {
   const { chat } = useChatStore.getState();
   const provider = getProvider() as IChatProviderConfig;
   const model = getModel() as IChatModelConfig;
-  console.log('>', provider, model);
   let maxTokens =
     model?.defaultMaxTokens || model?.maxTokens || DEFAULT_MAX_TOKENS;
   const prompt = chat.prompt as IPrompt | null;
