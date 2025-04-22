@@ -19,7 +19,7 @@ import {
   MoreHorizontal24Filled,
 } from '@fluentui/react-icons';
 import supabase from 'vendors/supa';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import useProviderStore from 'stores/useProviderStore';
 import useToast from 'hooks/useToast';
@@ -59,17 +59,21 @@ export default function Providers() {
   const { createProvider } = useProviderStore();
   const [contentHeight, setContentHeight] = useState(DEFAULT_HEIGHT);
   const [updatedAtCloud, setUpdatedAtCloud] = useState<string>();
+  const msgBarHeight = useMemo(
+    () => (updatedAtCloud ? 31 : 0),
+    [updatedAtCloud],
+  );
 
   useEffect(() => {
     const handleResize = () => {
-      setContentHeight(window.innerHeight);
+      setContentHeight(window.innerHeight - msgBarHeight);
     };
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  }, []);
+  }, [msgBarHeight]);
 
   useEffect(() => {
     if (!user || !updated) {
@@ -171,22 +175,6 @@ export default function Providers() {
       style={{ paddingBottom: 0 }}
     >
       <div className="page-top-bar" />
-      {updatedAtCloud && (
-        <div className="flex justify-between items-center text-xs py-1 px-10 bg-green-100 dark:bg-green-500/10 border-b border-green-600/10 -mx-5 absolute top-0 right-0 left-0 z-10">
-          <span className="latin">
-            {t('Settings.Info.UpdatedAtCloud')}&nbsp;{updatedAtCloud}
-          </span>
-          <StateButton
-            size="small"
-            loading={loading}
-            appearance="subtle"
-            icon={<CloudArrowDownIcon />}
-            onClick={restoreFromCloud}
-          >
-            {t('Settings.Action.DownloadFromCloud')}
-          </StateButton>
-        </div>
-      )}
       <div
         className="page-header border-b border-base -mx-5 px-5"
         style={{ paddingBottom: 0 }}
@@ -196,6 +184,7 @@ export default function Providers() {
           <Menu>
             <MenuTrigger disableButtonEnhancement>
               <MenuButton
+                disabled={loading}
                 appearance="transparent"
                 icon={<MoreHorizontal24Filled />}
               />
@@ -210,7 +199,24 @@ export default function Providers() {
             </MenuPopover>
           </Menu>
         </div>
+        {updatedAtCloud && (
+          <div className="flex animate-in justify-between items-center text-xs py-1 px-5 bg-green-100 dark:bg-green-500/10 border-t border-green-600/50 dark:border-green-900 -mx-5">
+            <span className="latin">
+              {t('Settings.Info.UpdatedAtCloud')}&nbsp;{updatedAtCloud}
+            </span>
+            <StateButton
+              size="small"
+              loading={loading}
+              appearance="subtle"
+              icon={<CloudArrowDownIcon />}
+              onClick={restoreFromCloud}
+            >
+              {t('Settings.Action.DownloadFromCloud')}
+            </StateButton>
+          </div>
+        )}
       </div>
+
       <div
         className="-ml-5 -mr-5 grid grid-cols-4"
         style={{ height: contentHeight - HEADER_HEIGHT }}
