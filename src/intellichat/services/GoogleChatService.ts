@@ -20,14 +20,6 @@ import INextChatService from './INextCharService';
 
 const debug = Debug('5ire:intellichat:GoogleChatService');
 
-const containsImage = (contents: IChatRequestMessage[]): boolean => {
-  if (contents?.length) {
-    const prompt = contents[contents.length - 1];
-    return !!prompt.parts?.some((part) => 'inline_data' in part);
-  }
-  return false;
-};
-
 export default class GoogleChatService
   extends NextChatService
   implements INextChatService
@@ -39,6 +31,7 @@ export default class GoogleChatService
     });
   }
 
+  // eslint-disable-next-line class-methods-use-this
   protected getReaderType(): new (
     reader: ReadableStreamDefaultReader<Uint8Array>,
   ) => BaseReader {
@@ -120,7 +113,7 @@ export default class GoogleChatService
   protected async convertPromptContent(
     content: string,
   ): Promise<IGeminiChatRequestMessagePart[]> {
-    if (this.context.getModel().vision?.enabled) {
+    if (this.context.getModel().capabilities?.vision?.enabled) {
       const items = splitByImg(content, false);
       const result: IGeminiChatRequestMessagePart[] = [];
       for (const item of items) {
@@ -247,12 +240,12 @@ export default class GoogleChatService
         payload,
       )}\r\n`,
     );
-    const { base, key } = this.apiSettings;
+    const provider = this.context.getProvider();
     const url = urlJoin(
       `/v1beta/models/${this.getModelName()}:${
         isStream ? 'streamGenerateContent' : 'generateContent'
-      }?key=${key}`,
-      base,
+      }?key=${provider.apiKey.trim()}`,
+      provider.apiBase.trim(),
     );
     const response = await fetch(url, {
       method: 'POST',

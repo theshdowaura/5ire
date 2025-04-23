@@ -2,7 +2,6 @@ import Debug from 'debug';
 import {
   IChatContext,
   IChatRequestMessage,
-  IChatResponseMessage,
 } from 'intellichat/types';
 
 import Fire from 'providers/Fire';
@@ -23,6 +22,7 @@ export default class FireChatService
     this.provider = Fire;
   }
 
+  // eslint-disable-next-line class-methods-use-this
   protected getReaderType() {
     return FireReader;
   }
@@ -38,12 +38,12 @@ export default class FireChatService
   ): Promise<Response> {
     const payload = await this.makePayload(messages, msgId);
     debug('About to make a request, payload:\r\n', payload);
-    const { base } = this.apiSettings;
+    const provider = this.context.getProvider();
     const key = this.getUserId();
     if (!key) {
       throw new Error('User is not authenticated');
     }
-    const url = urlJoin(`/v1/chat/completions`, base);
+    const url = urlJoin(`/v1/chat/completions`, provider.apiBase.trim());
     const response = await fetch(url, {
       method: 'POST',
       headers: {
