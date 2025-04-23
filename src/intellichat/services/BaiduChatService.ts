@@ -70,7 +70,9 @@ export default class BaiduChatService
     uri: string,
     timestamp: string,
   ): Promise<string> {
-    const { key, secret } = this.apiSettings;
+    const provider = this.context.getProvider();
+    const key = provider.apiKey.trim();
+    const secret = provider.apiSecret?.trim() || '';
     const signedHeaders = 'content-type;host;x-bce-date';
     const url = new URL('https://iam.bj.baidubce.com');
     const [path, query] = uri.split('?');
@@ -79,8 +81,8 @@ export default class BaiduChatService
     const queries = query.split('&');
     const canonicalQueryString = queries
       .map((q) => {
-        const [key, val] = q.split('=');
-        return `${encodeURIComponent(key)}=${encodeURIComponent(val)}`;
+        const [k, v] = q.split('=');
+        return `${encodeURIComponent(k)}=${encodeURIComponent(v)}`;
       })
       .join('&');
     const canonicalRequest = `GET\n${canonicalURI}\n${canonicalQueryString}\ncontent-type:${encodeURIComponent(
@@ -112,12 +114,12 @@ export default class BaiduChatService
   ): Promise<Response> {
     const payload = await this.makePayload(messages, msgId);
     debug('About to make a request, payload:\r\n', payload);
-    const { base } = this.apiSettings;
+    const provider = this.context.getProvider();
 
     const token = await this.geToken();
     payload.model = (this.getModelName() as string).toLowerCase();
 
-    const url = urlJoin('/v2/chat/completions', base);
+    const url = urlJoin('/v2/chat/completions', provider.apiBase.trim());
     const response = await fetch(url, {
       method: 'POST',
       headers: {
