@@ -478,16 +478,17 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
       models: [],
     };
     let found = false;
-    const updatedModels = customProvider.models.map((m: IChatModelConfig) => {
-      if (m.name === name) {
-        found = true;
-        return { ...m, ...model };
-      }
-      if (model.isDefault) {
-        m.isDefault = false;
-      }
-      return m;
-    });
+    const updatedModels =
+      customProvider.models?.map((m: IChatModelConfig) => {
+        if (m.name === name) {
+          found = true;
+          return { ...m, ...model };
+        }
+        if (model.isDefault) {
+          m.isDefault = false;
+        }
+        return m;
+      }) || [];
     if (!found) {
       updatedModels.push({ ...model, name } as IChatModelConfig);
     }
