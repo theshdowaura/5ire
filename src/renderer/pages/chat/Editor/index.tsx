@@ -191,7 +191,7 @@ export default function Editor({
         id="editor"
         ref={editorRef}
         autoCorrect="on"
-        className="w-full outline-0 pl-2.5 pr-2.5 pb-2.5 bg-brand-surface-1 flex-grow overflow-y-auto overflow-x-hidden"
+        className="w-full outline-0 px-2.5 pb-2.5 bg-brand-surface-1 flex-grow overflow-y-auto overflow-x-hidden"
         onKeyDown={onKeyDown}
         onFocus={restoreRange}
         onBlur={onBlur}

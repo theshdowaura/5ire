@@ -84,13 +84,15 @@ export default function ModelCtrl({
   }, [curModel?.name]);
 
   return (
-    <div className="flex flex-start items-center">
+    <div className="flex flex-start items-center -ml-1.5">
       <Menu>
         <MenuTrigger disableButtonEnhancement>
           <Button
             size="small"
-            appearance="subtle"
+            appearance="transparent"
             iconPosition="after"
+            className="justify-start"
+            style={{ padding: '0 4px' }}
             icon={<ChevronDownRegular className="ml-2" />}
           >
             {curProvider?.name}
@@ -117,12 +119,12 @@ export default function ModelCtrl({
       <Menu>
         <MenuTrigger disableButtonEnhancement>
           <Button
+            style={{ padding: '0 4px', minWidth: '10px' }}
             size="small"
-            appearance="subtle"
+            appearance="transparent"
             iconPosition="after"
             icon={<ChevronDownRegular className="ml-2" />}
             className="flex justify-start items-center"
-            style={{ minWidth: '10px' }}
           >
             {curModel?.label}
           </Button>

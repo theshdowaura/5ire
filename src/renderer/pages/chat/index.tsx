@@ -83,11 +83,9 @@ export default function Chat() {
 
   const clearTrace = useInspectorStore((state) => state.clearTrace);
   const chatSidebarShow = useAppearanceStore((state) => state.chatSidebar.show);
-  const [chatService, setChatService] = useState<INextChatService>(
-    createService(ChatContext),
-  );
+  const [chatService, setChatService] = useState<INextChatService | null>(null);
   const isServiceReady = useMemo(() => {
-    return chatService.isReady();
+    return chatService?.isReady() || false;
   }, [chatService]);
 
   const { notifyError } = useToast();
@@ -130,6 +128,7 @@ export default function Chat() {
   ).current;
 
   useEffect(() => {
+    setChatService(createService(ChatContext));
     const currentRef = ref.current;
     currentRef?.addEventListener('scroll', handleScroll);
     return () => {
@@ -220,7 +219,7 @@ export default function Chat() {
 
   const onSubmit = useCallback(
     async (prompt: string, msgId?: string) => {
-      if (prompt.trim() === '') {
+      if (!chatService || prompt.trim() === '') {
         return;
       }
       const provider = ChatContext.getProvider();
@@ -477,7 +476,7 @@ ${prompt}
                   isReady={isServiceReady}
                   onSubmit={onSubmit}
                   onAbort={() => {
-                    chatService.abort();
+                    chatService?.abort();
                   }}
                 />
               </Pane>
