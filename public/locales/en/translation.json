@@ -301,6 +301,6 @@
   "Provider.Model.PriceUnit": "per 1k tokens",
   "Provider.Model.NameAlreadyExists": "The model name already exists.",
   "Message.Error.EChartsRenderFailed": "The chart render failed.",
-  "Settings.ProviderSettingsMovedTo": "Providers and model configurations have been migrated to",
+  "Settings.ProviderSettingsMovedTo": "Provider and model configurations have been migrated to",
   "Common.InspectorHint": "The Inspector allows real-time tracking of tool executions and provides direct access to function parameter details and returned data."
 }
