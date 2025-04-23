@@ -17,13 +17,13 @@ export default class DeepSeekChatService
     messages: IChatRequestMessage[],
     msgId?: string,
   ): Promise<Response> {
-    const { base, key } = this.apiSettings;
-    const url = urlJoin('/chat/completions', base);
+    const provider = this.context.getProvider();
+    const url = urlJoin('/chat/completions', provider.apiBase.trim());
     const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${key}`,
+        Authorization: `Bearer ${provider.apiKey.trim()}`,
       },
       body: JSON.stringify(await this.makePayload(messages, msgId)),
       signal: this.abortController.signal,
