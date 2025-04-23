@@ -111,7 +111,9 @@ const getMergedLocalModels = (provider: IChatProviderConfig) => {
         inputPrice: customModel?.inputPrice || model.inputPrice,
         outputPrice: customModel?.outputPrice || model.outputPrice,
         description: customModel?.description || model.description || null,
-        isDefault: customModel?.isDefault || model.isDefault || false,
+        isDefault: !isNil(customModel?.isDefault)
+          ? customModel?.isDefault
+          : !!model.isDefault,
         isBuiltIn: true,
         isPremium: provider.isPremium,
         disabled: customModel?.disabled || false,
@@ -467,6 +469,7 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
     if (!found) {
       updatedModels.push({ ...model, name } as IChatModelConfig);
     }
+    console.log('updatedModels', updatedModels);
     const updatedProvider = {
       name: provider.name,
       models: updatedModels,

@@ -13,14 +13,14 @@ import {
   CaretRight16Regular,
 } from '@fluentui/react-icons';
 import { IChatModelConfig, IChatProviderConfig } from 'providers/types';
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import Spinner from 'renderer/components/Spinner';
 import TooltipIcon from 'renderer/components/TooltipIcon';
 import useProviderStore from 'stores/useProviderStore';
+import { ERROR_MODEL } from 'consts';
 import ModelFormDrawer from './ModelFormDrawer';
 import CapabilityTag from './CapabilityTag';
-import { ERROR_MODEL } from 'consts';
 
 const AddIcon = bundleIcon(AddCircleFilled, AddCircleRegular);
 
@@ -38,7 +38,7 @@ export default function ModelList({ height = 400 }: { height?: number }) {
   const [loading, setLoading] = useState(false);
   const [models, setModels] = useState<IChatModelConfig[]>([]);
 
-  const onOptionSelect: ComboboxProps['onOptionSelect'] = (e, data) => {
+  const onOptionSelect: ComboboxProps['onOptionSelect'] = (_, data) => {
     setQuery(data.optionText ?? '');
   };
 
@@ -51,13 +51,17 @@ export default function ModelList({ height = 400 }: { height?: number }) {
     }
   }, [provider.name, provider.models]);
 
-  const filteredModels = models.filter((model) => {
-    const label = model.label || (model.name as string);
-    return (
-      model.name !== ERROR_MODEL &&
-      label.toLowerCase().includes(query.toLowerCase().trim())
-    );
-  });
+  const filteredModels = useMemo(
+    () =>
+      models.filter((model) => {
+        const label = model.label || (model.name as string);
+        return (
+          model.name !== ERROR_MODEL &&
+          label.toLowerCase().includes(query.toLowerCase().trim())
+        );
+      }),
+    [query, models],
+  );
 
   useEffect(() => {
     loadModels();
@@ -141,6 +145,7 @@ export default function ModelList({ height = 400 }: { height?: number }) {
                           title={model.name}
                         >
                           {model.label || model.name}
+                          {`${model.isDefault}`}
                         </span>
 
                         {model.description && (
