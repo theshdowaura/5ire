@@ -4,7 +4,6 @@ import { IServiceProvider } from 'providers/types';
 export default interface INextChatService {
   context: IChatContext;
   provider: IServiceProvider;
-  modelMapping: Record<string, string>;
   chat(message: IChatRequestMessage[], msgId?: string): void;
   abort(): void;
   isReady(): boolean;
