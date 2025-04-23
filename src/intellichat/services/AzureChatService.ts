@@ -15,19 +15,21 @@ export default class AzureChatService
 
   protected async makeRequest(
     messages: IChatRequestMessage[],
-    msgId?:string
+    msgId?: string,
   ): Promise<Response> {
-    const apiVersion = '2024-10-21';
-    const { base, deploymentId, key } = this.apiSettings;
+    const defaultAPIVersion = '2024-12-01-preview';
+    const provider = this.context.getProvider();
+    const model = this.context.getModel();
+    const deploymentId = model.extras?.deploymentId || model.name;
     const url = urlJoin(
-      `/openai/deployments/${deploymentId}/chat/completions?api-version=${apiVersion}`,
-      base,
+      `/openai/deployments/${deploymentId}/chat/completions?api-version=${provider.apiVersion || defaultAPIVersion}`,
+      provider.apiBase.trim(),
     );
     const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'api-key': key,
+        'api-key': provider.apiKey,
       },
       body: JSON.stringify(await this.makePayload(messages, msgId)),
       signal: this.abortController.signal,
