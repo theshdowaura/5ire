@@ -186,7 +186,7 @@ export default function Editor({
       ) : null}
       <Toolbar onConfirm={onToolbarActionConfirm} isReady={isReady} />
       {!isReady && (
-        <div className="absolute top-[40px] right-0 left-0 z-10 tips flex justify-center flex-col items-center px-2.5">
+        <div className="absolute top-[40px] max-w-md right-0 left-0 z-10 tips px-2.5">
           <p>{t('Notification.APINotReady')}</p>
         </div>
       )}
