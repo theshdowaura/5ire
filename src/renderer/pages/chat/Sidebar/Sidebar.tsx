@@ -46,37 +46,46 @@ export default function Sidebar({ chatId }: { chatId: string }) {
         {t('Common.Inspector')}
       </div>
       <div className="h-full overflow-x-hidden overflow-y-auto break-word -ml-2.5">
-        <Accordion multiple collapsible>
-          {trace?.map((item: ITraceMessage, idx: number) => {
-            return item.message === '' ? (
-              <div className="pl-4 mt-2" key={`${chatId}-trace-${idx}`}>
-                <span className="-ml-1 inline-block pt-0 py-0.5 rounded truncate text-ellipsis overflow-hidden w-52 font-bold text-gray-400 dark:text-gray-400">
-                  <PlayCircleHint16Regular />
-                  &nbsp;{item.label}
-                </span>
-              </div>
-            ) : (
-              <AccordionItem value={idx} key={`${chatId}-trace-${idx}`}>
-                <AccordionHeader size="small">
-                  <span
-                    className={`-ml-1 px-1 inline-block pt-0 py-0.5 rounded ${labelClasses[item.label] || ''}`}
-                  >
-                    {item.label}
+        {trace.length > 0 ? (
+          <Accordion multiple collapsible>
+            {trace?.map((item: ITraceMessage, idx: number) => {
+              return item.message === '' ? (
+                <div className="pl-4 mt-2" key={`${chatId}-${item.id}`}>
+                  <span className="-ml-1 inline-block pt-0 py-0.5 rounded truncate text-ellipsis overflow-hidden w-52 font-bold text-gray-400 dark:text-gray-400">
+                    <PlayCircleHint16Regular />
+                    &nbsp;{item.label}
                   </span>
-                </AccordionHeader>
-                <AccordionPanel>
-                  <div className="inspector-message" style={{ marginLeft: 8 }}>
+                </div>
+              ) : (
+                <AccordionItem value={idx} key={`${chatId}-${item.id}`}>
+                  <AccordionHeader size="small">
+                    <span
+                      className={`-ml-1 px-1 inline-block pt-0 py-0.5 rounded ${labelClasses[item.label] || ''}`}
+                    >
+                      {item.label}
+                    </span>
+                  </AccordionHeader>
+                  <AccordionPanel>
                     <div
-                      dangerouslySetInnerHTML={{
-                        __html: render(`\`\`\`json\n${item.message}\n\`\`\``),
-                      }}
-                    />
-                  </div>
-                </AccordionPanel>
-              </AccordionItem>
-            );
-          })}
-        </Accordion>
+                      className="inspector-message"
+                      style={{ marginLeft: 8 }}
+                    >
+                      <div
+                        dangerouslySetInnerHTML={{
+                          __html: render(`\`\`\`json\n${item.message}\n\`\`\``),
+                        }}
+                      />
+                    </div>
+                  </AccordionPanel>
+                </AccordionItem>
+              );
+            })}
+          </Accordion>
+        ) : (
+          <div className="flex flex-col justify-center items-center px-2">
+            <p className="tips text-xs">{t('Common.InspectorHint')}</p>
+          </div>
+        )}
       </div>
     </aside>
   );
