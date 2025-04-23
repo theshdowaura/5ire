@@ -12,6 +12,7 @@ import { find } from 'lodash';
 import { IChatModelConfig, IChatProviderConfig } from 'providers/types';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import ToolStatusIndicator from 'renderer/components/ToolStatusIndicator';
 import useChatStore from 'stores/useChatStore';
 import useProviderStore from 'stores/useProviderStore';
 import eventBus from 'utils/bus';
@@ -144,7 +145,10 @@ export default function ModelCtrl({
                     isChanged.current = true;
                   }}
                 >
-                  {model.label}
+                  <div className="flex justify-start items-center gap-1 text-xs py-1">
+                    <ToolStatusIndicator model={model} withTooltip />
+                    <span> {model.label}</span>
+                  </div>
                 </MenuItem>
               ))
             ) : (

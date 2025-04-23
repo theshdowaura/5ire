@@ -219,11 +219,7 @@ export default function FolderSettingsDialog({
                         text={(m.label || m.name) as string}
                       >
                         <div className="flex justify-start items-center gap-1 text-xs">
-                          <ToolStatusIndicator
-                            provider={folderProvider}
-                            model={m.name}
-                            withTooltip
-                          />
+                          <ToolStatusIndicator model={m} withTooltip />
                           <span> {m.label || m.name}</span>
                         </div>
                       </Option>

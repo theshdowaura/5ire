@@ -1,38 +1,25 @@
 import { Tooltip } from '@fluentui/react-components';
 import { isNil } from 'lodash';
+import { IChatModelConfig } from 'providers/types';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import useProviderStore from 'stores/useProviderStore';
 
 export default function ToolStatusIndicator(
   props: {
-    provider: string;
-    model: string;
+    model: IChatModelConfig;
     withTooltip?: boolean;
   } & any,
 ) {
-  const {
-    provider: providerName,
-    model: modelName,
-    withTooltip,
-    ...rest
-  } = props;
-  const { getAvailableModel } = useProviderStore();
+  const { model, withTooltip, ...rest } = props;
 
-  const model = useMemo(
-    () => getAvailableModel(providerName, modelName),
-    [providerName, modelName],
-  );
-
-  // if the tools capability is not null or undefined, it means the model supports tools
-  const originalSupport = useMemo(
-    () => !isNil(model.capabilities?.tools),
-    [providerName, modelName],
-  );
+  const originalSupport = useMemo(() => {
+    if (isNil(model.capabilities?.tools)) return false;
+    return true;
+  }, [model.capabilities?.tools]);
 
   const actualSupport = useMemo(() => {
-    return !!model.capabilities?.tools?.enabled;
-  }, [providerName, modelName]);
+    return model.capabilities?.tools?.enabled || false;
+  }, [model.capabilities?.tools]);
 
   const { t } = useTranslation();
   const tip = t(actualSupport ? 'Tool.Supported' : 'Tool.NotSupported');
