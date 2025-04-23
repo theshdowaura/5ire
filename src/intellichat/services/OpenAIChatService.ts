@@ -1,4 +1,4 @@
-import Debug from 'debug';
+// import Debug from 'debug';
 import {
   IChatContext,
   IChatRequestMessage,
@@ -18,7 +18,7 @@ import NextChatService from './NextChatService';
 import INextChatService from './INextCharService';
 import OpenAI from '../../providers/OpenAI';
 
-const debug = Debug('5ire:intellichat:OpenAIChatService');
+// const debug = Debug('5ire:intellichat:OpenAIChatService');
 
 export default class OpenAIChatService
   extends NextChatService
@@ -255,14 +255,6 @@ export default class OpenAIChatService
   ): Promise<Response> {
     const payload = await this.makePayload(messages, msgId);
     const provider = this.context.getProvider();
-    debug(
-      'provider:',
-      provider.name,
-      ', apiBase:',
-      provider.apiBase,
-      ',payload:\r\n',
-      payload,
-    );
     const url = urlJoin('/chat/completions', provider.apiBase.trim());
     const response = await fetch(url, {
       method: 'POST',
