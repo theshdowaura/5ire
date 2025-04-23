@@ -145,7 +145,6 @@ export default function ModelList({ height = 400 }: { height?: number }) {
                           title={model.name}
                         >
                           {model.label || model.name}
-                          {`${model.isDefault}`}
                         </span>
 
                         {model.description && (
