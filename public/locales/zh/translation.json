@@ -50,7 +50,7 @@
   "Chat.DeleteConfirmation": "确定要删除当前对话？",
   "Chat.DeleteConfirmationInfo": " 当前对话中的所有消息将被删除。此操作无法撤销。",
   "Common.Yes": "是的",
-  "Notification.APINotReady": "请先在设置页面填写 API 的必要信息。(快捷键：CMD+,)",
+  "Notification.APINotReady": "当前选用的服务商或模型不可用，请切换至其他选项或检查配置设置。(快捷键：CMD+,)",
   "Common.Or": "或者",
   "Chat.New": "新对话",
   "Common.ClearFilter": "取消筛选",
