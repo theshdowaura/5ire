@@ -86,6 +86,15 @@ export default function Editor({
             event.preventDefault();
             // even execCommand is deprecated, it seems to be the only way to insert a line break in contentEditable.
             document.execCommand('insertLineBreak');
+            // scroll to bottom
+            if (editorRef.current) {
+              requestAnimationFrame(() => {
+                editorRef.current?.scrollTo({
+                  top: editorRef.current.scrollHeight,
+                  behavior: 'smooth',
+                });
+              });
+            }
           } else {
             event.preventDefault();
             setSubmitted(true);
@@ -198,7 +207,7 @@ export default function Editor({
         onInput={onInput}
         style={{ resize: 'none', whiteSpace: 'pre-wrap' }}
       />
-      <div className="h-12 flex-shrink-0" />
+      <div className="h-8 flex-shrink-0" />
     </div>
   );
 }
