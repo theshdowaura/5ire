@@ -11,8 +11,10 @@ import KnowledgeCtrl from './KnowledgeCtrl';
 import CtxNumCtrl from './CtxNumCtrl';
 
 export default function EditorToolbar({
+  isReady,
   onConfirm,
 }: {
+  isReady: boolean;
   onConfirm: () => void;
 }) {
   const chat = useChatStore((state) => state.chat) as IChat;
@@ -24,12 +26,12 @@ export default function EditorToolbar({
         className="flex items-center gap-3 ml-2 editor-toolbar"
       >
         <ModelCtrl ctx={ChatContext} chat={chat} />
-        <PromptCtrl ctx={ChatContext} chat={chat} />
-        <KnowledgeCtrl ctx={ChatContext} chat={chat} />
-        <MaxTokensCtrl ctx={ChatContext} chat={chat} onConfirm={onConfirm} />
-        <TemperatureCtrl ctx={ChatContext} chat={chat} />
-        <CtxNumCtrl ctx={ChatContext} chat={chat} />
-        <ImgCtrl ctx={ChatContext} chat={chat} />
+        <PromptCtrl ctx={ChatContext} chat={chat} disabled={!isReady} />
+        <KnowledgeCtrl ctx={ChatContext} chat={chat}  disabled={!isReady}/>
+        <MaxTokensCtrl ctx={ChatContext} chat={chat} onConfirm={onConfirm} disabled={!isReady}/>
+        <TemperatureCtrl ctx={ChatContext} chat={chat}  disabled={!isReady}/>
+        <CtxNumCtrl ctx={ChatContext} chat={chat} disabled={!isReady}/>
+        <ImgCtrl ctx={ChatContext} chat={chat} disabled={!isReady} />
       </Toolbar>
     </div>
   );

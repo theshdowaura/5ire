@@ -34,10 +34,12 @@ export default function MaxTokens({
   ctx,
   chat,
   onConfirm,
+  disabled,
 }: {
   ctx: IChatContext;
   chat: IChat;
   onConfirm: () => void;
+  disabled: boolean;
 }) {
   const { t } = useTranslation();
   const [open, setOpen] = useState<boolean>(false);
@@ -82,13 +84,14 @@ export default function MaxTokens({
     <Popover open={open} trapFocus withArrow onOpenChange={handleOpenChange}>
       <PopoverTrigger>
         <Button
+          disabled={disabled}
           size="small"
           title={`${t('Common.MaxTokens')}(Mod+Shift+4)`}
           aria-label={t('Common.MaxTokens')}
           appearance="subtle"
           onClick={() => setOpen((prevOpen) => !prevOpen)}
           icon={<NumberSymbolSquareIcon />}
-          className="justify-start text-color-secondary flex-shrink-0"
+          className={`justify-start text-color-secondary flex-shrink-0 ${disabled ? 'opacity-50' : ''}`}
           style={{
             padding: 1,
             minWidth: 20,

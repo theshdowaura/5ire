@@ -23,7 +23,7 @@ import {
 } from '@fluentui/react-icons';
 
 import { IChat, IChatContext } from 'intellichat/types';
-import { ChangeEvent, useEffect, useMemo, useRef, useState } from 'react';
+import { ChangeEvent, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { isBlank } from 'utils/validators';
 import { isWebUri } from 'valid-url';
@@ -36,9 +36,11 @@ const ImageAddIcon = bundleIcon(ImageAdd20Filled, ImageAdd20Regular);
 export default function ImgCtrl({
   ctx,
   chat,
+  disabled,
 }: {
   ctx: IChatContext;
   chat: IChat;
+  disabled: boolean;
 }) {
   const editStage = useChatStore((state) => state.editStage);
   const { t } = useTranslation();
@@ -71,7 +73,7 @@ export default function ImgCtrl({
 
   const vision = useMemo<IVersionCapability>(() => {
     return ctx.getModel()?.capabilities?.vision || { enabled: false };
-  }, []);
+  }, [chat.provider, chat.model]);
 
   useEffect(() => {
     Mousetrap.bind('mod+shift+7', openDialog);
@@ -137,7 +139,7 @@ export default function ImgCtrl({
     return (
       <div className="flex justify-start items-start gap-2">
         <Button
-          className="file-button"
+          className={`file-button ${disabled ? 'opacity-50' : ''}`}
           id="select-file-button"
           onClick={async () => {
             const dataString = await window.electron.selectImageWithBase64();
@@ -147,6 +149,7 @@ export default function ImgCtrl({
               setImgBase64(file.base64);
             }
           }}
+          disabled={disabled}
         >
           {t('Common.SelectImage')}
         </Button>

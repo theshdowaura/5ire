@@ -34,9 +34,11 @@ const PromptIcon = bundleIcon(Prompt20Filled, Prompt20Regular);
 export default function PromptCtrl({
   ctx,
   chat,
+  disabled
 }: {
   ctx: IChatContext;
   chat: IChat;
+  disabled?: boolean;
 }) {
   const { t } = useTranslation();
   const [open, setOpen] = useState<boolean>(false);
@@ -169,12 +171,13 @@ export default function PromptCtrl({
       <Dialog open={open} onOpenChange={() => setPromptPickerOpen(false)}>
         <DialogTrigger disableButtonEnhancement>
           <Button
+            disabled={disabled}
             size="small"
             title={t('Common.Prompts') + '(Mod+Shift+2)'}
             aria-label={t('Common.Prompts')}
             appearance="subtle"
             style={{ borderColor: 'transparent', boxShadow: 'none' }}
-            className="flex justify-start items-center text-color-secondary gap-1"
+            className={`flex justify-start items-center text-color-secondary gap-1 ${disabled ? 'opacity-50' : ''}`}
             onClick={openDialog}
             icon={<PromptIcon className="flex-shrink-0" />}
           >

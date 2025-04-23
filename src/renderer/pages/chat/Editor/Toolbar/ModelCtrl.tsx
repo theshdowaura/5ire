@@ -40,10 +40,10 @@ export default function ModelCtrl({
     const ctxModel = ctx.getModel();
     if (ctxModel?.name === ERROR_MODEL) {
       setCurModel(ctxModel);
-      return;
+    } else {
+      const model = getAvailableModel(provider.name, ctxModel?.name);
+      setCurModel(model);
     }
-    const model = getAvailableModel(provider.name, ctxModel?.name);
-    setCurModel(model);
     bus.current.emit('providerChanged', { provider: provider.name });
   };
 

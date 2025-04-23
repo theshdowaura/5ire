@@ -17,27 +17,27 @@ import {
 import { useState, ChangeEvent, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import useChatStore from 'stores/useChatStore';
-import Debug from 'debug';
+// import Debug from 'debug';
 import { IChat, IChatContext } from 'intellichat/types';
-import useSettingsStore from 'stores/useSettingsStore';
 import Mousetrap from 'mousetrap';
 import { isNumber } from 'lodash';
 import { MIN_CTX_MESSAGES, MAX_CTX_MESSAGES, NUM_CTX_MESSAGES } from 'consts';
 
-const debug = Debug('5ire:pages:chat:Editor:Toolbar:CtxNumCtrl');
+// const debug = Debug('5ire:pages:chat:Editor:Toolbar:CtxNumCtrl');
 
 const AttacheTextIcon = bundleIcon(AttachText20Filled, AttachText20Regular);
 
 export default function CtxNumCtrl({
   ctx,
   chat,
+  disabled,
 }: {
   ctx: IChatContext;
   chat: IChat;
+  disabled: boolean;
 }) {
   const { t } = useTranslation();
   const [open, setOpen] = useState<boolean>(false);
-  const providerName = useSettingsStore((state) => state.api).provider;
   const editStage = useChatStore((state) => state.editStage);
   const [ctxMessages, setCtxMessages] = useState<number>(NUM_CTX_MESSAGES);
 
@@ -69,7 +69,7 @@ export default function CtxNumCtrl({
     return () => {
       Mousetrap.unbind('mod+shift+6');
     };
-  }, [providerName, chat.id]);
+  }, [chat.id]);
 
   return (
     <Popover trapFocus withArrow open={open} onOpenChange={handleOpenChange}>
@@ -80,7 +80,8 @@ export default function CtxNumCtrl({
           aria-label={t('Common.NumberOfContextMessages')}
           appearance="subtle"
           icon={<AttacheTextIcon className="mr-0" />}
-          className="justify-start text-color-secondary flex-shrink-0"
+          className={`justify-start text-color-secondary flex-shrink-0 ${disabled ? 'opacity-50' : ''}`}
+          disabled={disabled}
           style={{
             padding: 1,
             minWidth: 30,

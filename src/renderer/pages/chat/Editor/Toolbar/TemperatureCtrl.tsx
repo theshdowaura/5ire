@@ -28,9 +28,11 @@ const TemperatureIcon = bundleIcon(Temperature20Filled, Temperature20Regular);
 export default function TemperatureCtrl({
   ctx,
   chat,
+  disabled,
 }: {
   ctx: IChatContext;
   chat: IChat;
+  disabled: boolean;
 }) {
   const { t } = useTranslation();
   const [open, setOpen] = useState<boolean>(false);
@@ -72,12 +74,13 @@ export default function TemperatureCtrl({
     <Popover trapFocus withArrow open={open} onOpenChange={handleOpenChange}>
       <PopoverTrigger disableButtonEnhancement>
         <Button
+          disabled={disabled}
           size="small"
           title={t('Common.Temperature')+"(Mod+Shift+5)"}
           aria-label={t('Common.Temperature')}
           appearance="subtle"
           icon={<TemperatureIcon className="mr-0" />}
-          className="justify-start text-color-secondary flex-shrink-0"
+          className={`justify-start text-color-secondary flex-shrink-0 ${disabled ? 'opacity-50' : ''}`}
           style={{
             padding: 1,
             minWidth: 30,

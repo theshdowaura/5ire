@@ -83,13 +83,12 @@ export default function Chat() {
 
   const clearTrace = useInspectorStore((state) => state.clearTrace);
   const chatSidebarShow = useAppearanceStore((state) => state.chatSidebar.show);
-  const chatService = useRef<INextChatService>(
-    useMemo(() => createService(ChatContext), []),
+  const [chatService, setChatService] = useState<INextChatService>(
+    createService(ChatContext),
   );
-  const isServiceReady = useMemo(
-    () => chatService.current.isReady(),
-    [chatService],
-  );
+  const isServiceReady = useMemo(() => {
+    return chatService.isReady();
+  }, [chatService]);
 
   const { notifyError } = useToast();
 
@@ -133,7 +132,6 @@ export default function Chat() {
   useEffect(() => {
     const currentRef = ref.current;
     currentRef?.addEventListener('scroll', handleScroll);
-
     return () => {
       currentRef?.removeEventListener('scroll', handleScroll);
       isUserScrollingRef.current = false;
@@ -143,7 +141,7 @@ export default function Chat() {
   useEffect(() => {
     bus.current.on('providerChanged', (event: any) => {
       debug('Provider changed:', event.provider);
-      chatService.current = createService(ChatContext);
+      setChatService(createService(ChatContext));
     });
     if (activeChatId !== tempChatId) {
       getChat(activeChatId);
@@ -191,7 +189,6 @@ export default function Chat() {
     loadMessages();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeChatId, debouncedFetchMessages, keywords]);
-
 
   useEffect(() => {
     bus.current.on('retry', async (event: any) => {
@@ -394,17 +391,17 @@ ${prompt}
         }
         updateStates($chatId, { loading: false, runningTool: null });
       };
-      chatService.current.onComplete(onChatComplete);
-      chatService.current.onReading((content: string, reasoning?: string) => {
+      chatService.onComplete(onChatComplete);
+      chatService.onReading((content: string, reasoning?: string) => {
         appendReply(msg.id, content || '', reasoning || '');
         if (!isUserScrollingRef.current) {
           scrollToBottom();
         }
       });
-      chatService.current.onToolCalls((toolName: string) => {
+      chatService.onToolCalls((toolName: string) => {
         updateStates($chatId, { runningTool: toolName });
       });
-      chatService.current.onError((err: any, aborted: boolean) => {
+      chatService.onError((err: any, aborted: boolean) => {
         console.error(err);
         if (!aborted) {
           notifyError(err.message || err);
@@ -412,7 +409,7 @@ ${prompt}
         updateStates($chatId, { loading: false });
       });
 
-      await chatService.current.chat(
+      await chatService.chat(
         [
           {
             role: 'user',
@@ -476,18 +473,13 @@ ${prompt}
                 </div>
               </Pane>
               <Pane minSize={180} maxSize="60%">
-                {isServiceReady ? (
-                  <Editor
-                    onSubmit={onSubmit}
-                    onAbort={() => {
-                      chatService.current.abort();
-                    }}
-                  />
-                ) : (
-                  <div className="flex flex-col justify-center h-3/4 text-center text-sm text-gray-400">
-                    {id === tempChatId ? '' : t('Notification.APINotReady')}
-                  </div>
-                )}
+                <Editor
+                  isReady={isServiceReady}
+                  onSubmit={onSubmit}
+                  onAbort={() => {
+                    chatService.abort();
+                  }}
+                />
               </Pane>
             </SplitPane>
           </div>
