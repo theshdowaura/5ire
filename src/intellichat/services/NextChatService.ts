@@ -13,7 +13,6 @@ import {
 } from 'intellichat/types';
 import { IServiceProvider } from 'providers/types';
 import useInspectorStore from 'stores/useInspectorStore';
-import useSettingsStore from 'stores/useSettingsStore';
 import { raiseError, stripHtmlTags } from 'utils/util';
 
 const debug = Debug('5ire:intellichat:NextChatService');
@@ -24,8 +23,6 @@ export default abstract class NextCharService {
   context: IChatContext;
 
   provider: IServiceProvider;
-
-  modelMapping: Record<string, string>;
 
   protected abstract getReaderType(): new (
     reader: ReadableStreamDefaultReader<Uint8Array>,
@@ -54,8 +51,6 @@ export default abstract class NextCharService {
     context: IChatContext;
     provider: IServiceProvider;
   }) {
-    this.apiSettings = useSettingsStore.getState().api;
-    this.modelMapping = useSettingsStore.getState().modelMapping;
     this.provider = provider;
     this.context = context;
     this.abortController = new AbortController();
@@ -160,7 +155,8 @@ export default abstract class NextCharService {
     if ($provider.schema.includes('secret') && !$provider) {
       return false;
     }
-    return true;
+    const $model = this.context.getModel();
+    return $model?.isReady;
   }
 
   public async chat(messages: IChatRequestMessage[], msgId?: string) {
