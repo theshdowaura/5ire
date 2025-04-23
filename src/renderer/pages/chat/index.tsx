@@ -26,7 +26,7 @@ import Empty from 'renderer/components/Empty';
 
 import useUsageStore from 'stores/useUsageStore';
 import useNav from 'hooks/useNav';
-import { debounce } from 'lodash';
+import { debounce, set } from 'lodash';
 import { isBlank } from 'utils/validators';
 import {
   extractCitationIds,
@@ -84,9 +84,7 @@ export default function Chat() {
   const clearTrace = useInspectorStore((state) => state.clearTrace);
   const chatSidebarShow = useAppearanceStore((state) => state.chatSidebar.show);
   const [chatService, setChatService] = useState<INextChatService | null>(null);
-  const isServiceReady = useMemo(() => {
-    return chatService?.isReady() || false;
-  }, [chatService]);
+  const [isReady, setIsReady] = useState(false);
 
   const { notifyError } = useToast();
 
@@ -128,7 +126,9 @@ export default function Chat() {
   ).current;
 
   useEffect(() => {
-    setChatService(createService(ChatContext));
+    const service = createService(ChatContext);
+    setChatService(service);
+    setIsReady(service.isReady());
     const currentRef = ref.current;
     currentRef?.addEventListener('scroll', handleScroll);
     return () => {
@@ -140,11 +140,13 @@ export default function Chat() {
   useEffect(() => {
     bus.current.on('providerChanged', (event: any) => {
       debug('Provider changed:', event.provider);
-      setChatService(createService(ChatContext));
+      const service = createService(ChatContext);
+      setChatService(service);
+      setIsReady(service.isReady());
     });
     if (activeChatId !== tempChatId) {
       getChat(activeChatId);
-    } else if (isServiceReady) {
+    } else if (isReady) {
       if (folder) {
         initChat(getCurFolderSettings());
       } else {
@@ -462,7 +464,7 @@ ${prompt}
                       <MemoizedMessages messages={messages} />
                     </div>
                   ) : (
-                    isServiceReady || (
+                    isReady || (
                       <Empty
                         image="hint"
                         text={t('Notification.APINotReady')}
@@ -473,7 +475,7 @@ ${prompt}
               </Pane>
               <Pane minSize={180} maxSize="60%">
                 <Editor
-                  isReady={isServiceReady}
+                  isReady={isReady}
                   onSubmit={onSubmit}
                   onAbort={() => {
                     chatService?.abort();
