@@ -18,8 +18,8 @@ import { useState, ChangeEvent, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import useChatStore from 'stores/useChatStore';
 import { IChat, IChatContext } from 'intellichat/types';
-import useSettingsStore from 'stores/useSettingsStore';
 import Mousetrap from 'mousetrap';
+import useProviderStore from 'stores/useProviderStore';
 
 // const debug = Debug('5ire:pages:chat:Editor:Toolbar:TemperatureCtrl');
 
@@ -34,9 +34,9 @@ export default function TemperatureCtrl({
   chat: IChat;
   disabled: boolean;
 }) {
+  const { getAvailableProvider } = useProviderStore();
   const { t } = useTranslation();
   const [open, setOpen] = useState<boolean>(false);
-  const providerName = useSettingsStore((state) => state.api).provider;
   const editStage = useChatStore((state) => state.editStage);
   const [maxTemperature, setMaxTemperature] = useState<number>(0);
   const [minTemperature, setMinTemperature] = useState<number>(0);
@@ -51,14 +51,16 @@ export default function TemperatureCtrl({
         return !prevOpen;
       }),
     );
-    const provider = ctx.getProvider();
-    setMinTemperature(provider.temperature.min);
-    setMaxTemperature(provider.temperature.max);
-    setTemperature(ctx.getTemperature());
+    if (chat.provider) {
+      const provider = getAvailableProvider(chat.provider);
+      setMinTemperature(provider.temperature.min);
+      setMaxTemperature(provider.temperature.max);
+      setTemperature(ctx.getTemperature());
+    }
     return () => {
       Mousetrap.unbind('mod+shift+5');
     };
-  }, [providerName, chat.id, chat.temperature]);
+  }, [chat.id, chat.provider, chat.temperature]);
 
   const updateTemperature = (
     ev: ChangeEvent<HTMLInputElement>,
@@ -76,7 +78,7 @@ export default function TemperatureCtrl({
         <Button
           disabled={disabled}
           size="small"
-          title={t('Common.Temperature')+"(Mod+Shift+5)"}
+          title={`${t('Common.Temperature')}(Mod+Shift+5)`}
           aria-label={t('Common.Temperature')}
           appearance="subtle"
           icon={<TemperatureIcon className="mr-0" />}

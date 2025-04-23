@@ -7,8 +7,8 @@ import {
   MenuTrigger,
 } from '@fluentui/react-components';
 import { ChevronDownRegular } from '@fluentui/react-icons';
-import { ERROR_MODEL } from 'consts';
 import { IChat, IChatContext } from 'intellichat/types';
+import { find } from 'lodash';
 import { IChatModelConfig, IChatProviderConfig } from 'providers/types';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -26,8 +26,7 @@ export default function ModelCtrl({
   const { t } = useTranslation();
   const bus = useRef(eventBus);
   const editStage = useChatStore((state) => state.editStage);
-  const { getAvailableProviders, getModels, getAvailableModel } =
-    useProviderStore();
+  const { getAvailableProviders, getModels } = useProviderStore();
   const providers = useMemo(() => {
     return getAvailableProviders().filter((provider) => !provider.disabled);
   }, [getAvailableProviders]);
@@ -39,14 +38,8 @@ export default function ModelCtrl({
   const loadModels = async (provider: IChatProviderConfig) => {
     const $models = await getModels(provider);
     setModels($models);
-    const ctxModel = ctx.getModel();
-    if (ctxModel?.name === ERROR_MODEL) {
-      setCurModel(ctxModel);
-    } else {
-      const model = getAvailableModel(provider.name, ctxModel?.name);
-      setCurModel(model);
-    }
-    bus.current.emit('providerChanged', { provider: provider.name });
+    const ctxModel = find($models, { isDefault: true }) || $models[0];
+    setCurModel(ctxModel);
   };
 
   useEffect(() => {
@@ -65,10 +58,8 @@ export default function ModelCtrl({
   useEffect(() => {
     if (curProvider) {
       loadModels(curProvider);
-      editStage(chat.id, {
-        provider: curProvider?.name,
-        model: curModel?.name,
-      });
+    } else {
+      setModels([]);
     }
   }, [curProvider?.name]);
 
@@ -103,6 +94,12 @@ export default function ModelCtrl({
             {providers.map((provider) => (
               <MenuItem
                 key={provider.name}
+                style={{
+                  fontSize: 12,
+                  paddingTop: 2,
+                  paddingBottom: 2,
+                  minHeight: 12,
+                }}
                 disabled={!provider.isReady}
                 onClick={() => {
                   setCurProvider(provider);
@@ -136,6 +133,12 @@ export default function ModelCtrl({
                 <MenuItem
                   key={model.name}
                   disabled={!model.isReady}
+                  style={{
+                    fontSize: 12,
+                    paddingTop: 2,
+                    paddingBottom: 2,
+                    minHeight: 12,
+                  }}
                   onClick={() => {
                     setCurModel(model);
                     isChanged.current = true;
