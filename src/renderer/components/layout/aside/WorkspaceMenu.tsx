@@ -66,8 +66,10 @@ export default function WorkspaceMenu({ collapsed }: { collapsed: boolean }) {
 
   useEffect(() => {
     Mousetrap.bind('mod+,', () => navigate('/settings'));
+    Mousetrap.bind('mod+k', () => navigate('/providers'));
     Mousetrap.bind('mod+p', () => navigate('/prompts'));
     return () => {
+      Mousetrap.unbind('mod+,');
       Mousetrap.unbind('mod+k');
       Mousetrap.unbind('mod+p');
     };
@@ -152,21 +154,28 @@ export default function WorkspaceMenu({ collapsed }: { collapsed: boolean }) {
           <MenuList>
             <MenuDivider className="border-base" />
             <MenuItem
-              title="mod+,"
+              title="mod+k"
               icon={<LayerDiagonalSparkle24Regular />}
               onClick={() => {
                 navigate('/providers');
               }}
             >
-              {t('Common.Providers')}
+              <div className="flex justify-between items-center">
+                {t('Common.Providers')}
+                <span className="text-xs tips">MOD+k</span>
+              </div>
             </MenuItem>
             <MenuItem
+              title="mod+,"
               icon={<Settings24Regular />}
               onClick={() => {
                 navigate('/settings');
               }}
             >
-              {t('Common.Settings')}
+              <div className="flex justify-between items-center">
+                {t('Common.Settings')}
+                <span className="text-xs tips">MOD+,</span>
+              </div>
             </MenuItem>
             <MenuItem
               icon={<ReceiptSparkles24Regular />}
@@ -174,7 +183,10 @@ export default function WorkspaceMenu({ collapsed }: { collapsed: boolean }) {
                 navigate('/prompts');
               }}
             >
-              {t('Common.Prompts')}
+              <div className="flex justify-between items-center">
+                {t('Common.Prompts')}
+                <span className="text-xs tips">MOD+P</span>
+              </div>
             </MenuItem>
             <MenuItem
               icon={<DataUsage24Regular />}

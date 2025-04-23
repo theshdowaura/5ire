@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 
 import './Settings.scss';
 
+import { Link } from 'react-router-dom';
 import Version from './Version';
 import AppearanceSettings from './AppearanceSettings';
 import EmbedSettings from './EmbedSettings';
@@ -19,7 +20,17 @@ export default function Settings() {
         </div>
       </div>
       <div className="overflow-y-auto h-full pb-28 -mr-5 pr-5">
-        <div>迁移至 Provider</div>
+        <div className="settings-section">
+          <div className="settings-section--header">{t('Common.API')}</div>
+          <div className="py-4 flex-grow mt-1 gap-1">
+            <span className="tips">
+              {t('Settings.ProviderSettingsMovedTo')}&nbsp;
+            </span>
+            <Link to="/providers" className="underline">
+              {t('Common.Providers')}
+            </Link>
+          </div>
+        </div>
         <EmbedSettings />
         <AppearanceSettings />
         <LanguageSettings />

@@ -64,7 +64,7 @@
   "Chat.DeleteConfirmation": "Are you sure you want to delete the chat? ",
   "Chat.DeleteConfirmationInfo": " All messages in this conversation will be deleted. Not reversible.",
   "Common.Yes": "Yes",
-  "Notification.APINotReady": "The currently selected service provider or model is unavailable. Please try an alternative or verify your configuration. (Shortcut: CMD+, )",
+  "Notification.APINotReady": "The currently selected service provider or model is unavailable. Please try an alternative or verify your configuration. (Shortcut: CMD+k )",
   "Common.Or": "Or",
   "Chat.New": "New Chat",
   "Common.ClearFilter": "Clear filter",
@@ -300,5 +300,6 @@
   "Provider.Model.BuiltInModelCannotBeRenamed": "The built-in model cannot be renamed.",
   "Provider.Model.PriceUnit": "per 1k tokens",
   "Provider.Model.NameAlreadyExists": "The model name already exists.",
-  "Message.Error.EChartsRenderFailed": "The chart render failed."
+  "Message.Error.EChartsRenderFailed": "The chart render failed.",
+  "Settings.ProviderSettingsMovedTo": "Providers and model configurations have been migrated to"
 }
