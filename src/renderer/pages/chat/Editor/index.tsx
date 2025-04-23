@@ -175,32 +175,30 @@ export default function Editor({
           </Button>
         </div>
       ) : null}
-      <Toolbar onConfirm={onToolbarActionConfirm}  isReady={isReady}/>
-      <div className="relative">
-        {!isReady && (
-          <div className='absolute top-0 right-0 bottom-0 left-0 z-10 tips flex justify-center flex-col items-center px-5'>
-            <p>{t('Notification.APINotReady')}</p>
-          </div>
-        )}
-        <div
-          contentEditable={isReady}
-          role="textbox"
-          aria-label="editor"
-          aria-multiline="true"
-          tabIndex={0}
-          suppressContentEditableWarning
-          id="editor"
-          ref={editorRef}
-          autoCorrect="on"
-          className="w-full outline-0 pl-2.5 pr-2.5 pb-2.5 bg-brand-surface-1 flex-grow overflow-y-auto overflow-x-hidden"
-          onKeyDown={onKeyDown}
-          onFocus={restoreRange}
-          onBlur={onBlur}
-          onInput={onInput}
-          style={{ resize: 'none', whiteSpace: 'pre-wrap' }}
-        ></div>
-        <div className="h-12 flex-shrink-0" />
-      </div>
+      <Toolbar onConfirm={onToolbarActionConfirm} isReady={isReady} />
+      {!isReady && (
+        <div className="absolute top-[40px] right-0 left-0 z-10 tips flex justify-center flex-col items-center px-5">
+          <p>{t('Notification.APINotReady')}</p>
+        </div>
+      )}
+      <div
+        contentEditable={isReady}
+        role="textbox"
+        aria-label="editor"
+        aria-multiline="true"
+        tabIndex={0}
+        suppressContentEditableWarning
+        id="editor"
+        ref={editorRef}
+        autoCorrect="on"
+        className="w-full outline-0 pl-2.5 pr-2.5 pb-2.5 bg-brand-surface-1 flex-grow overflow-y-auto overflow-x-hidden"
+        onKeyDown={onKeyDown}
+        onFocus={restoreRange}
+        onBlur={onBlur}
+        onInput={onInput}
+        style={{ resize: 'none', whiteSpace: 'pre-wrap' }}
+      />
+      <div className="h-12 flex-shrink-0" />
     </div>
   );
 }
