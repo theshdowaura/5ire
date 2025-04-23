@@ -1,9 +1,8 @@
 import { Tooltip } from '@fluentui/react-components';
-import { isUndefined } from 'lodash';
+import { isNil } from 'lodash';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import useProviderStore from 'stores/useProviderStore';
-import useSettingsStore from 'stores/useSettingsStore';
 
 export default function ToolStatusIndicator(
   props: {
@@ -12,22 +11,28 @@ export default function ToolStatusIndicator(
     withTooltip?: boolean;
   } & any,
 ) {
-  const { provider, model, withTooltip, ...rest } = props;
-  const { getToolState } = useSettingsStore();
-  const {getAvailableModel} = useProviderStore();
+  const {
+    provider: providerName,
+    model: modelName,
+    withTooltip,
+    ...rest
+  } = props;
+  const { getAvailableModel } = useProviderStore();
 
+  const model = useMemo(
+    () => getAvailableModel(providerName, modelName),
+    [providerName, modelName],
+  );
+
+  // if the tools capability is not null or undefined, it means the model supports tools
   const originalSupport = useMemo(
-    () => getAvailableModel(provider, model).capabilities?.tools?.enabled || false,
-    [provider, model],
+    () => !isNil(model.capabilities?.tools),
+    [providerName, modelName],
   );
 
   const actualSupport = useMemo(() => {
-    let toolState = getToolState(provider, model);
-    if (isUndefined(toolState)) {
-      toolState = originalSupport;
-    }
-    return toolState;
-  }, [provider, model, originalSupport]);
+    return !!model.capabilities?.tools?.enabled;
+  }, [providerName, modelName]);
 
   const { t } = useTranslation();
   const tip = t(actualSupport ? 'Tool.Supported' : 'Tool.NotSupported');

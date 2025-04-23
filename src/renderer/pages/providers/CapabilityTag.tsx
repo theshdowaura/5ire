@@ -1,32 +1,22 @@
 import { capitalize, isNil } from 'lodash';
+import { IChatModelConfig } from 'providers/types';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import useProviderStore from 'stores/useProviderStore';
 
 export default function CapabilityTag(
   props: {
-    provider: string;
-    model: string;
+    model: IChatModelConfig;
     capability: 'json' | 'tools' | 'vision';
   } & any,
 ) {
-  const {
-    provider: providerName,
-    model: modelName,
-    capability: capabilityName,
-  } = props;
-  const { providers } = useProviderStore();
+  const { model, capability: capabilityName } = props;
 
   const capability = useMemo(() => {
-    const provider = providers.find((p) => p.name === providerName);
-    if (!provider) return null;
-    const model = provider.models.find((m) => m.name === modelName);
-    if (!model) return null;
     return (
       model.capabilities[capabilityName as keyof typeof model.capabilities] ||
       null
     );
-  }, [providerName, providers, modelName]);
+  }, [model]);
 
   const originalSupport = useMemo(() => {
     if (isNil(capability)) return false;

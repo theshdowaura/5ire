@@ -164,16 +164,8 @@ export default function ModelList({ height = 400 }: { height?: number }) {
                         )}
                       </div>
                       <div className="flex justify-end gap-1">
-                        <CapabilityTag
-                          provider={provider.name}
-                          model={model.name}
-                          capability="vision"
-                        />
-                        <CapabilityTag
-                          provider={provider.name}
-                          model={model.name}
-                          capability="tools"
-                        />
+                        <CapabilityTag model={model} capability="vision" />
+                        <CapabilityTag model={model} capability="tools" />
                       </div>
                     </div>
                   </div>
