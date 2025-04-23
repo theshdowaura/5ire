@@ -401,7 +401,7 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
     options?: { withDisabled?: boolean },
   ) => {
     const modelsMap = keyBy(provider.models || [], 'name');
-    let $models = [];
+    let $models: IChatModelConfig[] = [];
     if (provider.modelsEndpoint) {
       try {
         const resp = await fetch(
@@ -423,8 +423,9 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
       } catch (e) {
         $models = [ErrorModel];
       }
+    } else {
+      $models = getMergedLocalModels(provider);
     }
-    $models = getMergedLocalModels(provider);
     if (options?.withDisabled) {
       return $models;
     }
