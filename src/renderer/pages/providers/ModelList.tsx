@@ -45,7 +45,7 @@ export default function ModelList({ height = 400 }: { height?: number }) {
   const loadModels = useCallback(async () => {
     try {
       setLoading(true);
-      setModels(await getModels(provider));
+      setModels(await getModels(provider, { withDisabled: true }));
     } finally {
       setLoading(false);
     }

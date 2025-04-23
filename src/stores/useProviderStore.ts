@@ -229,8 +229,14 @@ export interface IProviderStore {
     providerName: string,
     modelName: string,
   ) => IChatModelConfig;
-  getModelsSync: (provider: IChatProviderConfig) => IChatModelConfig[];
-  getModels: (provider: IChatProviderConfig) => Promise<IChatModelConfig[]>;
+  getModelsSync: (
+    provider: IChatProviderConfig,
+    options?: { withDisabled?: boolean },
+  ) => IChatModelConfig[];
+  getModels: (
+    provider: IChatProviderConfig,
+    options?: { withDisabled?: boolean },
+  ) => Promise<IChatModelConfig[]>;
   getGroupedModelOptions: () => Promise<{
     [key: string]: ModelOption[];
   }>;
@@ -371,19 +377,31 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
       ErrorModel
     );
   },
-  getModelsSync: (provider: IChatProviderConfig) => {
+  getModelsSync: (
+    provider: IChatProviderConfig,
+    options?: { withDisabled?: boolean },
+  ) => {
+    let $models = [];
     if (provider.modelsEndpoint) {
-      return provider.models.map((model) => {
+      $models = provider.models.map((model) => {
         const customModel = provider.models.find(
           (m: IChatModelConfig) => m.name === model.name,
         );
         return mergeRemoteModel(model.name, customModel);
       });
     }
-    return getMergedLocalModels(provider);
+    $models = getMergedLocalModels(provider);
+    if (options?.withDisabled) {
+      return $models;
+    }
+    return $models.filter((model) => !model.disabled);
   },
-  getModels: async (provider: IChatProviderConfig) => {
+  getModels: async (
+    provider: IChatProviderConfig,
+    options?: { withDisabled?: boolean },
+  ) => {
     const modelsMap = keyBy(provider.models || [], 'name');
+    let $models = [];
     if (provider.modelsEndpoint) {
       try {
         const resp = await fetch(
@@ -396,17 +414,21 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
           },
         );
         const data = await resp.json();
-        return data.models
+        $models = data.models
           .filter((model: { name: string }) => model.name.indexOf('embed') < 0)
           .map((model: { name: string }) => {
             const customModel = modelsMap[model.name];
             return mergeRemoteModel(model.name, customModel);
           });
       } catch (e) {
-        return [ErrorModel];
+        $models = [ErrorModel];
       }
     }
-    return getMergedLocalModels(provider);
+    $models = getMergedLocalModels(provider);
+    if (options?.withDisabled) {
+      return $models;
+    }
+    return $models.filter((model) => !model.disabled);
   },
   getGroupedModelOptions: async () => {
     const { getAvailableProviders, getModels } = get();
@@ -469,7 +491,6 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
     if (!found) {
       updatedModels.push({ ...model, name } as IChatModelConfig);
     }
-    console.log('updatedModels', updatedModels);
     const updatedProvider = {
       name: provider.name,
       models: updatedModels,

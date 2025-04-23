@@ -11,6 +11,7 @@ import { ERROR_MODEL } from 'consts';
 import { IChat, IChatContext } from 'intellichat/types';
 import { IChatModelConfig, IChatProviderConfig } from 'providers/types';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import useChatStore from 'stores/useChatStore';
 import useProviderStore from 'stores/useProviderStore';
 import eventBus from 'utils/bus';
@@ -22,6 +23,7 @@ export default function ModelCtrl({
   chat: IChat;
   ctx: IChatContext;
 }) {
+  const { t } = useTranslation();
   const bus = useRef(eventBus);
   const editStage = useChatStore((state) => state.editStage);
   const { getAvailableProviders, getModels, getAvailableModel } =
@@ -127,18 +129,22 @@ export default function ModelCtrl({
         </MenuTrigger>
         <MenuPopover>
           <MenuList>
-            {models.map((model: IChatModelConfig) => (
-              <MenuItem
-                key={model.name}
-                disabled={!model.isReady}
-                onClick={() => {
-                  setCurModel(model);
-                  isChanged.current = true;
-                }}
-              >
-                {model.label}
-              </MenuItem>
-            ))}
+            {models.length > 0 ? (
+              models.map((model: IChatModelConfig) => (
+                <MenuItem
+                  key={model.name}
+                  disabled={!model.isReady}
+                  onClick={() => {
+                    setCurModel(model);
+                    isChanged.current = true;
+                  }}
+                >
+                  {model.label}
+                </MenuItem>
+              ))
+            ) : (
+              <MenuItem disabled>{t('Common.NoModels')}</MenuItem>
+            )}
           </MenuList>
         </MenuPopover>
       </Menu>
