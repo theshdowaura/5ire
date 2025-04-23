@@ -17,16 +17,18 @@ export default class DoubaoChatService
     messages: IChatRequestMessage[],
     msgId?: string,
   ): Promise<Response> {
-    const { base, deploymentId, key } = this.apiSettings;
-    const payload = await this.makePayload(messages,msgId);
+    const provider = this.context.getProvider();
+    const model = this.context.getModel();
+    const deploymentId = model.extras?.deploymentId || model.name;
+    const payload = await this.makePayload(messages, msgId);
     payload.model = deploymentId;
     payload.stream = true;
-    const url = urlJoin('/chat/completions', base);
+    const url = urlJoin('/chat/completions', provider.apiBase.trim());
     const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${key}`,
+        Authorization: `Bearer ${provider.apiKey.trim()}`,
       },
       body: JSON.stringify(payload),
       signal: this.abortController.signal,
