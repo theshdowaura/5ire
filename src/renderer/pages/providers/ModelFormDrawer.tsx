@@ -54,6 +54,7 @@ export default function ModelFormDrawer({
   const [tools, setTools] = useState<boolean>(false);
   const [isDefault, setIsDefault] = useState<boolean>(false);
   const [disabled, setDisabled] = useState<boolean>(false);
+  const [extras, setExtras] = useState<{ [key: string]: string }>({});
 
   const modelNames = useMemo(
     () => provider.models.map((m) => m.name),
@@ -99,6 +100,7 @@ export default function ModelFormDrawer({
     setTools(false);
     setIsDefault(false);
     setDisabled(false);
+    setExtras({});
   };
 
   const onSave = () => {
@@ -121,6 +123,7 @@ export default function ModelFormDrawer({
       isDefault,
       disabled,
       isReady: true,
+      extras,
       capabilities: {
         tools: (!!provider.modelsEndpoint ||
           !model?.isBuiltIn ||
@@ -165,6 +168,7 @@ export default function ModelFormDrawer({
       setOutputPrice(model.outputPrice || 0);
       setVision(model.capabilities?.vision?.enabled || false);
       setTools(model.capabilities?.tools?.enabled || false);
+      setExtras(model.extras || {});
     } else {
       reset();
     }
@@ -300,6 +304,26 @@ export default function ModelFormDrawer({
             />
           </Field>
         </div>
+        {provider.modelExtras?.map((extraName: string) => {
+          return (
+            <Field
+              key={extraName}
+              label={t(`Dynamic.${extraName}`)}
+              size="small"
+            >
+              <Input
+                value={extras[extraName] || ''}
+                placeholder={t('Common.Required')}
+                onChange={(e) => {
+                  setExtras({
+                    ...extras,
+                    [extraName]: e.target.value,
+                  });
+                }}
+              />
+            </Field>
+          );
+        })}
         <div className="grid grid-cols-2 gap-1 field-small">
           <Switch
             disabled={
