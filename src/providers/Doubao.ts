@@ -120,7 +120,7 @@ export default {
   },
   chat: {
     docs: {
-      deploymentId: '接入点名称, 类似 ep-20241101123241-24smv',
+      modelId: '接入点名称, 类似 ep-20241101123241-24smv',
       temperature:
         'Higher values will make the output more creative and unpredictable, while lower values will make it more precise.',
       presencePenalty:
@@ -129,7 +129,7 @@ export default {
       model: '用于统计用量和控制上下文长度，请选择与部署一致的模型',
     },
     apiSchema: ['base', 'key'],
-    modelExtras: ['deploymentId'],
+    modelExtras: ['modelId'],
     frequencyPenalty: { min: -2, max: 2, default: 0 },
     topP: { min: 0, max: 1, default: 0.7 },
     presencePenalty: { min: -2, max: 2, default: 0 },
