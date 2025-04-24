@@ -1,4 +1,4 @@
-import { find, isNil, keyBy, unionBy } from 'lodash';
+import { find, isNil, keyBy, omit, unionBy } from 'lodash';
 import { getBuiltInProviders } from 'providers';
 import {
   IChatModel,
@@ -79,7 +79,7 @@ const mergeRemoteModel = (
     inputPrice: customModel?.inputPrice || 0,
     outputPrice: customModel?.outputPrice || 0,
     description: customModel?.description || '',
-    isBuiltIn: true,
+    isBuiltIn: true, // remote models are always built-in
     disabled: customModel?.disabled || false,
   } as IChatModelConfig;
 };
@@ -89,14 +89,20 @@ const getMergedLocalModels = (provider: IChatProviderConfig) => {
   const builtinModels =
     builtInProviders.find((p) => p.name === provider.name)?.chat.models || [];
   const userCreatedModels =
-    provider?.models?.filter((model: IChatModelConfig) => {
-      return (
-        !provider.isBuiltIn ||
-        !builtinModels?.some(
-          (builtInModel: IChatModel) => builtInModel.name === model.name,
-        )
-      );
-    }) || [];
+    provider?.models
+      ?.filter((model: IChatModelConfig) => {
+        return (
+          !provider.isBuiltIn ||
+          !builtinModels?.some(
+            (builtInModel: IChatModel) => builtInModel.name === model.name,
+          )
+        );
+      })
+      .map((model) => {
+        model.isBuiltIn = false;
+        model.isReady = true;
+        return model;
+      }) || [];
   const customModels = keyBy(provider?.models || [], 'name');
   return [
     ...(builtinModels?.map((model) => {
@@ -154,7 +160,6 @@ const migrateSettings = () => {
         apiSecret: provider.secret,
         apiVersion: provider.version,
         models: [],
-        isBuiltIn: true,
         isDefault: provider.provider === legacyDefaultProvider,
       }),
     );
@@ -275,7 +280,7 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
           found = true;
           return {
             ...providerItem,
-            ...provider,
+            ...omit(provider, 'isBuiltIn'),
           };
         }
         if (provider.isDefault) {
@@ -351,8 +356,6 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
       currency: 'USD',
       apiKey: '',
       isDefault: false,
-      isPremium: false,
-      isBuiltIn: false,
       models: [],
       disabled: false,
     } as Partial<IChatProviderConfig>;
@@ -458,10 +461,7 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
     ) || {
       models: [],
     };
-    const newModel = {
-      ...model,
-      isBuiltIn: false,
-    } as IChatModelConfig;
+    const newModel = omit(model, 'isBuiltIn') as IChatModelConfig;
     const updatedProvider = {
       name: provider.name,
       models: [...(customProvider.models || []), newModel],
@@ -483,7 +483,7 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
       customProvider.models?.map((m: IChatModelConfig) => {
         if (m.name === name) {
           found = true;
-          return { ...m, ...model };
+          return { ...m, ...omit(model, 'isBuiltIn') };
         }
         if (model.isDefault) {
           m.isDefault = false;
