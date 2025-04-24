@@ -52,6 +52,11 @@ export default function ImgCtrl({
   const [errMsg, setErrMsg] = useState<string>('');
   const [open, setOpen] = useState<boolean>(false);
 
+  const closeDialog = () => {
+    setOpen(false);
+    Mousetrap.unbind('esc');
+  };
+
   const openDialog = () => {
     setOpen(true);
     setTimeout(
@@ -64,11 +69,6 @@ export default function ImgCtrl({
       500,
     );
     Mousetrap.bind('esc', closeDialog);
-  };
-
-  const closeDialog = () => {
-    setOpen(false);
-    Mousetrap.unbind('esc');
   };
 
   const vision = useMemo<IVersionCapability>(() => {
@@ -162,6 +162,7 @@ export default function ImgCtrl({
     <Dialog open={open}>
       <DialogTrigger disableButtonEnhancement>
         <Button
+          disabled={disabled}
           aria-label={t('Common.Image')}
           title="Mod+Shift+6"
           size="small"
