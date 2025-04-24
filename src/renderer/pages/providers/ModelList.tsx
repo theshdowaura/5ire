@@ -141,7 +141,7 @@ export default function ModelList({ height = 400 }: { height?: number }) {
                           <div className="w-[16px]" />
                         )}
                         <span
-                          className={`text-sm ${model.disabled ? 'text-gray-300 dark:text-gray-500' : ''}`}
+                          className={`text-sm ${model.disabled || !model.isReady ? 'text-gray-300 dark:text-gray-500' : ''}`}
                           title={model.name}
                         >
                           {model.label || model.name}
