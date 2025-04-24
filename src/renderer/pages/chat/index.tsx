@@ -147,7 +147,7 @@ export default function Chat() {
     });
     if (activeChatId !== tempChatId) {
       getChat(activeChatId);
-    } else if (isReady) {
+    } else {
       if (folder) {
         initChat(getCurFolderSettings());
       } else {
