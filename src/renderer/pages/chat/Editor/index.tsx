@@ -205,7 +205,11 @@ export default function Editor({
         onFocus={restoreRange}
         onBlur={onBlur}
         onInput={onInput}
-        style={{ resize: 'none', whiteSpace: 'pre-wrap' }}
+        style={{
+          resize: 'none',
+          whiteSpace: 'pre-wrap',
+          opacity: isReady ? 1 : 0,
+        }}
       />
       <div className="h-8 flex-shrink-0" />
     </div>
