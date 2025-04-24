@@ -69,7 +69,10 @@ const mergeRemoteModel = (
 ) => {
   return {
     name: modelName,
-    label: customModel?.label || modelName,
+    label:
+      customModel?.label || modelName === ERROR_MODEL
+        ? 'Invalid Model'
+        : modelName,
     isReady: modelName !== ERROR_MODEL,
     isDefault: customModel?.isDefault || false,
     contextWindow: customModel?.contextWindow || DEFAULT_CONTEXT_WINDOW,
@@ -395,8 +398,9 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
         );
         return mergeRemoteModel(model.name, customModel);
       });
+    } else {
+      $models = getMergedLocalModels(provider);
     }
-    $models = getMergedLocalModels(provider);
     if (options?.withDisabled) {
       return $models;
     }
