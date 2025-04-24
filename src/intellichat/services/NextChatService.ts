@@ -18,10 +18,9 @@ import { raiseError, stripHtmlTags } from 'utils/util';
 const debug = Debug('5ire:intellichat:NextChatService');
 
 export default abstract class NextCharService {
+  name: string;
   abortController: AbortController;
-
   context: IChatContext;
-
   provider: IServiceProvider;
 
   protected abstract getReaderType(): new (
@@ -45,12 +44,15 @@ export default abstract class NextCharService {
   protected traceTool: (chatId: string, label: string, msg: string) => void;
 
   constructor({
+    name,
     context,
     provider,
   }: {
+    name: string;
     context: IChatContext;
     provider: IServiceProvider;
   }) {
+    this.name = name;
     this.provider = provider;
     this.context = context;
     this.abortController = new AbortController();

@@ -45,7 +45,7 @@ export default {
     apiKeyCustomizable: false,
   },
   chat: {
-    apiSchema: ['base', 'model'],
+    apiSchema: ['base'],
     presencePenalty: { min: -2, max: 2, default: 0 },
     topP: { min: 0, max: 1, default: 1 },
     temperature: { min: 0, max: 1, default: 0.9 },

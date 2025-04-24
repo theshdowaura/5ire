@@ -114,7 +114,7 @@ export default function PromptCtrl({
         setVariableDialogOpen(true);
       } else {
         const input = insertUserMessage(prompt.userMessage);
-        editStage(chat.id, { prompt: $prompt, input });
+        await editStage(chat.id, { prompt: $prompt, input });
       }
     }
     const editor = document.querySelector('#editor') as HTMLTextAreaElement;
@@ -133,7 +133,7 @@ export default function PromptCtrl({
   }, [setPickedPrompt]);
 
   const onVariablesConfirm = useCallback(
-    (
+    async (
       systemVars: { [key: string]: string },
       userVars: { [key: string]: string },
     ) => {
@@ -153,7 +153,7 @@ export default function PromptCtrl({
         );
         payload.input = insertUserMessage(payload.prompt.userMessage);
       }
-      editStage(chat.id, payload);
+      await editStage(chat.id, payload);
       setVariableDialogOpen(false);
     },
     [pickedPrompt, editStage, chat.id],

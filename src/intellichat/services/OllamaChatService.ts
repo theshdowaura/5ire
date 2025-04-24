@@ -12,8 +12,8 @@ export default class OllamaChatService
   extends OpenAIChatService
   implements INextChatService
 {
-  constructor(context: IChatContext) {
-    super(context);
+  constructor(name:string, context: IChatContext) {
+    super(name, context);
     this.provider = Ollama;
   }
 

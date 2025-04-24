@@ -96,7 +96,7 @@ export default function ImgCtrl({
     setImgURL(data.value);
   };
 
-  const Add = () => {
+  const Add = async () => {
     let url = null;
     if (imgURL) {
       if (!isWebUri(imgURL) && !imgURL.startsWith('data:')) {
@@ -109,7 +109,7 @@ export default function ImgCtrl({
     }
     setErrMsg('');
     const editor = document.querySelector('#editor') as HTMLDivElement;
-    editStage(chat.id, {
+    await editStage(chat.id, {
       input: insertAtCursor(
         editor,
         `<img src="${url}" style="width:260px; display:block;" />`,

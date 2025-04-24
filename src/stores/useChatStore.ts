@@ -112,7 +112,7 @@ export interface IChatStore {
     offset?: number;
     keyword?: string;
   }) => Promise<IChatMessage[]>;
-  editStage: (chatId: string, stage: Partial<IStage>) => void;
+  editStage: (chatId: string, stage: Partial<IStage>) => Promise<void>;
   deleteStage: (chatId: string) => void;
 }
 
@@ -757,7 +757,7 @@ const useChatStore = create<IChatStore>((set, get) => ({
     set({ messages });
     return messages;
   },
-  editStage: (chatId: string, stage: Partial<IStage>) => {
+  editStage: async (chatId: string, stage: Partial<IStage>) => {
     if (chatId === tempChatId) {
       set(
         produce((state: IChatStore): void => {
@@ -797,7 +797,8 @@ const useChatStore = create<IChatStore>((set, get) => ({
       get().editChat({ id: chatId, ...stage });
       window.electron.store.set('stage', get().tempStage);
     } else {
-      get().updateChat({ id: chatId, ...stage });
+      const { updateChat } = get();
+      await updateChat({ id: chatId, ...stage });
     }
   },
   deleteStage: (chatId: string) => {

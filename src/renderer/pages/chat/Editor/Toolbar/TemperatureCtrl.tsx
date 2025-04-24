@@ -62,12 +62,12 @@ export default function TemperatureCtrl({
     };
   }, [chat.id, chat.provider, chat.temperature]);
 
-  const updateTemperature = (
+  const updateTemperature = async (
     ev: ChangeEvent<HTMLInputElement>,
     data: SliderOnChangeData,
   ) => {
     const $temperature = data.value;
-    editStage(chat.id, { temperature: $temperature });
+    await editStage(chat.id, { temperature: $temperature });
     setTemperature($temperature);
     window.electron.ingestEvent([{ app: 'modify-temperature' }]);
   };

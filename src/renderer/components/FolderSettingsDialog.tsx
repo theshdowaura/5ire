@@ -86,7 +86,7 @@ export default function FolderSettingsDialog({
       systemMessage: folderSystemMessage,
     });
     if (chat.id === tempChatId) {
-      editStage(chat.id, {
+      await editStage(chat.id, {
         provider: folderProvider,
         model: folderModel,
         temperature: folderTemperature,

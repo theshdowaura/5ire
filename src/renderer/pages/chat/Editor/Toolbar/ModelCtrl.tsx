@@ -40,8 +40,14 @@ export default function ModelCtrl({
     async (provider: IChatProviderConfig) => {
       const $models = await getModels(provider);
       setModels($models);
-      const ctxModel = find($models, { isDefault: true }) || $models[0];
-      setCurModel(ctxModel);
+      const ctxProvider = ctx.getProvider();
+      const ctxModel = ctx.getModel();
+      if (ctxProvider.name === provider.name) {
+        setCurModel(ctxModel);
+      } else {
+        const $model = find($models, { isDefault: true }) || $models[0];
+        setCurModel($model);
+      }
     },
     [getModels],
   );
@@ -67,15 +73,19 @@ export default function ModelCtrl({
     }
   }, [curProvider?.name]);
 
-  useEffect(() => {
+  const onModelChange = async () => {
     if (isChanged.current) {
-      editStage(chat.id, {
+      await editStage(chat.id, {
         provider: curProvider?.name,
         model: curModel?.name,
       });
-      bus.current.emit('providerChanged', { provider: curProvider?.name });
       isChanged.current = false;
     }
+    bus.current.emit('providerChanged', { provider: curProvider?.name });
+  };
+
+  useEffect(() => {
+    onModelChange();
   }, [curModel?.name]);
 
   return (
@@ -106,8 +116,9 @@ export default function ModelCtrl({
                 }}
                 disabled={!provider.isReady}
                 onClick={() => {
-                  setCurProvider(provider);
                   isChanged.current = true;
+                  setCurProvider(provider);
+                  console.log('setCurProvider', isChanged.current);
                 }}
               >
                 {provider.name}
@@ -144,9 +155,8 @@ export default function ModelCtrl({
                     minHeight: 12,
                   }}
                   onClick={() => {
-                    console.log('>>>>', model.name);
-                    setCurModel(model);
                     isChanged.current = true;
+                    setCurModel(model);
                   }}
                 >
                   <div className="flex justify-start items-center gap-1 text-xs py-1">

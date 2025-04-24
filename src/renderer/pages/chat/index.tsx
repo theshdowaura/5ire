@@ -134,6 +134,7 @@ export default function Chat() {
     return () => {
       currentRef?.removeEventListener('scroll', handleScroll);
       isUserScrollingRef.current = false;
+      setChatService(null);
     };
   }, []);
 

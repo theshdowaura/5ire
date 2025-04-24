@@ -9,7 +9,7 @@ export default {
     modelsEndpoint: '/api/tags',
   },
   chat: {
-    apiSchema: ['base', 'model'],
+    apiSchema: ['base'],
     docs: {
       temperature:
         'Higher values will make the output more creative and unpredictable, while lower values will make it more precise.',
@@ -30,7 +30,7 @@ export default {
     models: [],
   },
   embedding: {
-    apiSchema: ['base', 'model'],
+    apiSchema: ['base'],
     placeholders: {
       base: ' http://127.0.0.1:11434',
     },

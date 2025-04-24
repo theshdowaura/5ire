@@ -44,13 +44,13 @@ export default function CtxNumCtrl({
   const handleOpenChange: PopoverProps['onOpenChange'] = (e, data) =>
     setOpen(data.open || false);
 
-  const updateCtxMessages = (
+  const updateCtxMessages = async (
     ev: ChangeEvent<HTMLInputElement>,
     data: SliderOnChangeData,
   ) => {
     const maxCtxMessages = data.value;
     setCtxMessages(maxCtxMessages);
-    editStage(chat.id, { maxCtxMessages });
+    await editStage(chat.id, { maxCtxMessages });
     window.electron.ingestEvent([
       { app: 'modify-max-ctx-messages' },
       { 'max-ctx-messages': maxCtxMessages },

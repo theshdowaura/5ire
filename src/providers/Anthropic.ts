@@ -183,7 +183,7 @@ export default {
     apiKeyCustomizable: true,
   },
   chat: {
-    apiSchema: ['base', 'key', 'model'],
+    apiSchema: ['base', 'key'],
     topP: { min: 0, max: 1, default: null },
     temperature: { min: 0, max: 1, default: 1.0 },
     options: {

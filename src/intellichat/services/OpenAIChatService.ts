@@ -24,8 +24,9 @@ export default class OpenAIChatService
   extends NextChatService
   implements INextChatService
 {
-  constructor(context: IChatContext) {
+  constructor(name: string, context: IChatContext) {
     super({
+      name,
       context,
       provider: OpenAI,
     });

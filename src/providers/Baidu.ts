@@ -72,7 +72,7 @@ export default {
   description:
     '[API 密钥] 和 [API Secret] 的获取参考：https://cloud.baidu.com/doc/Reference/s/9jwvz2egb',
   chat: {
-    apiSchema: ['base', 'key', 'secret', 'model'],
+    apiSchema: ['base', 'key', 'secret'],
     docs: {
       key: '用户账号->安全认证->[Access Key]',
       secret: '用户账号->安全认证->[Secret Key]',

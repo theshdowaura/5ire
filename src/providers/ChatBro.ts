@@ -61,7 +61,7 @@ const chatModels = [
     defaultMaxTokens: 4000,
     inputPrice: 0.01,
     outputPrice: 0.02,
-    description: `Ability to understand images, in addition to all other GPT-4 Turbo capabilties.
+    description: `Ability to understand images, in addition to all other GPT-4 Turbo capabilities.
     Returns a maximum of 4,096 output tokens.
     This is a preview model version and not suited yet for production traffic`,
   },
@@ -76,7 +76,7 @@ export default {
     apiKeyCustomizable: true,
   },
   chat: {
-    apiSchema: ['base', 'key', 'model'],
+    apiSchema: ['base', 'key'],
     presencePenalty: { min: -2, max: 2, default: 0 },
     topP: { min: 0, max: 1, default: 1 },
     temperature: { min: 0, max: 1, default: 0.9 },

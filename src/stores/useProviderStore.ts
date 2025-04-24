@@ -70,7 +70,7 @@ const mergeRemoteModel = (
   return {
     name: modelName,
     label: customModel?.label || modelName,
-    isReady: true,
+    isReady: modelName !== ERROR_MODEL,
     isDefault: customModel?.isDefault || false,
     contextWindow: customModel?.contextWindow || DEFAULT_CONTEXT_WINDOW,
     capabilities: customModel?.capabilities || {},
@@ -100,7 +100,7 @@ const getMergedLocalModels = (provider: IChatProviderConfig) => {
       })
       .map((model) => {
         model.isBuiltIn = false;
-        model.isReady = true;
+        model.isReady = model.name !== ERROR_MODEL;
         return model;
       }) || [];
   const customModels = keyBy(provider?.models || [], 'name');
@@ -371,7 +371,11 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
   },
   getAvailableModel: (providerName: string, modelName: string) => {
     const { getModelsSync, getAvailableProvider } = get();
-    const models = getModelsSync(getAvailableProvider(providerName));
+    const provider = getAvailableProvider(providerName);
+    if (provider.modelsEndpoint) {
+      return mergeRemoteModel(modelName);
+    }
+    const models = getModelsSync(provider, { withDisabled: false });
     return (
       find(models, { name: modelName }) ||
       find(models, { isDefault: true }) ||

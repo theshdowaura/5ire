@@ -181,40 +181,42 @@ export default function ProviderForm() {
           />
         </Field>
       </div>
-      <div className="mt-2 flex justify-start items-baseline gap-1">
-        <Label className="w-[70px]" size="small">
-          {t('Common.APIKey')}
-        </Label>
-        <Field
-          size="small"
-          className="field-small flex-grow"
-          validationState={apiKeyError ? 'error' : 'none'}
-          validationMessage={apiKeyError}
-        >
-          <MaskableInput
-            className="flex-grow"
-            value={apiKey}
-            onBlur={(ev: React.FocusEvent<HTMLInputElement>) => {
-              if (isBlank(ev.target.value)) {
-                setApiKeyError(t('Common.Required'));
-              } else {
-                setApiKeyError('');
-                updateProvider(name, {
-                  apiKey: ev.target.value,
-                });
-              }
-            }}
-            onChange={(ev: React.ChangeEvent<HTMLInputElement>) => {
-              setApiKey(ev.target.value);
-              if (isBlank(ev.target.value)) {
-                setApiKeyError(t('Common.Required'));
-              } else {
-                setApiKeyError('');
-              }
-            }}
-          />
-        </Field>
-      </div>
+      {getChatAPISchema(provider.name || '').includes('key') && (
+        <div className="mt-2 flex justify-start items-baseline gap-1">
+          <Label className="w-[70px]" size="small">
+            {t('Common.APIKey')}
+          </Label>
+          <Field
+            size="small"
+            className="field-small flex-grow"
+            validationState={apiKeyError ? 'error' : 'none'}
+            validationMessage={apiKeyError}
+          >
+            <MaskableInput
+              className="flex-grow"
+              value={apiKey}
+              onBlur={(ev: React.FocusEvent<HTMLInputElement>) => {
+                if (isBlank(ev.target.value)) {
+                  setApiKeyError(t('Common.Required'));
+                } else {
+                  setApiKeyError('');
+                  updateProvider(name, {
+                    apiKey: ev.target.value,
+                  });
+                }
+              }}
+              onChange={(ev: React.ChangeEvent<HTMLInputElement>) => {
+                setApiKey(ev.target.value);
+                if (isBlank(ev.target.value)) {
+                  setApiKeyError(t('Common.Required'));
+                } else {
+                  setApiKeyError('');
+                }
+              }}
+            />
+          </Field>
+        </div>
+      )}
       {getChatAPISchema(provider.name || '').includes('secret') && (
         <div className="mt-2 flex justify-start items-baseline gap-1">
           <Label className="w-[70px]" size="small">

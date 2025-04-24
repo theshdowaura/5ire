@@ -8,8 +8,8 @@ export default class AzureChatService
   extends OpenAIChatService
   implements INextChatService
 {
-  constructor(chatContext: IChatContext) {
-    super(chatContext);
+  constructor(name:string,chatContext: IChatContext) {
+    super(name, chatContext);
     this.provider = Azure;
   }
 

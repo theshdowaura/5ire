@@ -2,6 +2,7 @@ import { IChatContext, IChatRequestMessage } from 'intellichat/types';
 import { IServiceProvider } from 'providers/types';
 
 export default interface INextChatService {
+  name: string;
   context: IChatContext;
   provider: IServiceProvider;
   chat(message: IChatRequestMessage[], msgId?: string): void;

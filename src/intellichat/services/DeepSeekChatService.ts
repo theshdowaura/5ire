@@ -8,8 +8,8 @@ export default class DeepSeekChatService
   extends OpenAIChatService
   implements INextChatService
 {
-  constructor(chatContext: IChatContext) {
-    super(chatContext);
+  constructor(name:string, chatContext: IChatContext) {
+    super(name, chatContext);
     this.provider = DeepSeek;
   }
 

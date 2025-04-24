@@ -11,7 +11,14 @@ import {
 } from 'intellichat/types';
 import { isBlank } from 'utils/validators';
 import Google from 'providers/Google';
-import { getBase64, removeAdditionalProperties, splitByImg, stripHtmlTags, transformPropertiesType, urlJoin } from 'utils/util';
+import {
+  getBase64,
+  removeAdditionalProperties,
+  splitByImg,
+  stripHtmlTags,
+  transformPropertiesType,
+  urlJoin,
+} from 'utils/util';
 import BaseReader from 'intellichat/readers/BaseReader';
 import GoogleReader from 'intellichat/readers/GoogleReader';
 import { ITool } from 'intellichat/readers/IChatReader';
@@ -24,8 +31,9 @@ export default class GoogleChatService
   extends NextChatService
   implements INextChatService
 {
-  constructor(context: IChatContext) {
+  constructor(name: string, context: IChatContext) {
     super({
+      name,
       context,
       provider: Google,
     });

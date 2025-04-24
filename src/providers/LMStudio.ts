@@ -30,7 +30,7 @@ export default {
     models: [],
   },
   embedding: {
-    apiSchema: ['base', 'model'],
+    apiSchema: ['base'],
     placeholders: {
       base: ' http://127.0.0.1:1234/v1',
     },

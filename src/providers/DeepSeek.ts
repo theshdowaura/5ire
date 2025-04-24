@@ -9,7 +9,7 @@ const chatModels = [
     inputPrice: 0.0006,
     outputPrice: 0.002,
     isDefault: true,
-    description: `60 tokens/second, Enhanced capabilities，API compatibility intact`,
+    description: `60 tokens/second, Enhanced capabilities,API compatibility intact`,
     capabilities: {
       tools: {
         enabled: true,
@@ -40,7 +40,7 @@ export default {
     apiKeyCustomizable: true,
   },
   chat: {
-    apiSchema: ['base', 'key', 'model'],
+    apiSchema: ['base', 'key'],
     presencePenalty: { min: -2, max: 2, default: 0 },
     topP: { min: 0, max: 1, default: 1 },
     temperature: { min: 0, max: 2, default: 1 },

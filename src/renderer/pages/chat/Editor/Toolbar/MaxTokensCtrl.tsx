@@ -66,7 +66,7 @@ export default function MaxTokens({
   const handleOpenChange: PopoverProps['onOpenChange'] = (e, data) =>
     setOpen(data.open || false);
 
-  const updateMaxTokens = (
+  const updateMaxTokens = async (
     ev: SpinButtonChangeEvent,
     data: SpinButtonOnChangeData,
   ) => {
@@ -74,7 +74,7 @@ export default function MaxTokens({
       ? data.value
       : str2int(data.displayValue as string);
     const $maxToken = Math.max(Math.min(value as number, modelMaxTokens), 1);
-    editStage(chat.id, { maxTokens: $maxToken });
+    await editStage(chat.id, { maxTokens: $maxToken });
     setMaxTokens($maxToken);
     onConfirm();
     window.electron.ingestEvent([{ app: 'modify-max-tokens' }]);

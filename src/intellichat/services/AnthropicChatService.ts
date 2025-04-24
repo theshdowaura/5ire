@@ -29,8 +29,9 @@ export default class AnthropicChatService
   extends NextChatService
   implements INextChatService
 {
-  constructor(context: IChatContext) {
+  constructor(name: string, context: IChatContext) {
     super({
+      name,
       context,
       provider: Anthropic,
     });
@@ -96,7 +97,7 @@ export default class AnthropicChatService
   protected async convertPromptContent(
     content: string,
   ): Promise<string | IChatRequestMessageContent[]> {
-    if (this.context.getModel().vision?.enabled) {
+    if (this.context.getModel().capabilities.vision?.enabled) {
       const items = splitByImg(content);
       const promises = items.map(async (item) => {
         if (item.type === 'image') {

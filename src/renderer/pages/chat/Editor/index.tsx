@@ -53,9 +53,9 @@ export default function Editor({
   }, [savedRange]);
 
   const saveInput = useMemo(() => {
-    return debounce((chatId: string) => {
+    return debounce(async (chatId: string) => {
       if (!submitted) {
-        editStage(chatId, { input: editorRef.current?.innerHTML });
+        await editStage(chatId, { input: editorRef.current?.innerHTML });
       }
     }, 500);
   }, [editStage]);
