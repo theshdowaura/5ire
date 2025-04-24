@@ -292,5 +292,6 @@
   "Provider.Model.NameAlreadyExists": "该模型名称已经存在",
   "Message.Error.EChartsRenderFailed": "图表渲染失败.",
   "Settings.ProviderSettingsMovedTo": "服务商与模型配置已移动至服务商",
-  "Common.InspectorHint": "通过 Inspector，您可实时追踪工具执行状态，并查看函数参数细节及返回数据内容。"
+  "Common.InspectorHint": "通过 Inspector，您可实时追踪工具执行状态，并查看函数参数细节及返回数据内容。",
+  "Dynamic.modelId": "Model ID"
 }
