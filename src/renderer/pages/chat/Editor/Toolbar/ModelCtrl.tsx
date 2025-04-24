@@ -10,7 +10,7 @@ import { ChevronDownRegular } from '@fluentui/react-icons';
 import { IChat, IChatContext } from 'intellichat/types';
 import { find } from 'lodash';
 import { IChatModelConfig, IChatProviderConfig } from 'providers/types';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import ToolStatusIndicator from 'renderer/components/ToolStatusIndicator';
 import useChatStore from 'stores/useChatStore';
@@ -36,12 +36,15 @@ export default function ModelCtrl({
   const [models, setModels] = useState<IChatModelConfig[]>([]);
   const isChanged = useRef(false);
 
-  const loadModels = async (provider: IChatProviderConfig) => {
-    const $models = await getModels(provider);
-    setModels($models);
-    const ctxModel = find($models, { isDefault: true }) || $models[0];
-    setCurModel(ctxModel);
-  };
+  const loadModels = useCallback(
+    async (provider: IChatProviderConfig) => {
+      const $models = await getModels(provider);
+      setModels($models);
+      const ctxModel = find($models, { isDefault: true }) || $models[0];
+      setCurModel(ctxModel);
+    },
+    [getModels],
+  );
 
   useEffect(() => {
     const ctxProvider = ctx.getProvider();
@@ -54,7 +57,7 @@ export default function ModelCtrl({
       setModels([]);
       isChanged.current = false;
     };
-  }, [chat.id, chat.provider, chat.model]);
+  }, [chat.id, chat.provider]);
 
   useEffect(() => {
     if (curProvider) {
@@ -141,6 +144,7 @@ export default function ModelCtrl({
                     minHeight: 12,
                   }}
                   onClick={() => {
+                    console.log('>>>>', model.name);
                     setCurModel(model);
                     isChanged.current = true;
                   }}
