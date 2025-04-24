@@ -121,7 +121,7 @@ const getMergedLocalModels = (provider: IChatProviderConfig) => {
         extras: customModel?.extras || {},
       } as IChatModelConfig;
       mergedModel.isReady = isModelReady(
-        provider.modelExtras || [],
+        provider.modelExtras as string[],
         mergedModel,
       );
       return mergedModel;
@@ -197,7 +197,7 @@ const mergeProviders = (
       isPremium: !!builtInProvider?.isPremium,
       disabled: customProvider?.disabled || false,
       isBuiltIn: !!builtInProvider,
-      modelExtras: customProvider?.modelExtras || [],
+      modelExtras: builtInProvider?.chat.modelExtras || [],
       modelsEndpoint: builtInProvider?.options?.modelsEndpoint,
       isReady: false,
       models: customProvider?.models || [],
