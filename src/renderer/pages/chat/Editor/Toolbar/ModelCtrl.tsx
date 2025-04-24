@@ -118,7 +118,6 @@ export default function ModelCtrl({
                 onClick={() => {
                   isChanged.current = true;
                   setCurProvider(provider);
-                  console.log('setCurProvider', isChanged.current);
                 }}
               >
                 {provider.name}
@@ -138,7 +137,7 @@ export default function ModelCtrl({
             icon={<ChevronDownRegular className="ml-2" />}
             className="flex justify-start items-center"
           >
-            {curModel?.label}
+            {curModel?.label || curModel?.name}
           </Button>
         </MenuTrigger>
         <MenuPopover>
