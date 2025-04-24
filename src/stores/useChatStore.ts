@@ -538,7 +538,7 @@ const useChatStore = create<IChatStore>((set, get) => ({
   },
   fetchChat: async (limit: number = 300, offset = 0) => {
     const rows = (await window.electron.db.all(
-      'SELECT id, summary, folderId, createdAt FROM chats ORDER BY createdAt DESC limit ? offset ?',
+      'SELECT id, summary, provider, model, folderId, createdAt FROM chats ORDER BY createdAt DESC limit ? offset ?',
       [limit, offset],
     )) as IChat[];
     const chats = rows.map((chat) => {
