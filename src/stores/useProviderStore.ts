@@ -117,9 +117,7 @@ const getMergedLocalModels = (provider: IChatProviderConfig) => {
         inputPrice: customModel?.inputPrice || model.inputPrice,
         outputPrice: customModel?.outputPrice || model.outputPrice,
         description: customModel?.description || model.description || null,
-        isDefault: !isNil(customModel?.isDefault)
-          ? customModel?.isDefault
-          : !!model.isDefault,
+        isDefault: customModel?.isDefault,
         isBuiltIn: true,
         isPremium: provider.isPremium,
         disabled: customModel?.disabled || false,
@@ -271,16 +269,41 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
       }
     }
   },
+  createProvider: (providerName = 'Untitled') => {
+    const { providers } = get();
+    const names = providers.map((provider) => provider.name);
+    const defaultName = genDefaultName(names, providerName);
+    const newProvider = {
+      name: defaultName,
+      apiBase: '',
+      currency: 'USD',
+      apiKey: '',
+      isDefault: false,
+      models: [],
+      disabled: false,
+    } as Partial<IChatProviderConfig>;
+    const customProviders = window.electron.store.get('providers');
+    const newCustomProviders = (
+      [...customProviders, newProvider] as IChatProviderConfig[]
+    ).sort(sortByName);
+    window.electron.store.set('providers', newCustomProviders);
+    const newProviders = mergeProviders(newCustomProviders);
+    set({
+      provider: find(newProviders, { name: defaultName }),
+      providers: newProviders,
+    });
+  },
   updateProvider: (name: string, provider: Partial<IChatProviderConfig>) => {
     const customProviders = window.electron.store.get('providers');
     let found = false;
+    const newProvider = omit(provider, ['isBuiltIn', 'isReady', 'isPremium']);
     const updatedProviders = customProviders.map(
       (providerItem: IChatProviderConfig) => {
         if (providerItem.name === name) {
           found = true;
           return {
             ...providerItem,
-            ...omit(provider, 'isBuiltIn'),
+            ...newProvider,
           };
         }
         if (provider.isDefault) {
@@ -290,7 +313,7 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
       },
     ) as IChatProviderConfig[];
     if (!found) {
-      updatedProviders.push({ ...provider, name } as IChatProviderConfig);
+      updatedProviders.push({ ...newProvider, name } as IChatProviderConfig);
     }
     window.electron.store.set('providers', updatedProviders);
     const providers = mergeProviders(updatedProviders);
@@ -345,30 +368,6 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
     const { getAvailableProviders } = get();
     const providers = getAvailableProviders();
     return find(providers, { isDefault: true }) || providers[0];
-  },
-  createProvider: (providerName = 'Untitled') => {
-    const { providers } = get();
-    const names = providers.map((provider) => provider.name);
-    const defaultName = genDefaultName(names, providerName);
-    const newProvider = {
-      name: defaultName,
-      apiBase: '',
-      currency: 'USD',
-      apiKey: '',
-      isDefault: false,
-      models: [],
-      disabled: false,
-    } as Partial<IChatProviderConfig>;
-    const customProviders = window.electron.store.get('providers');
-    const newCustomProviders = (
-      [...customProviders, newProvider] as IChatProviderConfig[]
-    ).sort(sortByName);
-    window.electron.store.set('providers', newCustomProviders);
-    const newProviders = mergeProviders(newCustomProviders);
-    set({
-      provider: find(newProviders, { name: defaultName }),
-      providers: newProviders,
-    });
   },
   getAvailableModel: (providerName: string, modelName: string) => {
     const { getModelsSync, getAvailableProvider } = get();
@@ -461,7 +460,7 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
     ) || {
       models: [],
     };
-    const newModel = omit(model, 'isBuiltIn') as IChatModelConfig;
+    const newModel = omit(model, ['isBuiltIn', 'isReady']) as IChatModelConfig;
     const updatedProvider = {
       name: provider.name,
       models: [...(customProvider.models || []), newModel],
@@ -479,11 +478,12 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
       models: [],
     };
     let found = false;
+    const newModel = omit(model, ['isBuiltIn', 'isReady']) as IChatModelConfig;
     const updatedModels =
       customProvider.models?.map((m: IChatModelConfig) => {
         if (m.name === name) {
           found = true;
-          return { ...m, ...omit(model, 'isBuiltIn') };
+          return { ...m, ...newModel };
         }
         if (model.isDefault) {
           m.isDefault = false;
@@ -491,7 +491,7 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
         return m;
       }) || [];
     if (!found) {
-      updatedModels.push({ ...model, name } as IChatModelConfig);
+      updatedModels.push({ ...newModel, name } as IChatModelConfig);
     }
     const updatedProvider = {
       name: provider.name,
