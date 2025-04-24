@@ -19,9 +19,9 @@ export default class DoubaoChatService
   ): Promise<Response> {
     const provider = this.context.getProvider();
     const model = this.context.getModel();
-    const deploymentId = model.extras?.deploymentId || model.name;
+    const modelId = model.extras?.modelId || model.name;
     const payload = await this.makePayload(messages, msgId);
-    payload.model = deploymentId;
+    payload.model = modelId;
     payload.stream = true;
     const url = urlJoin('/chat/completions', provider.apiBase.trim());
     const response = await fetch(url, {
