@@ -18,6 +18,7 @@ import {
   MoreVerticalRegular,
 } from '@fluentui/react-icons';
 import { t } from 'i18next';
+import { find } from 'lodash';
 import { IChatProviderConfig } from 'providers/types';
 import { useEffect, useMemo, useState } from 'react';
 import ConfirmDialog from 'renderer/components/ConfirmDialog';
@@ -41,8 +42,7 @@ export default function ProviderList({ height = 400 }: { height: number }) {
 
   useEffect(() => {
     if (!selectedProvider) {
-      // If no provider is selected, select the first one
-      setProvider(providers[0]);
+      setProvider(find(providers, { isDefault: true }) || providers[0]);
     }
   }, [selectedProvider, setProvider, providers]);
 
