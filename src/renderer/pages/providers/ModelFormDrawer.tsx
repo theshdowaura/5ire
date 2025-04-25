@@ -13,13 +13,14 @@ import {
   SpinButtonOnChangeData,
 } from '@fluentui/react-components';
 import { Dismiss24Regular } from '@fluentui/react-icons';
+import { useTranslation } from 'react-i18next';
 import {
   DEFAULT_CONTEXT_WINDOW,
   DEFAULT_MAX_TOKENS,
   MAX_CONTEXT_WINDOW,
   MAX_TOKENS,
 } from 'consts';
-import { t } from 'i18next';
+import useToast from 'hooks/useToast';
 import { isNil } from 'lodash';
 import { IChatModelConfig, IChatProviderConfig } from 'providers/types';
 import { useEffect, useMemo, useState } from 'react';
@@ -39,6 +40,8 @@ export default function ModelFormDrawer({
   const provider = useProviderStore(
     (state) => state.provider as IChatProviderConfig,
   );
+  const { t } = useTranslation();
+  const { notifySuccess } = useToast();
   const { createModel, updateModel, deleteModel } = useProviderStore();
   const [name, setName] = useState<string>('');
   const [nameError, setNameError] = useState<string | null>(null);
@@ -150,9 +153,13 @@ export default function ModelFormDrawer({
 
   const onDelete = () => {
     if (model) {
-      deleteModel(model.name as string);
+      deleteModel(model.id as string);
+
       setOpen(false);
       reset();
+      notifySuccess(
+        `${t('Provider.Model.Deleted', { model: model?.label || model?.name })}`,
+      );
     }
   };
 
