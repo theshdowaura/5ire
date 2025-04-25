@@ -1,7 +1,7 @@
 import { Toolbar } from '@fluentui/react-components';
-import ChatContext from '../../../../ChatContext';
 import useChatStore from 'stores/useChatStore';
 import { IChat } from 'intellichat/types';
+import ChatContext from '../../../../ChatContext';
 import ModelCtrl from './ModelCtrl';
 import PromptCtrl from './PromptCtrl';
 import TemperatureCtrl from './TemperatureCtrl';
@@ -23,15 +23,22 @@ export default function EditorToolbar({
       <Toolbar
         aria-label="Default"
         size="small"
-        className="flex items-center gap-3 ml-2 editor-toolbar"
+        className="flex items-center gap-2 ml-2 editor-toolbar"
       >
         <ModelCtrl ctx={ChatContext} chat={chat} />
-        <PromptCtrl ctx={ChatContext} chat={chat} disabled={!isReady} />
-        <KnowledgeCtrl ctx={ChatContext} chat={chat}  disabled={!isReady}/>
-        <MaxTokensCtrl ctx={ChatContext} chat={chat} onConfirm={onConfirm} disabled={!isReady}/>
-        <TemperatureCtrl ctx={ChatContext} chat={chat}  disabled={!isReady}/>
-        <CtxNumCtrl ctx={ChatContext} chat={chat} disabled={!isReady}/>
-        <ImgCtrl ctx={ChatContext} chat={chat} disabled={!isReady} />
+        <div className="flex justify-start items-center gap-2 -ml-2">
+          <PromptCtrl ctx={ChatContext} chat={chat} disabled={!isReady} />
+          <KnowledgeCtrl ctx={ChatContext} chat={chat} disabled={!isReady} />
+          <MaxTokensCtrl
+            ctx={ChatContext}
+            chat={chat}
+            onConfirm={onConfirm}
+            disabled={!isReady}
+          />
+          <TemperatureCtrl ctx={ChatContext} chat={chat} disabled={!isReady} />
+          <CtxNumCtrl ctx={ChatContext} chat={chat} disabled={!isReady} />
+          <ImgCtrl ctx={ChatContext} chat={chat} disabled={!isReady} />
+        </div>
       </Toolbar>
     </div>
   );

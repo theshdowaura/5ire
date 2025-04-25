@@ -9,6 +9,7 @@ import {
 import { ChevronDownRegular } from '@fluentui/react-icons';
 import { IChat, IChatContext } from 'intellichat/types';
 import { find } from 'lodash';
+import Mousetrap from 'mousetrap';
 import { IChatModelConfig, IChatProviderConfig } from 'providers/types';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -35,6 +36,9 @@ export default function ModelCtrl({
   const [curModel, setCurModel] = useState<IChatModelConfig>();
   const [models, setModels] = useState<IChatModelConfig[]>([]);
   const isChanged = useRef(false);
+
+  const [menuModelOpen, setMenuModelOpen] = useState(false);
+  const [menuProviderOpen, setMenuProviderOpen] = useState(false);
 
   const loadModels = useCallback(
     async (provider: IChatProviderConfig) => {
@@ -88,17 +92,46 @@ export default function ModelCtrl({
     onModelChange();
   }, [curModel?.name]);
 
+  useEffect(() => {
+    Mousetrap.bind('mod+shift+0', () => {
+      setMenuModelOpen(false);
+      setMenuProviderOpen(true);
+    });
+    return () => {
+      Mousetrap.unbind('mod+shift+0');
+    };
+  }, [menuProviderOpen]);
+
+  useEffect(() => {
+    Mousetrap.bind('mod+shift+1', () => {
+      setMenuProviderOpen(false);
+      setMenuModelOpen(true);
+    });
+    return () => {
+      Mousetrap.unbind('mod+shift+1');
+    };
+  }, [menuModelOpen]);
+
   return (
     <div className="flex flex-start items-center -ml-1.5">
-      <Menu>
+      <Menu
+        open={menuProviderOpen}
+        onOpenChange={(_, data) => setMenuProviderOpen(data.open)}
+      >
         <MenuTrigger disableButtonEnhancement>
           <Button
+            title={`${t('Common.Provider')}(Mod+Shift+0)`}
             size="small"
             appearance="transparent"
             iconPosition="after"
-            className="justify-start"
-            style={{ padding: '0 4px' }}
-            icon={<ChevronDownRegular className="ml-2" />}
+            className="justify-start focus-visible:ring-0 focus:right-0 border-none"
+            style={{ padding: '0 4px', border: 0, boxShadow: 'none' }}
+            icon={
+              <ChevronDownRegular
+                className="w-3"
+                style={{ marginBottom: -2 }}
+              />
+            }
           >
             {curProvider?.name}
           </Button>
@@ -120,24 +153,38 @@ export default function ModelCtrl({
                   setCurProvider(provider);
                 }}
               >
-                {provider.name}
+                <div className="flex justify-start items-center gap-1 text-xs py-0.5">
+                  <span>{provider.name}</span>
+                  {curProvider?.name === provider.name && <span>✓</span>}
+                </div>
               </MenuItem>
             ))}
           </MenuList>
         </MenuPopover>
       </Menu>
       <div className="text-gray-400">/</div>
-      <Menu>
+      <Menu
+        open={menuModelOpen}
+        onOpenChange={(_, data) => setMenuModelOpen(data.open)}
+      >
         <MenuTrigger disableButtonEnhancement>
           <Button
-            style={{ padding: '0 4px', minWidth: '10px' }}
+            title={`${t('Common.Model')}(Mod+Shift+1)`}
+            style={{
+              padding: '0 4px',
+              border: 0,
+              boxShadow: 'none',
+              minWidth: '10px',
+            }}
             size="small"
             appearance="transparent"
             iconPosition="after"
-            icon={<ChevronDownRegular className="ml-2" />}
+            icon={<ChevronDownRegular className="w-3" />}
             className="flex justify-start items-center"
           >
-            {curModel?.label || curModel?.name}
+            <div className="overflow-hidden text-ellipsis whitespace-nowrap w-32 sm:w-full">
+              {curModel?.label || curModel?.name}
+            </div>
           </Button>
         </MenuTrigger>
         <MenuPopover>
@@ -161,6 +208,7 @@ export default function ModelCtrl({
                   <div className="flex justify-start items-center gap-1 text-xs py-1">
                     <ToolStatusIndicator model={model} withTooltip />
                     <span> {model.label}</span>
+                    {curModel?.name === model.name && <span>✓</span>}
                   </div>
                 </MenuItem>
               ))
