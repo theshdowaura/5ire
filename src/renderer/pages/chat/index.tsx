@@ -26,13 +26,17 @@ import Empty from 'renderer/components/Empty';
 
 import useUsageStore from 'stores/useUsageStore';
 import useNav from 'hooks/useNav';
-import { debounce, set } from 'lodash';
+import { debounce } from 'lodash';
 import { isBlank } from 'utils/validators';
 import {
   extractCitationIds,
   getNormalContent,
   getReasoningContent,
 } from 'utils/util';
+import useAppearanceStore from 'stores/useAppearanceStore';
+import createService from 'intellichat/services';
+import eventBus from 'utils/bus';
+import ChatContext from '../../ChatContext';
 import Header from './Header';
 import Messages from './Messages';
 import Editor from './Editor';
@@ -41,10 +45,6 @@ import CitationDialog from './CitationDialog';
 
 import './Chat.scss';
 import 'split-pane-react/esm/themes/default.css';
-import eventBus from 'utils/bus';
-import useAppearanceStore from 'stores/useAppearanceStore';
-import ChatContext from '../../ChatContext';
-import createService from 'intellichat/services';
 
 const debug = Debug('5ire:pages:chat');
 
@@ -84,6 +84,7 @@ export default function Chat() {
   const clearTrace = useInspectorStore((state) => state.clearTrace);
   const chatSidebarShow = useAppearanceStore((state) => state.chatSidebar.show);
   const [chatService, setChatService] = useState<INextChatService | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [isReady, setIsReady] = useState(false);
 
   const { notifyError } = useToast();
@@ -126,6 +127,12 @@ export default function Chat() {
   ).current;
 
   useEffect(() => {
+    bus.current.on('providerChanged', (event: any) => {
+      debug('Provider changed:', event.provider);
+      const service = createService(ChatContext);
+      setChatService(service);
+      setIsReady(service.isReady());
+    });
     const service = createService(ChatContext);
     setChatService(service);
     setIsReady(service.isReady());
@@ -134,29 +141,26 @@ export default function Chat() {
     return () => {
       currentRef?.removeEventListener('scroll', handleScroll);
       isUserScrollingRef.current = false;
+      bus.current.off('providerChanged');
       setChatService(null);
     };
   }, []);
 
   useEffect(() => {
-    bus.current.on('providerChanged', (event: any) => {
-      debug('Provider changed:', event.provider);
-      const service = createService(ChatContext);
-      setChatService(service);
-      setIsReady(service.isReady());
-    });
-    if (activeChatId !== tempChatId) {
-      getChat(activeChatId);
-    } else {
-      if (folder) {
+    const loadChat = async () => {
+      setIsLoading(true);
+      if (activeChatId !== tempChatId) {
+        await getChat(activeChatId);
+      } else if (folder) {
         initChat(getCurFolderSettings());
       } else {
         initChat(tempStage);
       }
-    }
+      setIsLoading(false);
+    };
+    loadChat();
     return () => {
       isUserScrollingRef.current = false;
-      bus.current.off('providerChanged');
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeChatId]);
@@ -191,15 +195,6 @@ export default function Chat() {
     loadMessages();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeChatId, debouncedFetchMessages, keywords]);
-
-  useEffect(() => {
-    bus.current.on('retry', async (event: any) => {
-      await onSubmit(event.prompt, event.msgId);
-    });
-    return () => {
-      bus.current.off('retry');
-    };
-  }, [messages]);
 
   useEffect(() => {
     if (chatSidebarShow) {
@@ -275,7 +270,7 @@ export default function Chat() {
             reply: '',
             chatId: $chatId,
             model: model.label,
-            temperature: temperature,
+            temperature,
             maxTokens,
             isActive: 1,
           });
@@ -439,6 +434,15 @@ ${prompt}
     ],
   );
 
+  useEffect(() => {
+    bus.current.on('retry', async (event: any) => {
+      await onSubmit(event.prompt, event.msgId);
+    });
+    return () => {
+      bus.current.off('retry');
+    };
+  }, [messages]);
+
   return (
     <div id="chat" className="relative h-screen flex flex-start -mx-5 ">
       <SplitPane
@@ -475,13 +479,15 @@ ${prompt}
                 </div>
               </Pane>
               <Pane minSize={180} maxSize="60%">
-                <Editor
-                  isReady={isReady}
-                  onSubmit={onSubmit}
-                  onAbort={() => {
-                    chatService?.abort();
-                  }}
-                />
+                {!isLoading && (
+                  <Editor
+                    isReady={isReady}
+                    onSubmit={onSubmit}
+                    onAbort={() => {
+                      chatService?.abort();
+                    }}
+                  />
+                )}
               </Pane>
             </SplitPane>
           </div>

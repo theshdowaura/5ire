@@ -7,7 +7,6 @@ import {
   MenuTrigger,
 } from '@fluentui/react-components';
 import { ChevronDownRegular } from '@fluentui/react-icons';
-import { ERROR_MODEL } from 'consts';
 import { IChat, IChatContext } from 'intellichat/types';
 import { find } from 'lodash';
 import Mousetrap from 'mousetrap';
@@ -41,19 +40,28 @@ export default function ModelCtrl({
   const [menuModelOpen, setMenuModelOpen] = useState(false);
   const [menuProviderOpen, setMenuProviderOpen] = useState(false);
 
-  const loadModels = useCallback(async (provider: IChatProviderConfig) => {
-    const $models = await getModels(provider);
-    setModels($models);
-    const defaultModel = find($models, { isDefault: true }) || $models[0];
-    const ctxProvider = ctx.getProvider();
-    const ctxModel = ctx.getModel();
-    if (ctxProvider.name === provider.name && ctxModel.id !== ERROR_MODEL) {
-      const $model = find($models, { name: ctxModel.name }) || defaultModel;
-      setCurModel($model);
-    } else {
+  const loadModels = useCallback(
+    async (provider: IChatProviderConfig) => {
+      const $models = await getModels(provider);
+      setModels($models);
+      const defaultModel = find($models, { isDefault: true }) || $models[0];
+      const ctxProvider = ctx.getProvider();
+      const ctxModel = ctx.getModel();
+      if (ctxProvider.name === provider.name) {
+        const $model = find($models, { name: ctxModel.name });
+        if ($model) {
+          setCurModel($model);
+          return;
+        }
+      }
       setCurModel(defaultModel);
-    }
-  }, []);
+      await editStage(chat.id, {
+        provider: provider.name,
+        model: defaultModel.name,
+      });
+    },
+    [chat.id],
+  );
 
   useEffect(() => {
     const ctxProvider = ctx.getProvider();
@@ -66,7 +74,7 @@ export default function ModelCtrl({
       setModels([]);
       isChanged.current = false;
     };
-  }, [chat.provider]);
+  }, [chat.id]);
 
   useEffect(() => {
     if (curProvider) {

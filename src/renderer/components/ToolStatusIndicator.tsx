@@ -13,7 +13,7 @@ export default function ToolStatusIndicator(
   const { model, withTooltip, ...rest } = props;
 
   const originalSupport = useMemo(() => {
-    if (isNil(model.capabilities?.tools)) return false;
+    if (!model.isBuiltin || isNil(model.capabilities?.tools)) return false;
     return true;
   }, [model.capabilities?.tools]);
 

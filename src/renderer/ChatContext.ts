@@ -23,7 +23,7 @@ const getProvider = () => {
   const { chat } = useChatStore.getState();
   const { getAvailableProvider, getDefaultProvider } =
     useProviderStore.getState();
-  debug('getProvider: chat.provider', chat.provider);
+  debug(`getProvider: chat(${chat.summary})`, chat.provider);
   if (chat.provider) {
     return getAvailableProvider(chat.provider);
   }
