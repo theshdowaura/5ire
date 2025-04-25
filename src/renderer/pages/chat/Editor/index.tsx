@@ -57,7 +57,7 @@ export default function Editor({
       if (!submitted) {
         await editStage(chatId, { input: editorRef.current?.innerHTML });
       }
-    }, 500);
+    }, 1000);
   }, [editStage]);
 
   const onBlur = () => {
@@ -175,7 +175,10 @@ export default function Editor({
   };
 
   return (
-    <div className="relative flex flex-col editor">
+    <div
+      className="relative flex flex-col cursor-text editor"
+      onClick={() => editorRef.current?.focus()}
+    >
       {states.loading ? (
         <div className="editor-loading-mask absolute flex flex-col justify-center items-center">
           <Button onClick={onAbortClick} className="flex items-center">
@@ -200,7 +203,7 @@ export default function Editor({
         id="editor"
         ref={editorRef}
         autoCorrect="on"
-        className="w-full outline-0 px-2.5 pb-2.5 bg-brand-surface-1 flex-grow overflow-y-auto overflow-x-hidden"
+        className="w-full bg-red-500 outline-0 px-2.5 pb-2.5 bg-brand-surface-1 overflow-y-auto overflow-x-hidden"
         onKeyDown={onKeyDown}
         onFocus={restoreRange}
         onBlur={onBlur}
