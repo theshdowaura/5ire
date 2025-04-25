@@ -76,7 +76,7 @@ export default function GlobalNav({ collapsed }: { collapsed: boolean }) {
     <div
       className={`relative ${
         collapsed ? 'text-center' : ''
-      } border-b border-base py-2`}
+      } border-b border-base pb-2`}
     >
       <div className="px-1">
         <WorkspaceMenu collapsed={collapsed} />

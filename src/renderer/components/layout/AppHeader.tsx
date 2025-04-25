@@ -68,7 +68,7 @@ export default function AppHeader() {
   return (
     <div>
       <div
-        className={`app-header z-30 pl-20 pt-2.5 w-auto ${
+        className={`app-header z-30 pl-20 pt-1.5 pb-2 w-auto ${
           collapsed ? 'md:w-[10rem]' : 'md:w-[17rem]'
         } flex items-center`}
       >

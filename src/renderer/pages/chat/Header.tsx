@@ -94,7 +94,7 @@ export default function Header() {
           : 'left-[12rem] md:left-0 lg:left-0'
       }`}
     >
-      <div className="flex-grow text-sm text-gray-300 dark:text-gray-600">
+      <div className="flex-grow text-sm text-gray-300 dark:text-gray-600 -mt-2">
         {chatFolder.name}
       </div>
       <div className="flex justify-end items-center gap-1">
