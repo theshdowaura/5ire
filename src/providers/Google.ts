@@ -2,6 +2,7 @@ import { IServiceProvider } from './types';
 
 const chatModels = [
   {
+    id: 'gemini-2.5-pro-exp',
     name: 'gemini-2.5-pro-exp-03-25',
     label: 'gemini-2.5-pro-exp',
     contextWindow: 1000000,
@@ -25,6 +26,7 @@ const chatModels = [
     description: `Google's our most advanced coding model yet and is state-of-the-art across a range of benchmarks requiring enhanced reasoning.`,
   },
   {
+    id: 'gemini-2.5-flash',
     name: 'gemini-2.0-flash-001',
     label: 'gemini-2.0-flash',
     contextWindow: 1048576,
@@ -48,6 +50,7 @@ const chatModels = [
     description: `Next generation features, superior speed, native tool use, and multimodal generation`,
   },
   {
+    id: 'gemini-2.0-pro-exp',
     name: 'gemini-2.0-pro-exp-02-05',
     label: 'gemini-2.0-pro-exp-02-05',
     contextWindow: 1048576,
@@ -71,6 +74,7 @@ const chatModels = [
     description: `The quality has improved, especially for world knowledge, code, and long contexts.`,
   },
   {
+    id: 'gemini-2.0-flash-thinking-exp',
     name: 'gemini-2.0-flash-thinking-exp',
     contextWindow: 1048576,
     maxTokens: 8192,
@@ -90,6 +94,7 @@ const chatModels = [
     description: `Capable of reasoning about complex problems and possessing new thinking abilities`,
   },
   {
+    id: 'gemini-2.0-flash-lite',
     name: 'gemini-2.0-flash-lite-preview-02-05',
     label: 'gemini-2.0-flash-lite',
     contextWindow: 1048576,
@@ -114,6 +119,7 @@ const chatModels = [
     description: `Quality improvements, celebrate 1 year of Gemini`,
   },
   {
+    id: 'gemini-1.5-pro',
     name: 'gemini-1.5-pro',
     contextWindow: 1048576,
     maxTokens: 8192,
@@ -136,6 +142,7 @@ const chatModels = [
     description: `The multi-modal model from Google's Gemini family that balances model performance and speed.`,
   },
   {
+    id: 'gemini-1.5-flash',
     name: 'gemini-1.5-flash',
     contextWindow: 1048576,
     maxTokens: 8192,
@@ -158,6 +165,7 @@ const chatModels = [
     description: `Lightweight, fast and cost-efficient while featuring multimodal reasoning and a breakthrough long context window of up to one million tokens.`,
   },
   {
+    id: 'gemini-1.5-flash-8b',
     name: 'gemini-1.5-flash-8b',
     contextWindow: 1048576,
     maxTokens: 8192,

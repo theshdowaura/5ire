@@ -2,6 +2,7 @@ import { IServiceProvider } from './types';
 
 const chatModels = [
   {
+    id: 'codestral',
     name: 'codestral-latest',
     contextWindow: 32000,
     maxTokens: 4096,
@@ -18,6 +19,7 @@ const chatModels = [
     group: 'Codestral',
   },
   {
+    id: 'mistral-large',
     name: 'mistral-large-latest',
     contextWindow: 131000,
     maxTokens: 4096,
@@ -32,6 +34,7 @@ const chatModels = [
     description: `Mistrals's top-tier reasoning model for high-complexity tasks with the lastest version released November 2024`,
   },
   {
+    id: 'mistral-small',
     name: 'mistral-small-latest',
     contextWindow: 32000,
     maxTokens: 4096,
@@ -46,6 +49,7 @@ const chatModels = [
     description: `Mistrals's top-tier reasoning model for high-complexity tasks with the lastest version released November 2024`,
   },
   {
+    id: 'pixtral-large',
     name: 'pixtral-large-latest',
     contextWindow: 128000,
     maxTokens: 4096,
@@ -65,6 +69,7 @@ const chatModels = [
     description: `Mistrals's frontier-class multimodal model released November 2024.`,
   },
   {
+    id: 'ministral-8b',
     name: 'ministral-8b-latest',
     contextWindow: 128000,
     maxTokens: 4096,
@@ -82,6 +87,7 @@ const chatModels = [
     description: `Powerful edge model with extremely high performance/price ratio`,
   },
   {
+    id: 'ministral-3b',
     name: 'ministral-3b-latest',
     contextWindow: 128000,
     maxTokens: 4096,

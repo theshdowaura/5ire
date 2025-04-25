@@ -2,7 +2,8 @@ import { IServiceProvider } from './types';
 
 const chatModels = [
   {
-    name: 'grok-3-beta',
+    id: 'grok-3',
+    name: 'grok-3',
     contextWindow: 131072,
     defaultMaxTokens: 4000,
     maxTokens: 131072,
@@ -16,7 +17,24 @@ const chatModels = [
     },
   },
   {
-    name: 'grok-3-mini-beta',
+    id: 'grok-3-fast',
+    name: 'grok-3-fast',
+    contextWindow: 131072,
+    defaultMaxTokens: 4000,
+    maxTokens: 131072,
+    inputPrice: 0.005,
+    outputPrice: 0.025,
+    isDefault: true,
+    description: `Fast mode delivers reduced latency and a quicker time-to-first-token. Scroll down to read more.`,
+    capabilities: {
+      tools: {
+        enabled: true,
+      },
+    },
+  },
+  {
+    id: 'grok-3-mini',
+    name: 'grok-3-mini',
     contextWindow: 131072,
     defaultMaxTokens: 4000,
     maxTokens: 131072,
@@ -31,6 +49,23 @@ const chatModels = [
     },
   },
   {
+    id: 'grok-3-mini-fast',
+    name: 'grok-3-mini-fast',
+    contextWindow: 131072,
+    defaultMaxTokens: 4000,
+    maxTokens: 131072,
+    inputPrice: 0.0006,
+    outputPrice: 0.004,
+    isDefault: true,
+    description: `Fast mode delivers reduced latency and a quicker time-to-first-token. Scroll down to read more.`,
+    capabilities: {
+      tools: {
+        enabled: true,
+      },
+    },
+  },
+  {
+    id: 'grok-2-vision',
     name: 'grok-2-vision',
     contextWindow: 32768,
     defaultMaxTokens: 4000,
@@ -50,6 +85,7 @@ const chatModels = [
     description: `specialized model for advanced image generation and understanding`,
   },
   {
+    id: 'grok-2',
     name: 'grok-2',
     contextWindow: 128000,
     defaultMaxTokens: 128000,

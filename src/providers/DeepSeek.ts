@@ -2,6 +2,7 @@ import { IServiceProvider } from './types';
 
 const chatModels = [
   {
+    id: 'deepseek-chat',
     name: 'deepseek-chat',
     contextWindow: 65536,
     maxTokens: 8192,
@@ -17,6 +18,7 @@ const chatModels = [
     },
   },
   {
+    id: 'deepseek-reasoner',
     name: 'deepseek-reasoner',
     contextWindow: 65536,
     maxTokens: 8192,

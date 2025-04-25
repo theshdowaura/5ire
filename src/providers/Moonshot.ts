@@ -2,6 +2,7 @@ import { IServiceProvider } from './types';
 
 const chatModels = [
   {
+    id: 'moonshot-v1-8k',
     name: 'moonshot-v1-8k',
     contextWindow: 8192,
     maxTokens: 1024,
@@ -15,6 +16,7 @@ const chatModels = [
     },
   },
   {
+    id: 'moonshot-v1-32k',
     name: 'moonshot-v1-32k',
     contextWindow: 32768,
     maxTokens: 1024,
@@ -27,6 +29,7 @@ const chatModels = [
     },
   },
   {
+    id: 'moonshot-v1-128k',
     name: 'moonshot-v1-128k',
     contextWindow: 128000,
     maxTokens: 1024,

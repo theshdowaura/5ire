@@ -114,12 +114,14 @@ export interface IServiceProvider {
 }
 
 export interface IChatModelConfig {
+  id: string;
   name: string;
   label?: string;
   description?: string | null;
   maxTokens?: number | null;
   defaultMaxTokens?: number | null;
   contextWindow: number | null;
+  noStreaming?: boolean;
   isDefault?: boolean;
   isBuiltIn?: boolean;
   isPremium?: boolean;

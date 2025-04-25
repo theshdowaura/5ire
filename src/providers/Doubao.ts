@@ -2,6 +2,7 @@ import { IServiceProvider } from './types';
 
 const chatModels = [
   {
+    id: 'doubao-vision-pro-32k',
     name: 'doubao-vision-pro-32k',
     contextWindow: 32000,
     maxTokens: 4096,
@@ -17,6 +18,7 @@ const chatModels = [
     },
   },
   {
+    id: 'doubao-pro-256k',
     name: 'doubao-pro-256k',
     contextWindow: 256000,
     maxTokens: 4096,
@@ -30,6 +32,7 @@ const chatModels = [
     },
   },
   {
+    id: 'doubao-pro-128k',
     name: 'doubao-pro-128k',
     contextWindow: 128000,
     maxTokens: 4096,
@@ -44,6 +47,7 @@ const chatModels = [
     },
   },
   {
+    id: 'doubao-pro-32k',
     name: 'doubao-pro-32k',
     contextWindow: 32000,
     maxTokens: 4096,
@@ -57,6 +61,7 @@ const chatModels = [
     },
   },
   {
+    id: 'doubao-pro-4k',
     name: 'doubao-pro-4k',
     contextWindow: 4000,
     maxTokens: 4096,
@@ -70,6 +75,7 @@ const chatModels = [
     },
   },
   {
+    id: 'doubao-lite-128k',
     name: 'doubao-lite-128k',
     contextWindow: 128000,
     defaultMaxTokens: 4000,
@@ -83,6 +89,7 @@ const chatModels = [
     },
   },
   {
+    id: 'doubao-lite-32k',
     name: 'doubao-lite-32k',
     contextWindow: 32000,
     maxTokens: 4096,
@@ -96,6 +103,7 @@ const chatModels = [
     },
   },
   {
+    id: 'doubao-lite-4k',
     name: 'doubao-lite-4k',
     contextWindow: 4000,
     maxTokens: 4096,

@@ -2,6 +2,7 @@ import { IServiceProvider } from './types';
 
 const chatModels = [
   {
+    id: 'o1',
     name: 'o1',
     contextWindow: 200000,
     maxTokens: 100000,
@@ -17,7 +18,28 @@ const chatModels = [
     description: `The o1 reasoning model is designed to solve hard problems across domains`,
   },
   {
-    name: 'o1-mini',
+    id: 'o1-pro',
+    name: 'o1-pro-2025-03-19',
+    label: 'o1-pro',
+    contextWindow: 200000,
+    maxTokens: 100000,
+    defaultMaxTokens: 10000,
+    inputPrice: 0.15,
+    outputPrice: 0.6,
+    noStreaming: true,
+    capabilities: {
+      vision: {
+        enabled: true,
+        allowBase64: true,
+        allowUrl: true,
+      },
+    },
+    description: `The o1 reasoning model is designed to solve hard problems across domains`,
+  },
+  {
+    id: 'o1-mini',
+    name: 'o1-mini-2024-09-12',
+    label: 'o1-mini',
     contextWindow: 128000,
     maxTokens: 65536,
     defaultMaxTokens: 60000,
@@ -33,7 +55,26 @@ const chatModels = [
     description: `o1-mini is a faster and more affordable reasoning model`,
   },
   {
-    name: 'o3-mini',
+    id: 'o3',
+    name: 'o3-2025-04-16',
+    label: 'o3',
+    contextWindow: 200000,
+    maxTokens: 100000,
+    defaultMaxTokens: 100000,
+    inputPrice: 0.01,
+    outputPrice: 0.04,
+    capabilities: {
+      tools: {
+        enabled: true,
+      },
+    },
+    isDefault: false,
+    description: `o3 is a well-rounded and powerful model across domains. It sets a new standard for math, science, coding, and visual reasoning tasks. It also excels at technical writing and instruction-following. Use it to think through multi-step problems that involve analysis across text, code, and images.`,
+  },
+  {
+    id: 'o3-mini',
+    name: 'o3-mini-2025-01-31',
+    label: 'o3-mini',
     contextWindow: 200000,
     maxTokens: 100000,
     defaultMaxTokens: 100000,
@@ -48,12 +89,31 @@ const chatModels = [
     description: `o3-mini is OpenAI's most recent small reasoning model, providing high intelligence at the same cost and latency targets of o1-min`,
   },
   {
-    name: 'gpt-4o',
-    contextWindow: 128000,
-    maxTokens: 4096,
+    id: 'o4-mini',
+    name: 'o4-mini-2025-04-16',
+    label: 'o4-mini',
+    contextWindow: 200000,
+    maxTokens: 100000,
+    defaultMaxTokens: 100000,
+    inputPrice: 0.0011,
+    outputPrice: 0.0044,
+    capabilities: {
+      tools: {
+        enabled: true,
+      },
+    },
+    isDefault: false,
+    description: `o4-mini is OpenAI's latest small o-series model. It's optimized for fast, effective reasoning with exceptionally efficient performance in coding and visual tasks.`,
+  },
+  {
+    id: 'gpt-4.1',
+    name: 'gpt-4.1-2025-04-14',
+    label: 'gpt-4.1',
+    contextWindow: 1047576,
+    maxTokens: 32768,
     defaultMaxTokens: 4000,
-    inputPrice: 0.005,
-    outputPrice: 0.015,
+    inputPrice: 0.002,
+    outputPrice: 0.008,
     capabilities: {
       tools: {
         enabled: true,
@@ -65,15 +125,17 @@ const chatModels = [
       },
     },
     isDefault: true,
-    description: `GPT-4o it's most advanced multimodal model of OpenAI that’s faster and cheaper than GPT-4 Turbo with stronger vision capabilities`,
+    description: `GPT-4.1 is OpenAI's flagship model for complex tasks. It is well suited for problem solving across domains.`,
   },
   {
-    name: 'gpt-4o-mini',
-    contextWindow: 128000,
-    maxTokens: 16384,
-    defaultMaxTokens: 16000,
-    inputPrice: 0.00015,
-    outputPrice: 0.0006,
+    id: 'gpt-4.1-nano',
+    name: 'gpt-4.1-nano-2025-04-14',
+    label: 'GPT-4.1 nano',
+    contextWindow: 1047576,
+    maxTokens: 32768,
+    defaultMaxTokens: 8000,
+    inputPrice: 0.002,
+    outputPrice: 0.008,
     capabilities: {
       tools: {
         enabled: true,
@@ -84,15 +146,83 @@ const chatModels = [
         allowUrl: true,
       },
     },
-    description: `GPT-4o mini (“o” for “omni”) is OpenAI's advanced model in the small models category, and it's cheapest model yet. It is multimodal (accepting text or image inputs and outputting text), has higher intelligence than gpt-3.5-turbo but is just as fast. It is meant to be used for smaller tasks, including vision tasks.`,
+    isDefault: true,
+    description: `GPT-4.1 nano is the fastest, most cost-effective GPT-4.1 model.`,
   },
   {
-    name: 'gpt-4-turbo',
+    id: 'gpt-4.1-mini',
+    name: 'gpt-4.1-mini-2025-04-14',
+    label: 'GPT-4.1 mini',
+    contextWindow: 1047576,
+    maxTokens: 32768,
+    defaultMaxTokens: 8000,
+    inputPrice: 0.0004,
+    outputPrice: 0.0016,
+    capabilities: {
+      tools: {
+        enabled: true,
+      },
+      vision: {
+        enabled: true,
+        allowBase64: true,
+        allowUrl: true,
+      },
+    },
+    isDefault: true,
+    description: `GPT-4.1 mini provides a balance between intelligence, speed, and cost that makes it an attractive model for many use cases.`,
+  },
+  {
+    id: 'gpt-4o',
+    name: 'gpt-4o-2024-08-06',
+    label: 'gpt-4o',
+    contextWindow: 128000,
+    maxTokens: 16384,
+    defaultMaxTokens: 8000,
+    inputPrice: 0.0025,
+    outputPrice: 0.01,
+    capabilities: {
+      tools: {
+        enabled: true,
+      },
+      vision: {
+        enabled: true,
+        allowBase64: true,
+        allowUrl: true,
+      },
+    },
+    isDefault: true,
+    description: `GPT-4o (“o” for “omni”) is OpenAI's versatile, high-intelligence flagship model. It accepts both text and image inputs, and produces text outputs (including Structured Outputs). It is the best model for most tasks, and is OpenAI's most capable model outside of it's o-series models.`,
+  },
+  {
+    id: 'gpt-4o-mini',
+    name: 'gpt-4o-mini-2024-07-18',
+    label: 'gpt-4o-mini',
+    contextWindow: 128000,
+    maxTokens: 100000,
+    defaultMaxTokens: 10000,
+    inputPrice: 0.0011,
+    outputPrice: 0.0044,
+    capabilities: {
+      tools: {
+        enabled: true,
+      },
+      vision: {
+        enabled: true,
+        allowBase64: true,
+        allowUrl: true,
+      },
+    },
+    description: `o4-mini is OpenAI's latest small o-series model. It's optimized for fast, effective reasoning with exceptionally efficient performance in coding and visual tasks.`,
+  },
+  {
+    id: 'gpt-4-turbo',
+    name: 'gpt-4-turbo-2024-04-09',
+    label: 'GPT-4 Turbo',
     contextWindow: 128000,
     maxTokens: 4096,
     defaultMaxTokens: 4000,
-    inputPrice: 0.005,
-    outputPrice: 0.015,
+    inputPrice: 0.01,
+    outputPrice: 0.03,
     capabilities: {
       json: {
         enabled: true,
@@ -106,11 +236,10 @@ const chatModels = [
         allowUrl: true,
       },
     },
-    description: `The latest GPT-4 Turbo model with vision capabilities.
-      Vision requests can now use JSON mode and function calling.
-      Currently points to gpt-4-turbo-2024-04-09.`,
+    description: `An older high-intelligence GPT model`,
   },
   {
+    id: 'gpt-4',
     name: 'gpt-4',
     contextWindow: 8129,
     maxTokens: 8129,
@@ -122,22 +251,7 @@ const chatModels = [
         enabled: true,
       },
     },
-    description: `Snapshot of gpt-4 from June 13th 2023 with improved function calling support`,
-  },
-  {
-    name: 'gpt-3.5-turbo',
-    contextWindow: 16385,
-    maxTokens: 4096,
-    defaultMaxTokens: 4000,
-    inputPrice: 0.0005,
-    outputPrice: 0.0015,
-    capabilities: {
-      tools: {
-        enabled: true,
-      },
-    },
-    description: `The latest GPT-3.5 Turbo model with higher accuracy at responding in requested formats
-      and a fix for a bug which caused a text encoding issue for non-English language function calls`,
+    description: `An older high-intelligence GPT model`,
   },
 ];
 

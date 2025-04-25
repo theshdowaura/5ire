@@ -1,8 +1,8 @@
-import { keyBy } from 'lodash';
 import { IServiceProvider } from './types';
 
 const chatModels = [
   {
+    id: 'ERNIE-4.0-8K',
     name: 'ERNIE-4.0-8K',
     contextWindow: 5120,
     maxTokens: 2048,
@@ -12,6 +12,7 @@ const chatModels = [
     isDefault: true,
   },
   {
+    id: 'ERNIE-4.0-8K-Preview',
     name: 'ERNIE-4.0-8K-Preview',
     contextWindow: 5120,
     maxTokens: 2048,
@@ -20,6 +21,7 @@ const chatModels = [
     description: `百度自研的旗舰级超大规模⼤语⾔模型，相较ERNIE 3.5实现了模型能力全面升级，广泛适用于各领域复杂任务场景；支持自动对接百度搜索插件，保障问答信息时效。`,
   },
   {
+    id: 'ERNIE-4.0-8K-Latest',
     name: 'ERNIE-4.0-8K-Latest',
     contextWindow: 5120,
     maxTokens: 2048,
@@ -28,6 +30,7 @@ const chatModels = [
     description: `ERNIE-4.0-8K-Latest相比ERNIE-4.0-8K能力全面提升，其中角色扮演能力和指令遵循能力提升较大；相较ERNIE 3.5实现了模型能力全面升级，广泛适用于各领域复杂任务场景；支持自动对接百度搜索插件，保障问答信息时效，支持5K tokens输入+2K tokens输出。`,
   },
   {
+    id: 'ERNIE-4.0-Turbo-8K',
     name: 'ERNIE-4.0-Turbo-8K',
     contextWindow: 5120,
     maxTokens: 2048,
@@ -36,6 +39,7 @@ const chatModels = [
     description: `ERNIE 4.0 Turbo是百度自研的旗舰级超大规模⼤语⾔模型，综合效果表现出色，广泛适用于各领域复杂任务场景；支持自动对接百度搜索插件，保障问答信息时效。相较于ERNIE 4.0在性能表现上更优秀`,
   },
   {
+    id: 'ERNIE-4.0-Turbo-8K-Preview',
     name: 'ERNIE-4.0-Turbo-8K-Preview',
     contextWindow: 5120,
     maxTokens: 2048,
@@ -44,6 +48,7 @@ const chatModels = [
     description: `ERNIE 4.0 Turbo是百度自研的旗舰级超大规模⼤语⾔模型，综合效果表现出色，广泛适用于各领域复杂任务场景；支持自动对接百度搜索插件，保障问答信息时效。相较于ERNIE 4.0在性能表现上更优秀`,
   },
   {
+    id: 'ERNIE-4.0-Turbo-8K-Latest',
     name: 'ERNIE-4.0-Turbo-8K-Latest',
     contextWindow: 5120,
     maxTokens: 2048,
@@ -52,6 +57,7 @@ const chatModels = [
     description: `ERNIE 4.0 Turbo是百度自研的旗舰级超大规模⼤语⾔模型，综合效果表现出色，广泛适用于各领域复杂任务场景；支持自动对接百度搜索插件，保障问答信息时效。相较于ERNIE 4.0在性能表现上更优秀`,
   },
   {
+    id: 'ERNIE-3.5-8K',
     name: 'ERNIE-3.5-8K',
     contextWindow: 124000,
     maxTokens: 4096,
