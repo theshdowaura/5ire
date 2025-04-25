@@ -74,7 +74,7 @@ export default function ModelCtrl({
       setModels([]);
       isChanged.current = false;
     };
-  }, [chat.id]);
+  }, [chat.id, chat.provider]);
 
   useEffect(() => {
     if (curProvider) {
