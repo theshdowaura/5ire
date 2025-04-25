@@ -232,7 +232,11 @@ export default function ModelFormDrawer({
         >
           <InfoLabel
             size="small"
-            info={t('Provider.Model.ApiModelNameCannotBeChanged')}
+            info={
+              model?.isFromApi
+                ? t('Provider.Model.ApiModelNameCannotBeChanged')
+                : ''
+            }
           >
             {t('Provider.Model.Name')}
           </InfoLabel>
