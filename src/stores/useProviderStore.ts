@@ -437,21 +437,9 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
               ...customModel,
               isFromApi: true,
             });
-          })
-          .concat(
-            Object.values(modelsMap).map((model) => {
-              model.isBuiltIn = false;
-              model.isReady = model.name !== ERROR_MODEL;
-              return model;
-            }),
-          );
+          });
       } catch (e) {
-        const customModels = provider.models.map((model) => {
-          model.isBuiltIn = false;
-          model.isReady = model.name !== ERROR_MODEL;
-          return model;
-        });
-        $models = customModels.length ? customModels : [ErrorModel];
+        $models = [ErrorModel];
       }
     } else {
       $models = getMergedLocalModels(provider);
