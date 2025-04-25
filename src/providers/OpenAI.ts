@@ -130,7 +130,7 @@ const chatModels = [
   {
     id: 'gpt-4.1-nano',
     name: 'gpt-4.1-nano-2025-04-14',
-    label: 'GPT-4.1 nano',
+    label: 'GPT-4.1-nano',
     contextWindow: 1047576,
     maxTokens: 32768,
     defaultMaxTokens: 8000,
@@ -152,7 +152,7 @@ const chatModels = [
   {
     id: 'gpt-4.1-mini',
     name: 'gpt-4.1-mini-2025-04-14',
-    label: 'GPT-4.1 mini',
+    label: 'GPT-4.1-mini',
     contextWindow: 1047576,
     maxTokens: 32768,
     defaultMaxTokens: 8000,

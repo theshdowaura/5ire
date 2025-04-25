@@ -124,7 +124,7 @@ export default function ModelList({ height = 400 }: { height?: number }) {
             {filteredModels.map((model) => {
               return (
                 <ListItem
-                  key={model.name}
+                  key={model.id}
                   aria-label={model.name}
                   onAction={() => {
                     setSelectedModel(model as IChatModelConfig);

@@ -30,6 +30,7 @@ export interface IVersionCapability {
   allowedMimeTypes?: string[];
 }
 export interface IChatModel {
+  id: string;
   label?: string;
   name: string;
   description?: string | null;

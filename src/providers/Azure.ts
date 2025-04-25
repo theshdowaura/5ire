@@ -215,53 +215,9 @@ const chatModels = [
     description: `o4-mini is OpenAI's latest small o-series model. It's optimized for fast, effective reasoning with exceptionally efficient performance in coding and visual tasks.`,
   },
   {
-    id: 'gpt-4o',
-    name: 'gpt-4o',
-    contextWindow: 128000,
-    maxTokens: 4096,
-    defaultMaxTokens: 4000,
-    inputPrice: 0.005,
-    outputPrice: 0.015,
-    capabilities: {
-      json: {
-        enabled: true,
-      },
-      tools: {
-        enabled: true,
-      },
-      vision: {
-        enabled: true,
-        allowBase64: true,
-        allowUrl: true,
-      },
-    },
-  },
-  {
-    id: 'gpt-4o-mini',
-    name: 'gpt-4o-mini',
-    contextWindow: 128000,
-    maxTokens: 16384,
-    defaultMaxTokens: 16000,
-    inputPrice: 0.00015,
-    outputPrice: 0.0006,
-    description: `GPT-4o mini (“o” for “omni”) is OpenAI's advanced model in the small models category, and it's cheapest model yet. It is multimodal (accepting text or image inputs and outputting text), has higher intelligence than gpt-3.5-turbo but is just as fast. It is meant to be used for smaller tasks, including vision tasks.`,
-    capabilities: {
-      json: {
-        enabled: true,
-      },
-      tools: {
-        enabled: true,
-      },
-      vision: {
-        enabled: true,
-        allowBase64: true,
-        allowUrl: true,
-      },
-    },
-  },
-  {
     id: 'gpt-4',
     name: 'gpt-4',
+    label: 'gpt-4',
     contextWindow: 8192,
     maxTokens: 8192,
     defaultMaxTokens: 8000,
@@ -276,6 +232,7 @@ const chatModels = [
   {
     id: 'gpt-4-turbo',
     name: 'gpt-4-turbo',
+    label: 'gpt-4-turbo',
     contextWindow: 128000,
     maxTokens: 4096,
     defaultMaxTokens: 4000,
@@ -288,7 +245,9 @@ const chatModels = [
     },
   },
   {
+    id: 'gpt-4-32k',
     name: 'gpt-4-32k',
+    label: 'gpt-4-32k',
     contextWindow: 32000,
     maxTokens: 4096,
     defaultMaxTokens: 4000,

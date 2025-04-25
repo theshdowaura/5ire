@@ -15,9 +15,11 @@ import {
   MAX_TOKENS,
 } from 'consts';
 import { isBlank } from 'utils/validators';
+import { typeid } from 'typeid-js';
 import useAuthStore from './useAuthStore';
 
 const ErrorModel = {
+  id: ERROR_MODEL,
   name: ERROR_MODEL,
   label: 'Invalid Model',
   isReady: false,
@@ -68,6 +70,7 @@ const mergeRemoteModel = (
   customModel?: IChatModelConfig,
 ) => {
   return {
+    id: modelName,
     name: modelName,
     label:
       customModel?.label ||
@@ -96,7 +99,7 @@ const getMergedLocalModels = (provider: IChatProviderConfig) => {
         return (
           !provider.isBuiltIn ||
           !builtinModels?.some(
-            (builtInModel: IChatModel) => builtInModel.name === model.name,
+            (builtInModel: IChatModel) => builtInModel.id === model.id,
           )
         );
       })
@@ -105,12 +108,13 @@ const getMergedLocalModels = (provider: IChatProviderConfig) => {
         model.isReady = model.name !== ERROR_MODEL;
         return model;
       }) || [];
-  const customModels = keyBy(provider?.models || [], 'name');
+  const customModels = keyBy(provider?.models || [], 'id');
   return [
     ...(builtinModels?.map((model) => {
-      const customModel = customModels[model.name];
+      const customModel = customModels[model.id];
       const mergedModel = {
-        name: model.name,
+        id: model.id,
+        name: customModel?.name || model.name,
         label: customModel?.label || model.label || model.name,
         contextWindow: customModel?.contextWindow || model.contextWindow,
         maxTokens: customModel?.maxTokens || model.maxTokens,
@@ -246,8 +250,8 @@ export interface IProviderStore {
     [key: string]: ModelOption[];
   }>;
   createModel: (model: IChatModelConfig) => void;
-  updateModel: (name: string, model: Partial<IChatModel>) => void;
-  deleteModel: (modelName: string) => void;
+  updateModel: (model: Partial<IChatModelConfig> & { id: string }) => void;
+  deleteModel: (modelId: string) => void;
 }
 
 const useProviderStore = create<IProviderStore>((set, get) => ({
@@ -438,6 +442,7 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
     if (options?.withDisabled) {
       return $models;
     }
+    console.log($models);
     return $models.filter((model) => !model.disabled);
   },
   getGroupedModelOptions: async () => {
@@ -467,6 +472,7 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
     ) || {
       models: [],
     };
+    model.id = typeid('mod').toString();
     const newModel = omit(model, ['isBuiltIn', 'isReady']) as IChatModelConfig;
     const updatedProvider = {
       name: provider.name,
@@ -475,7 +481,7 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
     updateProvider(provider.name, updatedProvider);
   },
 
-  updateModel: (name: string, model: Partial<IChatModelConfig>) => {
+  updateModel: (model: Partial<IChatModelConfig> & { id: string }) => {
     const { provider, updateProvider } = get();
     if (!provider) return;
     const customProviders = window.electron.store.get('providers');
@@ -488,7 +494,7 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
     const newModel = omit(model, ['isBuiltIn', 'isReady']) as IChatModelConfig;
     const updatedModels =
       customProvider.models?.map((m: IChatModelConfig) => {
-        if (m.name === name) {
+        if (m.id === model.id) {
           found = true;
           return { ...m, ...newModel };
         }
@@ -498,7 +504,7 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
         return m;
       }) || [];
     if (!found) {
-      updatedModels.push({ ...newModel, name } as IChatModelConfig);
+      updatedModels.push({ ...newModel } as IChatModelConfig);
     }
     const updatedProvider = {
       name: provider.name,
@@ -507,7 +513,7 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
     updateProvider(provider.name, updatedProvider);
   },
 
-  deleteModel: (modelName: string) => {
+  deleteModel: (modelId: string) => {
     const { provider, updateProvider } = get();
     if (!provider) return;
     const customProviders = window.electron.store.get('providers');
@@ -519,7 +525,7 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
     const updatedProvider = {
       name: provider.name,
       models: customProvider.models.filter(
-        (model: IChatModelConfig) => model.name !== modelName,
+        (model: IChatModelConfig) => model.id !== modelId,
       ),
     };
     updateProvider(provider.name, updatedProvider);

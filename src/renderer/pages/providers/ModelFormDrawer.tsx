@@ -113,6 +113,7 @@ export default function ModelFormDrawer({
       setNameError('');
     }
     const payload = {
+      id: model?.id || '',
       name,
       label,
       description,
@@ -138,7 +139,7 @@ export default function ModelFormDrawer({
       },
     };
     if (model) {
-      updateModel(model.name, payload);
+      updateModel(payload);
     } else {
       createModel(payload);
     }
@@ -219,17 +220,11 @@ export default function ModelFormDrawer({
       <DrawerBody className="flex flex-col gap-4">
         <Field
           size="small"
+          label={t('Provider.Model.Name')}
           validationMessage={nameError}
           validationState={nameError ? 'error' : undefined}
         >
-          <InfoLabel
-            info={t('Provider.Model.BuiltInModelCannotBeRenamed')}
-            size="small"
-          >
-            {t('Provider.Model.Name')}
-          </InfoLabel>
           <Input
-            disabled={!!model?.isBuiltIn}
             placeholder={t('Common.Required')}
             value={name}
             onChange={(e) => {
