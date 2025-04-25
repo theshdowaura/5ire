@@ -5,11 +5,7 @@ import { find, isNil, isNumber } from 'lodash';
 import { isValidMaxTokens, isValidTemperature } from 'intellichat/validators';
 
 import { IChat, IChatContext, IChatMessage, IPrompt } from 'intellichat/types';
-import {
-  IChatModel,
-  IChatModelConfig,
-  IChatProviderConfig,
-} from 'providers/types';
+import { IChatModelConfig, IChatProviderConfig } from 'providers/types';
 import useProviderStore from 'stores/useProviderStore';
 
 const debug = Debug('5ire:renderer:ChatContext');
@@ -109,9 +105,19 @@ const isStream = () => {
   return stream;
 };
 
-const isToolsEnabled = () => {
-  const model = getModel() as IChatModel;
-  return model?.capabilities?.tools?.enabled || false;
+const isReady = () => {
+  const $provider = getProvider();
+  if ($provider.schema.includes('base') && !$provider.apiBase) {
+    return false;
+  }
+  if ($provider.schema.includes('key') && !$provider.apiKey) {
+    return false;
+  }
+  if ($provider.schema.includes('secret') && !$provider) {
+    return false;
+  }
+  const $model = getModel();
+  return $model?.isReady;
 };
 
 const getCtxMessages = (msgId?: string) => {
@@ -150,5 +156,5 @@ export default {
   getMaxTokens,
   getChatContext,
   isStream,
-  isToolsEnabled,
+  isReady,
 } as IChatContext;

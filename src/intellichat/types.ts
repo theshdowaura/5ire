@@ -204,7 +204,7 @@ export interface IChatContext {
   getChatContext: () => string;
   getCtxMessages: (msgId?: string) => IChatMessage[];
   isStream: () => boolean;
-  isToolsEnabled: () => boolean;
+  isReady: () => boolean;
 }
 
 export interface IChatFolder {
