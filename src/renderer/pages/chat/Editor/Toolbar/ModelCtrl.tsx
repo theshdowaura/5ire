@@ -182,7 +182,7 @@ export default function ModelCtrl({
             icon={<ChevronDownRegular className="w-3" />}
             className="flex justify-start items-center"
           >
-            <div className="overflow-hidden text-ellipsis whitespace-nowrap w-32 sm:w-full">
+            <div className="overflow-hidden text-ellipsis whitespace-nowrap max-w-32 sm:max-w-48">
               {curModel?.label || curModel?.name}
             </div>
           </Button>
