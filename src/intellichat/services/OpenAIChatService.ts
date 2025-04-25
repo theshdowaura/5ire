@@ -222,7 +222,7 @@ export default class OpenAIChatService
       temperature: this.context.getTemperature(),
       stream: true,
     };
-    if (this.context.isToolsEnabled()) {
+    if (this.isToolsEnabled()) {
       const tools = await window.electron.mcp.listTools();
       if (tools) {
         const unusedTools = tools
