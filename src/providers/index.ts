@@ -4,7 +4,6 @@ import Baidu from './Baidu';
 import OpenAI from './OpenAI';
 import Google from './Google';
 import Moonshot from './Moonshot';
-import ChatBro from './ChatBro';
 import Anthropic from './Anthropic';
 import Fire from './Fire';
 import Ollama from './Ollama';
@@ -23,7 +22,6 @@ export const providers: { [key: string]: IServiceProvider } = {
   Baidu,
   Mistral,
   Moonshot,
-  ChatBro,
   Ollama,
   Doubao,
   DeepSeek,

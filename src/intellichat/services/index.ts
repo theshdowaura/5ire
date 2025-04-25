@@ -7,7 +7,6 @@ import LMStudioChatService from './LMStudioChatService';
 import OpenAIChatService from './OpenAIChatService';
 import GoogleChatService from './GoogleChatService';
 import BaiduChatService from './BaiduChatService';
-import ChatBroChatService from './ChatBroChatService';
 import MoonshotChatService from './MoonshotChatService';
 import MistralChatService from './MistralChatService';
 import FireChatService from './FireChatService';
@@ -38,8 +37,6 @@ export default function createService(chatCtx: IChatContext): INextChatService {
       return new MoonshotChatService(provider.name, chatCtx);
     case 'Ollama':
       return new OllamaChatService(provider.name, chatCtx);
-    case 'ChatBro':
-      return new ChatBroChatService(provider.name, chatCtx);
     case '5ire':
       return new FireChatService(provider.name, chatCtx);
     case 'Doubao':
