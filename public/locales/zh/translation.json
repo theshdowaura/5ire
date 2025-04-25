@@ -293,5 +293,6 @@
   "Common.InspectorHint": "通过 Inspector，您可实时追踪工具执行状态，并查看函数参数细节及返回数据内容。",
   "Dynamic.modelId": "Model ID",
   "Dynamic.deploymentId": "Deployment ID",
-  "Provider.Model.Deleted": "模型 {{model}} 已被删除。"
+  "Provider.Model.Deleted": "模型 {{model}} 已被删除。",
+  "Provider.Model.ApiModelNameCannotBeChanged": "API 接口获取的模型名称不可修改."
 }

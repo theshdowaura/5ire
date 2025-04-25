@@ -427,14 +427,27 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
           },
         );
         const data = await resp.json();
-        $models = data.models
+        $models = (data.models || [])
           .filter((model: { name: string }) => model.name.indexOf('embed') < 0)
           .map((model: { name: string }) => {
             const customModel = modelsMap[model.name];
+            delete modelsMap[model.name];
             return mergeRemoteModel(model.name, customModel);
-          });
+          })
+          .concat(
+            Object.values(modelsMap).map((model) => {
+              model.isBuiltIn = false;
+              model.isReady = model.name !== ERROR_MODEL;
+              return model;
+            }),
+          );
       } catch (e) {
-        $models = [ErrorModel];
+        const customModels = provider.models.map((model) => {
+          model.isBuiltIn = false;
+          model.isReady = model.name !== ERROR_MODEL;
+          return model;
+        });
+        $models = customModels.length ? customModels : [ErrorModel];
       }
     } else {
       $models = getMergedLocalModels(provider);
@@ -442,7 +455,6 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
     if (options?.withDisabled) {
       return $models;
     }
-    console.log($models);
     return $models.filter((model) => !model.disabled);
   },
   getGroupedModelOptions: async () => {

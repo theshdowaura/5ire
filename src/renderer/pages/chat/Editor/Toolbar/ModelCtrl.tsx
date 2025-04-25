@@ -7,6 +7,7 @@ import {
   MenuTrigger,
 } from '@fluentui/react-components';
 import { ChevronDownRegular } from '@fluentui/react-icons';
+import { ERROR_MODEL } from 'consts';
 import { IChat, IChatContext } from 'intellichat/types';
 import { find } from 'lodash';
 import Mousetrap from 'mousetrap';
@@ -40,21 +41,19 @@ export default function ModelCtrl({
   const [menuModelOpen, setMenuModelOpen] = useState(false);
   const [menuProviderOpen, setMenuProviderOpen] = useState(false);
 
-  const loadModels = useCallback(
-    async (provider: IChatProviderConfig) => {
-      const $models = await getModels(provider);
-      setModels($models);
-      const ctxProvider = ctx.getProvider();
-      const ctxModel = ctx.getModel();
-      if (ctxProvider.name === provider.name) {
-        setCurModel(ctxModel);
-      } else {
-        const $model = find($models, { isDefault: true }) || $models[0];
-        setCurModel($model);
-      }
-    },
-    [getModels],
-  );
+  const loadModels = useCallback(async (provider: IChatProviderConfig) => {
+    const $models = await getModels(provider);
+    setModels($models);
+    const defaultModel = find($models, { isDefault: true }) || $models[0];
+    const ctxProvider = ctx.getProvider();
+    const ctxModel = ctx.getModel();
+    if (ctxProvider.name === provider.name && ctxModel.id !== ERROR_MODEL) {
+      const $model = find($models, { name: ctxModel.name }) || defaultModel;
+      setCurModel($model);
+    } else {
+      setCurModel(defaultModel);
+    }
+  }, []);
 
   useEffect(() => {
     const ctxProvider = ctx.getProvider();
@@ -67,7 +66,7 @@ export default function ModelCtrl({
       setModels([]);
       isChanged.current = false;
     };
-  }, [chat.id, chat.provider]);
+  }, [chat.provider]);
 
   useEffect(() => {
     if (curProvider) {
@@ -207,7 +206,7 @@ export default function ModelCtrl({
                 >
                   <div className="flex justify-start items-center gap-1 text-xs py-1">
                     <ToolStatusIndicator model={model} withTooltip />
-                    <span> {model.label}</span>
+                    <span> {model.label || model.name}</span>
                     {curModel?.name === model.name && <span>✓</span>}
                   </div>
                 </MenuItem>

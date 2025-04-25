@@ -179,6 +179,7 @@ export default function ModelList({ height = 400 }: { height?: number }) {
         open={formOpen}
         setOpen={setFormOpen}
         model={selectedModel}
+        models={models}
         onSaved={() => {}}
       />
     </div>

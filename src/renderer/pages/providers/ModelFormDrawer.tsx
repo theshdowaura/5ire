@@ -30,11 +30,13 @@ export default function ModelFormDrawer({
   open,
   setOpen,
   model,
+  models,
   onSaved,
 }: {
   open: boolean;
   setOpen: (state: boolean) => void;
   model: IChatModelConfig | null;
+  models: IChatModelConfig[];
   onSaved: () => void;
 }) {
   const provider = useProviderStore(
@@ -59,10 +61,9 @@ export default function ModelFormDrawer({
   const [disabled, setDisabled] = useState<boolean>(false);
   const [extras, setExtras] = useState<{ [key: string]: string }>({});
 
-  const modelNames = useMemo(
-    () => provider.models.map((m) => m.name),
-    [provider.models],
-  );
+  const modelNames = useMemo(() => {
+    return models.map((m) => m.name).filter((n) => n !== model?.name);
+  }, [models, model?.name]);
 
   const formatter = (value: number) => {
     return `${provider.currency === 'USD' ? '$' : '¥'}${value}`;
@@ -154,7 +155,6 @@ export default function ModelFormDrawer({
   const onDelete = () => {
     if (model) {
       deleteModel(model.id as string);
-
       setOpen(false);
       reset();
       notifySuccess(
@@ -227,11 +227,17 @@ export default function ModelFormDrawer({
       <DrawerBody className="flex flex-col gap-4">
         <Field
           size="small"
-          label={t('Provider.Model.Name')}
           validationMessage={nameError}
           validationState={nameError ? 'error' : undefined}
         >
+          <InfoLabel
+            size="small"
+            info={t('Provider.Model.ApiModelNameCannotBeChanged')}
+          >
+            {t('Provider.Model.Name')}
+          </InfoLabel>
           <Input
+            disabled={!!provider.modelsEndpoint && model?.isBuiltIn}
             placeholder={t('Common.Required')}
             value={name}
             onChange={(e) => {

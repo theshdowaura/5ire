@@ -303,5 +303,6 @@
   "Common.InspectorHint": "The Inspector allows real-time tracking of tool executions and provides direct access to function parameter details and returned data.",
   "Dynamic.modelId": "Model ID",
   "Dynamic.deploymentId": "Deployment ID",
-  "Provider.Model.Deleted": "Model {{model}} has been deleted."
+  "Provider.Model.Deleted": "Model {{model}} has been deleted.",
+  "Provider.Model.ApiModelNameCannotBeChanged": "The model name retrieved via the API cannot be modified."
 }
