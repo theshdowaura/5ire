@@ -199,7 +199,7 @@ export default class AnthropicChatService
     if (this.context.getMaxTokens()) {
       payload.max_tokens = this.context.getMaxTokens();
     }
-    if (this.context.isToolsEnabled()) {
+    if (this.isToolsEnabled()) {
       const tools = await window.electron.mcp.listTools();
       if (tools) {
         const unusedTools = tools

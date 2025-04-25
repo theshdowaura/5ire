@@ -146,19 +146,8 @@ export default abstract class NextCharService {
     this.abortController?.abort();
   }
 
-  public isReady(): boolean {
-    const $provider = this.context.getProvider();
-    if ($provider.schema.includes('base') && !$provider.apiBase) {
-      return false;
-    }
-    if ($provider.schema.includes('key') && !$provider.apiKey) {
-      return false;
-    }
-    if ($provider.schema.includes('secret') && !$provider) {
-      return false;
-    }
-    const $model = this.context.getModel();
-    return $model?.isReady;
+  public isToolsEnabled() {
+    return this.context.getModel()?.capabilities?.tools?.enabled || false;
   }
 
   public async chat(messages: IChatRequestMessage[], msgId?: string) {
@@ -170,7 +159,11 @@ export default abstract class NextCharService {
     try {
       signal = this.abortController.signal;
       const response = await this.makeRequest(messages, msgId);
-      debug('Start Reading:', response.status, response.statusText);
+      debug(
+        `${this.name} Start Reading:`,
+        response.status,
+        response.statusText,
+      );
       if (response.status !== 200) {
         const contentType = response.headers.get('content-type');
         let msg;

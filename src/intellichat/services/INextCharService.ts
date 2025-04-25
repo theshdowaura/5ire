@@ -7,7 +7,6 @@ export default interface INextChatService {
   provider: IServiceProvider;
   chat(message: IChatRequestMessage[], msgId?: string): void;
   abort(): void;
-  isReady(): boolean;
   onComplete(callback: (result: any) => Promise<void>): void;
   onToolCalls(callback: (toolName: string) => void): void;
   onReading(callback: (chunk: string, reasoning?: string) => void): void;
