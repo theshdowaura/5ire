@@ -16,7 +16,6 @@ import { useTranslation } from 'react-i18next';
 import ToolStatusIndicator from 'renderer/components/ToolStatusIndicator';
 import useChatStore from 'stores/useChatStore';
 import useProviderStore from 'stores/useProviderStore';
-import eventBus from 'utils/bus';
 
 export default function ModelCtrl({
   chat,
@@ -26,7 +25,6 @@ export default function ModelCtrl({
   ctx: IChatContext;
 }) {
   const { t } = useTranslation();
-  const bus = useRef(eventBus);
   const editStage = useChatStore((state) => state.editStage);
   const { getAvailableProviders, getModels } = useProviderStore();
   const providers = useMemo(() => {
@@ -92,7 +90,6 @@ export default function ModelCtrl({
       });
       isChanged.current = false;
     }
-    bus.current.emit('providerChanged', { provider: curProvider?.name });
   };
 
   useEffect(() => {
