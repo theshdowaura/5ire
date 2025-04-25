@@ -39,9 +39,7 @@ export default function Header() {
   const folders = useChatStore((state) => state.folders);
   const activeChat = useChatStore((state) => state.chat);
   const collapsed = useAppearanceStore((state) => state.sidebar.collapsed);
-  const chatSidebarShow = useAppearanceStore(
-    (state) => state.chatSidebar.show,
-  );
+  const chatSidebarShow = useAppearanceStore((state) => state.chatSidebar.show);
   const toggleChatSidebarVisibility = useAppearanceStore(
     (state) => state.toggleChatSidebarVisibility,
   );
@@ -88,13 +86,13 @@ export default function Header() {
 
   return (
     <div
-      className={`chat-header absolute p-2.5 flex justify-between items-center ${
+      className={`chat-header absolute px-2.5 flex justify-between items-center ${
         collapsed
           ? 'left-[12rem] md:left-[5rem]'
           : 'left-[12rem] md:left-0 lg:left-0'
       }`}
     >
-      <div className="flex-grow text-sm text-gray-300 dark:text-gray-600 -mt-2">
+      <div className="flex-grow text-sm text-gray-300 dark:text-gray-600">
         {chatFolder.name}
       </div>
       <div className="flex justify-end items-center gap-1">
@@ -127,7 +125,7 @@ export default function Header() {
               )
             }
             appearance="transparent"
-            title={'Inspector(Mod+shift+r)'}
+            title="Inspector(Mod+shift+r)"
             onClick={toggleChatSidebarVisibility}
           />
         </div>
