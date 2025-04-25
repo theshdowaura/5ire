@@ -162,7 +162,7 @@ export default function WorkspaceMenu({ collapsed }: { collapsed: boolean }) {
             >
               <div className="flex justify-between items-center">
                 {t('Common.Providers')}
-                <span className="text-xs tips">MOD+k</span>
+                <span className="text-xs tips">MOD + k</span>
               </div>
             </MenuItem>
             <MenuItem
@@ -174,7 +174,7 @@ export default function WorkspaceMenu({ collapsed }: { collapsed: boolean }) {
             >
               <div className="flex justify-between items-center">
                 {t('Common.Settings')}
-                <span className="text-xs tips">MOD+,</span>
+                <span className="text-xs tips">MOD + ,</span>
               </div>
             </MenuItem>
             <MenuItem
@@ -185,7 +185,7 @@ export default function WorkspaceMenu({ collapsed }: { collapsed: boolean }) {
             >
               <div className="flex justify-between items-center">
                 {t('Common.Prompts')}
-                <span className="text-xs tips">MOD+P</span>
+                <span className="text-xs tips">MOD + p</span>
               </div>
             </MenuItem>
             <MenuItem

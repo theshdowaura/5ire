@@ -62,7 +62,7 @@
   "Chat.DeleteConfirmation": "Are you sure you want to delete the chat? ",
   "Chat.DeleteConfirmationInfo": " All messages in this conversation will be deleted. Not reversible.",
   "Common.Yes": "Yes",
-  "Notification.APINotReady": "The currently selected service provider or model is unavailable. Please try an alternative or verify your configuration. (Shortcut: CMD+k )",
+  "Notification.APINotReady": "The currently selected service provider or model is unavailable. Please try an alternative or verify your configuration. (Shortcut: ⌘+k )",
   "Common.Or": "Or",
   "Chat.New": "New Chat",
   "Common.ClearFilter": "Clear filter",
