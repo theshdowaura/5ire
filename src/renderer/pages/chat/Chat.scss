@@ -1,8 +1,9 @@
 .chat-header {
   right: 0;
-  top: 0;
+  top: 5px;
   z-index: 2;
   -webkit-app-region: drag;
+  background: rgba(var(--color-bg-surface-1), 0.8);
 }
 
 .message {
@@ -11,12 +12,12 @@
     Barlow,
     -apple-system,
     BlinkMacSystemFont,
-    "PingFang SC",
-    "Hiragino Sans GB",
+    'PingFang SC',
+    'Hiragino Sans GB',
     Roboto,
-    "helvetica neue",
+    'helvetica neue',
     helvetica,
-    "segoe ui",
+    'segoe ui',
     Arial,
     sans-serif;
 
@@ -176,20 +177,9 @@
 
 .ellipsis-loader {
   font-family:
-    -apple-system,
-    BlinkMacSystemFont,
-    "PingFang SC",
-    "Hiragino Sans GB",
-    "Microsoft YaHei",
-    '微软雅黑',
-    "helvetica neue",
-    helvetica,
-    ubuntu,
-    roboto,
-    noto,
-    "segoe ui",
-    Arial,
-    sans-serif;
+    -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', '微软雅黑', 'helvetica neue', helvetica, ubuntu, roboto,
+    noto, 'segoe ui', Arial, sans-serif;
 }
 
 .ellipsis-loader::after {
@@ -311,5 +301,5 @@ div.think-body {
   border-color: rgba(var(--color-border), var(--tw-border-opacity));
 }
 .inspector-message * {
-  font-size:11px;
+  font-size: 11px;
 }
