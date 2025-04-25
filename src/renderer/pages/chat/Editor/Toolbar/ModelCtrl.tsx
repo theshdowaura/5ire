@@ -132,7 +132,12 @@ export default function ModelCtrl({
             appearance="transparent"
             iconPosition="after"
             className="justify-start focus-visible:ring-0 focus:right-0 border-none"
-            style={{ padding: '0 4px', border: 0, boxShadow: 'none' }}
+            style={{
+              padding: '0 4px',
+              border: 0,
+              boxShadow: 'none',
+              minWidth: '8px',
+            }}
             icon={
               <ChevronDownRegular
                 className="w-3"
