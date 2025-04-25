@@ -70,9 +70,8 @@ const mergeRemoteModel = (
   return {
     name: modelName,
     label:
-      customModel?.label || modelName === ERROR_MODEL
-        ? 'Invalid Model'
-        : modelName,
+      customModel?.label ||
+      (modelName === ERROR_MODEL ? 'Invalid Model' : modelName),
     isReady: modelName !== ERROR_MODEL,
     isDefault: customModel?.isDefault || false,
     contextWindow: customModel?.contextWindow || DEFAULT_CONTEXT_WINDOW,
