@@ -83,10 +83,8 @@ export default function Chat() {
 
   const clearTrace = useInspectorStore((state) => state.clearTrace);
   const chatSidebarShow = useAppearanceStore((state) => state.chatSidebar.show);
-  const [chatService, setChatService] = useState<INextChatService | null>(null);
+  const chatService = useRef<INextChatService>();
   const [isLoading, setIsLoading] = useState(false);
-  const [isReady, setIsReady] = useState(false);
-
   const { notifyError } = useToast();
 
   const isUserScrollingRef = useRef(false);
@@ -127,22 +125,11 @@ export default function Chat() {
   ).current;
 
   useEffect(() => {
-    bus.current.on('providerChanged', (event: any) => {
-      debug('Provider changed:', event.provider);
-      const service = createService(ChatContext);
-      setChatService(service);
-      setIsReady(service.isReady());
-    });
-    const service = createService(ChatContext);
-    setChatService(service);
-    setIsReady(service.isReady());
     const currentRef = ref.current;
     currentRef?.addEventListener('scroll', handleScroll);
     return () => {
       currentRef?.removeEventListener('scroll', handleScroll);
       isUserScrollingRef.current = false;
-      bus.current.off('providerChanged');
-      setChatService(null);
     };
   }, []);
 
@@ -217,7 +204,8 @@ export default function Chat() {
 
   const onSubmit = useCallback(
     async (prompt: string, msgId?: string) => {
-      if (!chatService || prompt.trim() === '') {
+      chatService.current = createService(ChatContext);
+      if (!chatService.current || prompt.trim() === '') {
         return;
       }
       const provider = ChatContext.getProvider();
@@ -388,17 +376,17 @@ ${prompt}
         }
         updateStates($chatId, { loading: false, runningTool: null });
       };
-      chatService.onComplete(onChatComplete);
-      chatService.onReading((content: string, reasoning?: string) => {
+      chatService.current.onComplete(onChatComplete);
+      chatService.current.onReading((content: string, reasoning?: string) => {
         appendReply(msg.id, content || '', reasoning || '');
         if (!isUserScrollingRef.current) {
           scrollToBottom();
         }
       });
-      chatService.onToolCalls((toolName: string) => {
+      chatService.current.onToolCalls((toolName: string) => {
         updateStates($chatId, { runningTool: toolName });
       });
-      chatService.onError((err: any, aborted: boolean) => {
+      chatService.current.onError((err: any, aborted: boolean) => {
         console.error(err);
         if (!aborted) {
           notifyError(err.message || err);
@@ -406,7 +394,7 @@ ${prompt}
         updateStates($chatId, { loading: false });
       });
 
-      await chatService.chat(
+      await chatService.current.chat(
         [
           {
             role: 'user',
@@ -469,7 +457,7 @@ ${prompt}
                       <MemoizedMessages messages={messages} />
                     </div>
                   ) : (
-                    isReady || (
+                    ChatContext.isReady() || (
                       <Empty
                         image="hint"
                         text={t('Notification.APINotReady')}
@@ -481,10 +469,10 @@ ${prompt}
               <Pane minSize={180} maxSize="60%">
                 {!isLoading && (
                   <Editor
-                    isReady={isReady}
+                    isReady={ChatContext.isReady()}
                     onSubmit={onSubmit}
                     onAbort={() => {
-                      chatService?.abort();
+                      chatService.current?.abort();
                     }}
                   />
                 )}
