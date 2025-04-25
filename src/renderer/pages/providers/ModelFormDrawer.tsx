@@ -237,7 +237,7 @@ export default function ModelFormDrawer({
             {t('Provider.Model.Name')}
           </InfoLabel>
           <Input
-            disabled={!!provider.modelsEndpoint && model?.isBuiltIn}
+            disabled={model?.isFromApi}
             placeholder={t('Common.Required')}
             value={name}
             onChange={(e) => {

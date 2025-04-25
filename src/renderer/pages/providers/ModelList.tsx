@@ -102,6 +102,7 @@ export default function ModelList({ height = 400 }: { height?: number }) {
         </Combobox>
         <div className="border-l border-base py-1 px-2 flex justify-center items-center min-w-[80px]">
           <Button
+            disabled={!!provider.modelsEndpoint}
             size="small"
             appearance="subtle"
             icon={<AddIcon />}

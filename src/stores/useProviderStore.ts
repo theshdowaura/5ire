@@ -84,6 +84,7 @@ const mergeRemoteModel = (
     inputPrice: customModel?.inputPrice || 0,
     outputPrice: customModel?.outputPrice || 0,
     description: customModel?.description || '',
+    isFromApi: customModel?.isFromApi || false,
     isBuiltIn: true, // remote models are always built-in
     disabled: customModel?.disabled || false,
   } as IChatModelConfig;
@@ -432,7 +433,10 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
           .map((model: { name: string }) => {
             const customModel = modelsMap[model.name];
             delete modelsMap[model.name];
-            return mergeRemoteModel(model.name, customModel);
+            return mergeRemoteModel(model.name, {
+              ...customModel,
+              isFromApi: true,
+            });
           })
           .concat(
             Object.values(modelsMap).map((model) => {
