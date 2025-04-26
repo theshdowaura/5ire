@@ -49,6 +49,7 @@ export default function FolderSettingsDialog({
     () => getAvailableProviders(),
     [folder?.id, session],
   );
+  const { t } = useTranslation();
   const [models, setModels] = useState<IChatModelConfig[]>([]);
   const { updateFolder, updateChat, editStage } = useChatStore();
   const [folderProvider, setFolderProvider] = useState('');
@@ -60,6 +61,11 @@ export default function FolderSettingsDialog({
     () => getAvailableProvider(folderProvider),
     [folderProvider],
   );
+
+  const folderModelLabel = useMemo(() => {
+    if (!folderModel) return '';
+    return find(models, { name: folderModel })?.label || folderModel;
+  }, [folderModel, models]);
 
   const loadModels = useCallback(
     async (providerName: string) => {
@@ -76,7 +82,6 @@ export default function FolderSettingsDialog({
     return chats.filter((c) => c.folderId === folder.id);
   }, [chats, folder]);
 
-  const { t } = useTranslation();
   const onConfirm = useCallback(async () => {
     await updateFolder({
       id: folder?.id as string,
@@ -138,6 +143,9 @@ export default function FolderSettingsDialog({
         $provider = getDefaultProvider();
       }
       setFolderProvider($provider.name);
+      if (folder?.model) {
+        setFolderModel(folder.model);
+      }
       setFolderSystemMessage(folder?.systemMessage || '');
       let temperature =
         folder?.temperature ||
@@ -203,7 +211,7 @@ export default function FolderSettingsDialog({
                     className="w-full"
                     style={{ minWidth: 260 }}
                     placeholder="Select a model"
-                    value={folderModel}
+                    value={folderModelLabel}
                     onOptionSelect={(
                       _: SelectionEvents,
                       data: OptionOnSelectData,
