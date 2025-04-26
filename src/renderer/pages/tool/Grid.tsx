@@ -15,12 +15,14 @@ import {
   MenuList,
   MenuPopover,
   MenuTrigger,
+  Popover,
+  PopoverSurface,
+  PopoverTrigger,
   Switch,
   TableCell,
   TableCellActions,
   TableCellLayout,
   TableColumnDefinition,
-  Tooltip,
   createTableColumn,
   useFluent,
   useScrollbarWidth,
@@ -40,11 +42,12 @@ import {
   WrenchScrewdriver20Filled,
   WrenchScrewdriver20Regular,
 } from '@fluentui/react-icons';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import useMCPStore from 'stores/useMCPStore';
 import useToast from 'hooks/useToast';
 import { IMCPServer } from 'types/mcp';
+import useMarkdown from 'hooks/useMarkdown';
 
 const EditIcon = bundleIcon(EditFilled, EditRegular);
 const DeleteIcon = bundleIcon(DeleteFilled, DeleteRegular);
@@ -69,11 +72,29 @@ export default function Grid({
   onInspect: (server: IMCPServer) => void;
 }) {
   const { t } = useTranslation();
+  const { render } = useMarkdown();
   const { notifyError } = useToast();
   const { activateServer, deactivateServer } = useMCPStore((state) => state);
   const [loading, setLoading] = useState<{ [key: string]: boolean }>({});
 
   const [innerHeight, setInnerHeight] = useState(window.innerHeight);
+
+  const renderToolState = useCallback(
+    (tool: IMCPServer) => {
+      if (loading[tool.key]) {
+        return (
+          <CircleHintHalfVertical16Filled className="animate-spin -mb-0.5" />
+        );
+      }
+
+      return tool.isActive ? (
+        <Circle16Filled className="text-green-500 -mb-0.5" />
+      ) : (
+        <CircleOff16Regular className="text-gray-400 dark:text-gray-600 -mb-0.5" />
+      );
+    },
+    [loading],
+  );
 
   useEffect(() => {
     const handleResize = () => {
@@ -99,30 +120,29 @@ export default function Grid({
           <TableCell>
             <TableCellLayout truncate>
               <div className="flex flex-start items-center flex-grow overflow-y-hidden">
-                {loading[item.key] ? (
-                  <CircleHintHalfVertical16Filled className="animate-spin -mb-1" />
-                ) : item.isActive ? (
-                  <Circle16Filled className="text-green-500 -mb-0.5" />
-                ) : (
-                  <CircleOff16Regular className="text-gray-400 dark:text-gray-600 -mb-0.5" />
-                )}
+                {renderToolState(item)}
                 <div className="ml-1.5">{item.name || item.key}</div>
-                {item.description && (
-                  <div className="-mb-0.5">
-                    <Tooltip
-                      content={item.description}
-                      relationship="label"
-                      withArrow
-                      appearance="inverted"
-                    >
+                <div className="-mb-0.5">
+                  <Popover withArrow size="small" positioning="after">
+                    <PopoverTrigger disableButtonEnhancement>
                       <Button
                         icon={<Info16Regular />}
                         size="small"
                         appearance="subtle"
                       />
-                    </Tooltip>
-                  </div>
-                )}
+                    </PopoverTrigger>
+                    <PopoverSurface tabIndex={-1}>
+                      <div
+                        className="text-xs"
+                        dangerouslySetInnerHTML={{
+                          __html: render(
+                            `\`\`\`json\n${JSON.stringify(item, null, 2)}\n\`\`\``,
+                          ),
+                        }}
+                      />
+                    </PopoverSurface>
+                  </Popover>
+                </div>
                 <div className="ml-4">
                   <Menu>
                     <MenuTrigger disableButtonEnhancement>
