@@ -84,7 +84,7 @@ const mergeRemoteModel = (
     inputPrice: customModel?.inputPrice || 0,
     outputPrice: customModel?.outputPrice || 0,
     description: customModel?.description || '',
-    isFromApi: customModel?.isFromApi || false,
+    isFromApi: true,
     isBuiltIn: true, // remote models are always built-in
     disabled: customModel?.disabled || false,
   } as IChatModelConfig;
