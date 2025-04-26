@@ -37,11 +37,12 @@ export default function ChatItem({
       >
         {collapsed ? null : (
           <div className="text-sm truncate ...">
-            {chat.summary
-              ?.substring(0, 40)
-              .replace(/&lt;/g, '<')
-              .replace(/&gt;/g, '>')
-              .replace(/&amp;/g, '&')}
+            {chat.name?.trim() ||
+              chat.summary
+                ?.substring(0, 40)
+                .replace(/&lt;/g, '<')
+                .replace(/&gt;/g, '>')
+                .replace(/&amp;/g, '&')}
           </div>
         )}
       </Button>

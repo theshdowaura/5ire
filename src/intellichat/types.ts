@@ -11,6 +11,7 @@ export interface IPrompt {
 
 export interface IChat {
   id: string;
+  name: string;
   summary: string;
   folderId: string | null;
   provider?: string;

@@ -428,6 +428,11 @@ const useChatStore = create<IChatStore>((set, get) => ({
     const $chat = { id: chat.id } as IChat;
     const stats: string[] = [];
     const params: (string | number | null)[] = [];
+    if (isNotBlank(chat.name)) {
+      stats.push('name = ?');
+      $chat.name = chat.name as string;
+      params.push($chat.name);
+    }
     if (isNotBlank(chat.summary)) {
       stats.push('summary = ?');
       $chat.summary = chat.summary as string;
@@ -522,7 +527,7 @@ const useChatStore = create<IChatStore>((set, get) => ({
   },
   getChat: async (id: string) => {
     const chat = (await window.electron.db.get(
-      'SELECT id, summary, provider, model, systemMessage, maxTokens, temperature, context, maxCtxMessages, stream, prompt, input, folderId, createdAt FROM chats where id = ?',
+      'SELECT id, name, summary, provider, model, systemMessage, maxTokens, temperature, context, maxCtxMessages, stream, prompt, input, folderId, createdAt FROM chats where id = ?',
       id,
     )) as IChat;
     if (chat) {
@@ -538,7 +543,7 @@ const useChatStore = create<IChatStore>((set, get) => ({
   },
   fetchChat: async (limit: number = 300, offset = 0) => {
     const rows = (await window.electron.db.all(
-      'SELECT id, summary, folderId, createdAt FROM chats ORDER BY createdAt DESC limit ? offset ?',
+      'SELECT id, name, summary, folderId, createdAt FROM chats ORDER BY createdAt DESC limit ? offset ?',
       [limit, offset],
     )) as IChat[];
     const chats = rows.map((chat) => {

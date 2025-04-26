@@ -37,6 +37,7 @@ function createTableChats() {
   CREATE TABLE IF NOT EXISTS "chats" (
     "id" text(31) NOT NULL,
     "folderId" text(31),
+    "name" text,
     "summary" text,
     "provider" text,
     "model" text,
@@ -230,6 +231,13 @@ function alertTableChats() {
     logging.debug('Added [provider] column to [chats] table');
   } else {
     logging.debug('[provider column already exists in [chats] table');
+  }
+  const hasNameColumn = columns.some((column: any) => column.name === 'name');
+  if (!hasNameColumn) {
+    database.prepare(`ALTER TABLE chats ADD COLUMN name TEXT`).run();
+    logging.debug('Added [name] column to [chats] table');
+  } else {
+    logging.debug('[name] column already exists in [chats] table');
   }
 }
 
