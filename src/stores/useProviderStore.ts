@@ -202,7 +202,9 @@ const mergeProviders = (
       topP: (builtInProvider || defaultProvider).chat.topP,
       presencePenalty: (builtInProvider || defaultProvider).chat
         .presencePenalty,
-      currency: (builtInProvider || defaultProvider).currency,
+      currency:
+        customProvider?.currency ||
+        (builtInProvider || defaultProvider).currency,
       isDefault: customProvider?.isDefault || false,
       isPremium: !!builtInProvider?.isPremium,
       disabled: customProvider?.disabled || false,
