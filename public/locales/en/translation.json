@@ -304,5 +304,6 @@
   "Dynamic.modelId": "Model ID",
   "Dynamic.deploymentId": "Deployment ID",
   "Provider.Model.Deleted": "Model {{model}} has been deleted.",
-  "Provider.Model.ApiModelNameCannotBeChanged": "The model name retrieved via the API cannot be modified."
+  "Provider.Model.ApiModelNameCannotBeChanged": "The model name retrieved via the API cannot be modified.",
+  "Common.Action.Clear": "Clear"
 }

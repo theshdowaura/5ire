@@ -294,5 +294,6 @@
   "Dynamic.modelId": "Model ID",
   "Dynamic.deploymentId": "Deployment ID",
   "Provider.Model.Deleted": "模型 {{model}} 已被删除。",
-  "Provider.Model.ApiModelNameCannotBeChanged": "API 接口获取的模型名称不可修改."
+  "Provider.Model.ApiModelNameCannotBeChanged": "API 接口获取的模型名称不可修改.",
+  "Common.Action.Clear": "清除"
 }
