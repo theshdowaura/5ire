@@ -19,7 +19,6 @@ import { ICollectionFile } from 'types/knowledge';
 import useChatStore from 'stores/useChatStore';
 import useChatKnowledgeStore from 'stores/useChatKnowledgeStore';
 import useKnowledgeStore from 'stores/useKnowledgeStore';
-import useInspectorStore from 'stores/useInspectorStore';
 
 import SplitPane, { Pane } from 'split-pane-react';
 import Empty from 'renderer/components/Empty';
@@ -81,7 +80,6 @@ export default function Chat() {
     openFolder,
   } = useChatStore();
 
-  const clearTrace = useInspectorStore((state) => state.clearTrace);
   const chatSidebarShow = useAppearanceStore((state) => state.chatSidebar.show);
   const chatService = useRef<INextChatService>();
   const [isLoading, setIsLoading] = useState(false);
@@ -249,7 +247,6 @@ export default function Chat() {
         }
         setKeyword(activeChatId, ''); // clear filter keyword
       }
-      clearTrace($chatId);
       updateStates($chatId, { loading: true });
       const msg = msgId
         ? (messages.find((message) => msgId === message.id) as IChatMessage)
