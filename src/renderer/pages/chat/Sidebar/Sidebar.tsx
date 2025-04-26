@@ -44,7 +44,7 @@ export default function Sidebar({ chatId }: { chatId: string }) {
         chatSidebar.show ? 'hidden sm:flex' : 'hidden'
       }  inset-y-0 top-0 flex-col duration-300 md:relative pl-2`}
     >
-      <div className="flex justify-between items-center text-gray-300 dark:text-gray-600 font-bold text-lg mb-2">
+      <div className="flex justify-between items-center text-gray-300 dark:text-stone-600 font-bold text-lg mb-2">
         <span> {t('Common.Inspector')}</span>
         {trace.length > 0 && (
           <Button
