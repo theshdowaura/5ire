@@ -296,5 +296,6 @@
   "Provider.Model.Deleted": "模型 {{model}} 已被删除。",
   "Provider.Model.ApiModelNameCannotBeChanged": "API 接口获取的模型名称不可修改.",
   "Common.Action.Clear": "清除",
-  "Input.Hint.EnterSubmitEscCancel": "回车确认，Esc 取消"
+  "Input.Hint.EnterSubmitEscCancel": "回车确认，Esc 取消",
+  "Settings.Notification.NoValidBackupFound": "未找到可用备份数据，产品升级更新了配置结构，旧备份不再适用，请重新备份。"
 }

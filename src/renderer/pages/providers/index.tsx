@@ -126,8 +126,10 @@ export default function Providers() {
         const { providers } = JSON.parse(decrypted);
         if (providers) {
           overwrite(providers);
+          notifySuccess(t('Settings.Notification.RestoreFromCloudSuccess'));
+        } else {
+          notifyError(t('Settings.Notification.NoValidBackupFound'));
         }
-        notifySuccess(t('Settings.Notification.RestoreFromCloudSuccess'));
       } else {
         notifyError(t('Settings.Notification.RestoreFromCloudFailed'));
       }
