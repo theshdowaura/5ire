@@ -2,14 +2,14 @@ import { useEffect, useMemo, useState } from 'react';
 import { Button, Tooltip } from '@fluentui/react-components';
 import Mousetrap from 'mousetrap';
 import {
-  MoreHorizontal24Regular,
-  MoreHorizontal24Filled,
   FilterDismiss24Regular,
-  PanelRight24Regular,
-  PanelRight24Filled,
-  Delete24Regular,
-  Delete24Filled,
   bundleIcon,
+  WindowConsoleFilled,
+  WindowConsoleRegular,
+  DeleteFilled,
+  DeleteRegular,
+  MoreHorizontalFilled,
+  MoreHorizontalRegular,
 } from '@fluentui/react-icons';
 import useAppearanceStore from 'stores/useAppearanceStore';
 import useChatStore from 'stores/useChatStore';
@@ -23,13 +23,13 @@ import { IChatFolder } from 'intellichat/types';
 import { isPersistedChat } from 'utils/util';
 import ChatSettingsDrawer from './ChatSettingsDrawer';
 
-const DeleteIcon = bundleIcon(Delete24Filled, Delete24Regular);
+const DeleteIcon = bundleIcon(DeleteFilled, DeleteRegular);
 const MoreHorizontalIcon = bundleIcon(
-  MoreHorizontal24Filled,
-  MoreHorizontal24Regular,
+  MoreHorizontalFilled,
+  MoreHorizontalRegular,
 );
-const PanelRightShowIcon = bundleIcon(PanelRight24Filled, PanelRight24Regular);
-const PanelRightHideIcon = bundleIcon(PanelRight24Regular, PanelRight24Filled);
+const InspectorShowIcon = bundleIcon(WindowConsoleFilled, WindowConsoleRegular);
+const InspectorHideIcon = bundleIcon(WindowConsoleRegular, WindowConsoleFilled);
 
 export default function Header() {
   const { t } = useTranslation();
@@ -119,9 +119,9 @@ export default function Header() {
           <Button
             icon={
               chatSidebarShow ? (
-                <PanelRightHideIcon className="text-color-tertiary" />
+                <InspectorHideIcon className="text-color-tertiary" />
               ) : (
-                <PanelRightShowIcon className="text-color-tertiary" />
+                <InspectorShowIcon className="text-color-tertiary" />
               )
             }
             appearance="transparent"

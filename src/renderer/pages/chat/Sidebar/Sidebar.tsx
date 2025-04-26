@@ -3,6 +3,7 @@ import {
   AccordionItem,
   AccordionHeader,
   AccordionPanel,
+  Button,
 } from '@fluentui/react-components';
 import { PlayCircleHint16Regular } from '@fluentui/react-icons';
 import useMarkdown from 'hooks/useMarkdown';
@@ -17,6 +18,7 @@ export default function Sidebar({ chatId }: { chatId: string }) {
   const { render } = useMarkdown();
   const chatSidebar = useAppearanceStore((state) => state.chatSidebar);
   const messages = useInspectorStore((state) => state.messages);
+  const { clearTrace } = useInspectorStore();
   const trace = useMemo(() => messages[chatId] || [], [messages, chatId]);
 
   const labelClasses: { [key: string]: string } = useMemo(() => {
@@ -42,8 +44,18 @@ export default function Sidebar({ chatId }: { chatId: string }) {
         chatSidebar.show ? 'hidden sm:flex' : 'hidden'
       }  inset-y-0 top-0 flex-col duration-300 md:relative pl-2`}
     >
-      <div className="text-gray-300 dark:text-gray-600 font-bold text-lg mb-2">
-        {t('Common.Inspector')}
+      <div className="flex justify-between items-center text-gray-300 dark:text-gray-600 font-bold text-lg mb-2">
+        <span> {t('Common.Inspector')}</span>
+        {trace.length > 0 && (
+          <Button
+            appearance="transparent"
+            className="opacity-60"
+            onClick={() => clearTrace(chatId)}
+            size="small"
+          >
+            {t('Common.Action.Clear')}
+          </Button>
+        )}
       </div>
       <div className="h-full overflow-x-hidden overflow-y-auto break-word -ml-2.5">
         {trace.length > 0 ? (
@@ -82,7 +94,7 @@ export default function Sidebar({ chatId }: { chatId: string }) {
             })}
           </Accordion>
         ) : (
-          <div className="flex flex-col justify-center items-center px-2">
+          <div className="flex flex-col justify-center items-center px-2 opacity-70">
             <p className="tips text-xs">{t('Common.InspectorHint')}</p>
           </div>
         )}
