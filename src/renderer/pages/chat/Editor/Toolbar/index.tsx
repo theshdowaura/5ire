@@ -26,7 +26,7 @@ export default function EditorToolbar({
         className="flex items-center gap-2 ml-2 editor-toolbar"
       >
         <ModelCtrl ctx={ChatContext} chat={chat} />
-        <div className="flex justify-start items-center gap-2 -ml-2">
+        <div className="flex justify-start items-center gap-2.5 -ml-2">
           <PromptCtrl ctx={ChatContext} chat={chat} disabled={!isReady} />
           <KnowledgeCtrl ctx={ChatContext} chat={chat} disabled={!isReady} />
           <MaxTokensCtrl
@@ -35,8 +35,16 @@ export default function EditorToolbar({
             onConfirm={onConfirm}
             disabled={!isReady}
           />
-          <TemperatureCtrl ctx={ChatContext} chat={chat} disabled={!isReady} />
-          <CtxNumCtrl ctx={ChatContext} chat={chat} disabled={!isReady} />
+          <div className="-ml-[4px]">
+            <TemperatureCtrl
+              ctx={ChatContext}
+              chat={chat}
+              disabled={!isReady}
+            />
+          </div>
+          <div className="-ml-[4px]">
+            <CtxNumCtrl ctx={ChatContext} chat={chat} disabled={!isReady} />
+          </div>
           <ImgCtrl ctx={ChatContext} chat={chat} disabled={!isReady} />
         </div>
       </Toolbar>

@@ -174,7 +174,7 @@ export default function ImgCtrl({
           icon={<ImageAddIcon />}
         />
       </DialogTrigger>
-      <DialogSurface aria-labelledby="add image">
+      <DialogSurface aria-labelledby="add image" style={{ width: '468px' }}>
         <DialogBody>
           <DialogTitle
             action={
