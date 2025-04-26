@@ -10,7 +10,6 @@ import {
 } from '@fluentui/react-components';
 import Mousetrap from 'mousetrap';
 import { useTranslation } from 'react-i18next';
-import { Dismiss24Regular } from '@fluentui/react-icons';
 import React, { useCallback, useEffect } from 'react';
 
 export default function ConfirmDialog(args: {
@@ -43,24 +42,13 @@ export default function ConfirmDialog(args: {
 
   return (
     <Dialog open={open}>
-      <DialogSurface>
+      <DialogSurface className="w-[468px]">
         <DialogBody>
-          <DialogTitle
-            action={
-              <DialogTrigger action="close">
-                <Button
-                  onClick={() => setOpen(false)}
-                  appearance="subtle"
-                  aria-label="close"
-                  icon={<Dismiss24Regular />}
-                />
-              </DialogTrigger>
-            }
-          >
-            {title || t('Common.DeleteConfirmation')}
-          </DialogTitle>
+          <DialogTitle>{title || t('Common.DeleteConfirmation')}</DialogTitle>
           <DialogContent>
-            {message || t('Common.DeleteConfirmationInfo')}
+            <div className="mt-1 mb-4">
+              {message || t('Common.DeleteConfirmationInfo')}
+            </div>
           </DialogContent>
           <DialogActions>
             <DialogTrigger disableButtonEnhancement>

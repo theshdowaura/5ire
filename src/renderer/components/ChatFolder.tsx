@@ -150,18 +150,19 @@ export default function ChatFolder({
                   size="small"
                 />
               </MenuTrigger>
-              <MenuPopover>
+              <MenuPopover style={{ minWidth: '80px' }}>
                 <MenuList>
                   <MenuItem onClick={() => setConfirmDialogOpen(true)}>
-                    {t('Common.Delete')}
+                    <span className="text-xs">{t('Common.Delete')}</span>
                   </MenuItem>
                   <MenuItem
+                    className="text-xs"
                     onClick={() => {
                       selectFolder(folder.id);
                       setFolderSettingsOpen(true);
                     }}
                   >
-                    {t('Common.Settings')}
+                    <span className="text-xs">{t('Common.Settings')}</span>
                   </MenuItem>
                 </MenuList>
               </MenuPopover>

@@ -60,7 +60,7 @@
   "Common.DeleteConfirmation": "Are you sure want to delete this conversation?",
   "Common.Delete": "Delete",
   "Chat.DeleteConfirmation": "Are you sure you want to delete the chat? ",
-  "Chat.DeleteConfirmationInfo": " All messages in this conversation will be deleted. Not reversible.",
+  "Chat.DeleteConfirmationInfo": " All messages in this conversation will be deleted. This action cannot be undone.",
   "Common.Yes": "Yes",
   "Notification.APINotReady": "The currently selected service provider or model is unavailable. Please try an alternative or verify your configuration. (Shortcut: ⌘+k )",
   "Common.Or": "Or",
