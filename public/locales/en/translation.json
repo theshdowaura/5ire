@@ -305,5 +305,6 @@
   "Dynamic.deploymentId": "Deployment ID",
   "Provider.Model.Deleted": "Model {{model}} has been deleted.",
   "Provider.Model.ApiModelNameCannotBeChanged": "The model name retrieved via the API cannot be modified.",
-  "Common.Action.Clear": "Clear"
+  "Common.Action.Clear": "Clear",
+  "Input.Hint.EnterSubmitEscCancel": "Press Enter to confirm, Esc to cancel."
 }
