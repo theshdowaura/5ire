@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { Button, Tooltip } from '@fluentui/react-components';
 import Mousetrap from 'mousetrap';
 import {
-  FilterDismiss24Regular,
   bundleIcon,
   WindowConsoleFilled,
   WindowConsoleRegular,
@@ -10,6 +9,8 @@ import {
   DeleteRegular,
   MoreHorizontalFilled,
   MoreHorizontalRegular,
+  FilterDismissRegular,
+  FilterDismissFilled,
 } from '@fluentui/react-icons';
 import useAppearanceStore from 'stores/useAppearanceStore';
 import useChatStore from 'stores/useChatStore';
@@ -24,6 +25,9 @@ import { isPersistedChat } from 'utils/util';
 import ChatSettingsDrawer from './ChatSettingsDrawer';
 
 const DeleteIcon = bundleIcon(DeleteFilled, DeleteRegular);
+
+const FilterDismissIcon = bundleIcon(FilterDismissFilled, FilterDismissRegular);
+
 const MoreHorizontalIcon = bundleIcon(
   MoreHorizontalFilled,
   MoreHorizontalRegular,
@@ -104,31 +108,31 @@ export default function Header() {
               title="Mod+d"
               onClick={() => setDelConfirmDialogOpen(true)}
             />
+            <div className="hidden sm:block">
+              <Button
+                icon={
+                  chatSidebarShow ? (
+                    <InspectorHideIcon className="text-color-tertiary" />
+                  ) : (
+                    <InspectorShowIcon className="text-color-tertiary" />
+                  )
+                }
+                appearance="transparent"
+                title="Inspector(Mod+shift+r)"
+                onClick={toggleChatSidebarVisibility}
+              />
+            </div>
             {keyword ? (
               <Tooltip content={t('Common.ClearFilter')} relationship="label">
                 <Button
-                  icon={<FilterDismiss24Regular />}
-                  appearance="subtle"
+                  icon={<FilterDismissIcon />}
+                  appearance="transparent"
                   onClick={() => setKeyword(activeChat?.id, '')}
                 />
               </Tooltip>
             ) : null}
           </>
         ) : null}
-        <div className="hidden sm:block">
-          <Button
-            icon={
-              chatSidebarShow ? (
-                <InspectorHideIcon className="text-color-tertiary" />
-              ) : (
-                <InspectorShowIcon className="text-color-tertiary" />
-              )
-            }
-            appearance="transparent"
-            title="Inspector(Mod+shift+r)"
-            onClick={toggleChatSidebarVisibility}
-          />
-        </div>
         <Button
           icon={<MoreHorizontalIcon className="text-color-tertiary" />}
           appearance="transparent"
