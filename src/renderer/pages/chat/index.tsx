@@ -82,6 +82,9 @@ export default function Chat() {
 
   const chatSidebarShow = useAppearanceStore((state) => state.chatSidebar.show);
   const chatService = useRef<INextChatService>();
+  const isReady = useMemo(() => {
+    return ChatContext.isReady();
+  }, [ChatContext.getActiveChat()]);
   const [isLoading, setIsLoading] = useState(false);
   const { notifyError } = useToast();
 
@@ -134,14 +137,17 @@ export default function Chat() {
   useEffect(() => {
     const loadChat = async () => {
       setIsLoading(true);
-      if (activeChatId !== tempChatId) {
-        await getChat(activeChatId);
-      } else if (folder) {
-        initChat(getCurFolderSettings());
-      } else {
-        initChat(tempStage);
+      try {
+        if (activeChatId !== tempChatId) {
+          return await getChat(activeChatId);
+        }
+        if (folder) {
+          return initChat(getCurFolderSettings());
+        }
+        return initChat(tempStage);
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     };
     loadChat();
     return () => {
@@ -434,7 +440,6 @@ ${prompt}
         split="vertical"
         sizes={horizontalSizes}
         onChange={setHorizontalSizes}
-        performanceMode
         sashRender={horizontalSashRender}
       >
         <div>
@@ -454,7 +459,7 @@ ${prompt}
                       <MemoizedMessages messages={messages} />
                     </div>
                   ) : (
-                    ChatContext.isReady() || (
+                    isReady || (
                       <Empty
                         image="hint"
                         text={t('Notification.APINotReady')}
@@ -466,7 +471,7 @@ ${prompt}
               <Pane minSize={180} maxSize="60%">
                 {!isLoading && (
                   <Editor
-                    isReady={ChatContext.isReady()}
+                    isReady={isReady}
                     onSubmit={onSubmit}
                     onAbort={() => {
                       chatService.current?.abort();
