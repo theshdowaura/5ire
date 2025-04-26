@@ -106,6 +106,7 @@ const getMergedLocalModels = (provider: IChatProviderConfig) => {
       })
       .map((model) => {
         model.isBuiltIn = false;
+        model.label = model.label || model.name;
         model.isReady = model.name !== ERROR_MODEL;
         return model;
       }) || [];
