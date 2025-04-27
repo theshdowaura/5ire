@@ -71,14 +71,11 @@ export default class OpenAIChatService
     msgId?: string,
   ): Promise<IChatRequestMessage[]> {
     const result = [];
+    const model = this.context.getModel();
     const systemMessage = this.context.getSystemMessage();
-    let sysRole = 'system';
-    if (
-      ['o1', 'o3'].some((prefix) =>
-        (this.getModelName() as string).startsWith(prefix),
-      )
-    ) {
-      sysRole = 'developer';
+    let sysRole = 'developer';
+    if (['o1', 'o3'].some((prefix) => model.name.startsWith(prefix))) {
+      sysRole = 'user'; // right now, o1, o3 models are not compatible with the system message
     }
     if (!isBlank(systemMessage)) {
       result.push({
@@ -215,12 +212,12 @@ export default class OpenAIChatService
     message: IChatRequestMessage[],
     msgId?: string,
   ): Promise<IChatRequestPayload> {
-    const modelName = this.getModelName() as string;
+    const model = this.context.getModel();
     const payload: IChatRequestPayload = {
-      model: modelName,
+      model: model.name,
       messages: await this.makeMessages(message, msgId),
       temperature: this.context.getTemperature(),
-      stream: true,
+      stream: !model.noStreaming,
     };
     if (this.isToolsEnabled()) {
       const tools = await window.electron.mcp.listTools();
@@ -236,16 +233,13 @@ export default class OpenAIChatService
         }
       }
     }
-    if (this.context.getMaxTokens()) {
-      /**
-       * max_tokens is deprecated, use max_completion_tokens instead for new models
-       */
-      if (modelName.startsWith('o1') || modelName.startsWith('o3')) {
-        payload.max_completion_tokens = this.context.getMaxTokens();
-        payload.temperature = 1; // o1 and o3 models require temperature to be 1
-      } else {
-        payload.max_tokens = this.context.getMaxTokens();
-      }
+    const maxTokens = this.context.getMaxTokens();
+    if (maxTokens) {
+      payload.max_completion_tokens = maxTokens;
+    }
+
+    if (model.name.startsWith('o1') || model.name.startsWith('o3')) {
+      payload.temperature = 1; // o1 and o3 models require temperature to be 1
     }
     return payload;
   }
