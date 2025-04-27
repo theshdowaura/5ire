@@ -217,7 +217,7 @@ const chatModels = [
   {
     id: 'gpt-4-turbo',
     name: 'gpt-4-turbo',
-    label: 'GPT-4 Turbo',
+    label: 'gpt-4-turbo',
     contextWindow: 128000,
     maxTokens: 4096,
     defaultMaxTokens: 4000,
