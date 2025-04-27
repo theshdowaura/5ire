@@ -5,6 +5,8 @@ import {
   ListItem,
   ComboboxProps,
   Button,
+  Skeleton,
+  SkeletonItem,
 } from '@fluentui/react-components';
 import {
   AddCircleFilled,
@@ -15,7 +17,6 @@ import {
 import { IChatModelConfig, IChatProviderConfig } from 'providers/types';
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import Spinner from 'renderer/components/Spinner';
 import TooltipIcon from 'renderer/components/TooltipIcon';
 import useProviderStore from 'stores/useProviderStore';
 import { ERROR_MODEL } from 'consts';
@@ -44,7 +45,9 @@ export default function ModelList({ height = 400 }: { height?: number }) {
 
   const loadModels = useCallback(async () => {
     try {
-      setLoading(true);
+      if (provider.modelsEndpoint) {
+        setLoading(true);
+      }
       setModels(await getModels(provider, { withDisabled: true }));
     } finally {
       setLoading(false);
@@ -73,10 +76,25 @@ export default function ModelList({ height = 400 }: { height?: number }) {
 
   if (loading) {
     return (
-      <div className="flex flex-col justify-center items-center h-full gap-1">
-        <Spinner size={28} />
-        <p className="ml-2">{t('Common.Loading')}</p>
-      </div>
+      <Skeleton>
+        <div className="flex flex-col p-3 h-ful gap-3">
+          <div className="flex justify-between items-center">
+            <SkeletonItem style={{ width: 128 }} />
+            <SkeletonItem style={{ width: 64 }} />
+          </div>
+          <div className="flex justify-between items-center">
+            <SkeletonItem style={{ width: 158 }} />
+            <div className="flex justify-end items-center gap-1">
+              <SkeletonItem style={{ width: 64 }} />
+              <SkeletonItem style={{ width: 64 }} />
+            </div>
+          </div>
+          <div className="flex justify-between items-center">
+            <SkeletonItem style={{ width: 108 }} />
+            <SkeletonItem style={{ width: 64 }} />
+          </div>
+        </div>
+      </Skeleton>
     );
   }
 
