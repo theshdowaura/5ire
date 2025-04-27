@@ -40,6 +40,7 @@ export interface IChatModel {
   isDefault?: boolean;
   inputPrice: number;
   outputPrice: number;
+  noStreaming?: boolean;
   capabilities?: {
     json?: { enabled: boolean };
     tools?: { enabled: boolean };

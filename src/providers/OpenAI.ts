@@ -19,7 +19,7 @@ const chatModels = [
   },
   {
     id: 'o1-pro',
-    name: 'o1-pro-2025-03-19',
+    name: 'o1-pro',
     label: 'o1-pro',
     contextWindow: 200000,
     maxTokens: 100000,
@@ -56,7 +56,7 @@ const chatModels = [
   },
   {
     id: 'o3',
-    name: 'o3-2025-04-16',
+    name: 'o3',
     label: 'o3',
     contextWindow: 200000,
     maxTokens: 100000,
@@ -73,7 +73,7 @@ const chatModels = [
   },
   {
     id: 'o3-mini',
-    name: 'o3-mini-2025-01-31',
+    name: 'o3-mini',
     label: 'o3-mini',
     contextWindow: 200000,
     maxTokens: 100000,
@@ -90,7 +90,7 @@ const chatModels = [
   },
   {
     id: 'o4-mini',
-    name: 'o4-mini-2025-04-16',
+    name: 'o4-mini',
     label: 'o4-mini',
     contextWindow: 200000,
     maxTokens: 100000,
@@ -107,7 +107,7 @@ const chatModels = [
   },
   {
     id: 'gpt-4.1',
-    name: 'gpt-4.1-2025-04-14',
+    name: 'gpt-4.1',
     label: 'gpt-4.1',
     contextWindow: 1047576,
     maxTokens: 32768,
@@ -129,8 +129,8 @@ const chatModels = [
   },
   {
     id: 'gpt-4.1-nano',
-    name: 'gpt-4.1-nano-2025-04-14',
-    label: 'GPT-4.1-nano',
+    name: 'gpt-4.1-nano',
+    label: 'gpt-4.1-nano',
     contextWindow: 1047576,
     maxTokens: 32768,
     defaultMaxTokens: 8000,
@@ -151,8 +151,8 @@ const chatModels = [
   },
   {
     id: 'gpt-4.1-mini',
-    name: 'gpt-4.1-mini-2025-04-14',
-    label: 'GPT-4.1-mini',
+    name: 'gpt-4.1-mini',
+    label: 'gpt-4.1-mini',
     contextWindow: 1047576,
     maxTokens: 32768,
     defaultMaxTokens: 8000,
@@ -173,7 +173,7 @@ const chatModels = [
   },
   {
     id: 'gpt-4o',
-    name: 'gpt-4o-2024-08-06',
+    name: 'gpt-4o',
     label: 'gpt-4o',
     contextWindow: 128000,
     maxTokens: 16384,
@@ -195,7 +195,7 @@ const chatModels = [
   },
   {
     id: 'gpt-4o-mini',
-    name: 'gpt-4o-mini-2024-07-18',
+    name: 'gpt-4o-mini',
     label: 'gpt-4o-mini',
     contextWindow: 128000,
     maxTokens: 100000,
@@ -216,7 +216,7 @@ const chatModels = [
   },
   {
     id: 'gpt-4-turbo',
-    name: 'gpt-4-turbo-2024-04-09',
+    name: 'gpt-4-turbo',
     label: 'GPT-4 Turbo',
     contextWindow: 128000,
     maxTokens: 4096,
