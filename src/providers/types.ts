@@ -105,6 +105,7 @@ export interface IServiceProvider {
   isBuiltIn?: boolean;
   apiBase: string;
   apiKey?: string;
+  apiVersion?: string;
   currency: 'USD' | 'CNY';
   options: {
     apiBaseCustomizable?: boolean;

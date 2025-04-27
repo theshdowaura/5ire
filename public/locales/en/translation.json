@@ -307,5 +307,6 @@
   "Provider.Model.ApiModelNameCannotBeChanged": "The model name retrieved via the API cannot be modified.",
   "Common.Action.Clear": "Clear",
   "Input.Hint.EnterSubmitEscCancel": "Press Enter to confirm, Esc to cancel.",
-  "Settings.Notification.NoValidBackupFound": "No available backup data was found. The product upgrade has updated the configuration structure, and the old backup is no longer applicable. Please back up again."
+  "Settings.Notification.NoValidBackupFound": "No available backup data was found. The product upgrade has updated the configuration structure, and the old backup is no longer applicable. Please back up again.",
+  "Bookmarks.Hint.Favorites": "Your favorite bookmarks will appear here."
 }

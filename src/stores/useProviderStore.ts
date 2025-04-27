@@ -153,21 +153,22 @@ export type ModelOption = {
 // for migrating settings from old version
 const migrateSettings = () => {
   const settings = window.electron.store.get('settings');
-  if (!settings.api) return;
+  if (!settings?.api) return;
   const customProviders = window.electron.store.get('providers');
+  if (customProviders?.length > 0) return;
   const legacyDefaultProvider = settings.api.activeProvider;
   const legacyProviders = settings.api.providers;
-  if ((customProviders?.length || 0) === 0 && legacyProviders) {
+  if (legacyProviders) {
     const newProviders = Object.values(legacyProviders).map(
-      (provider: any) => ({
-        name: provider.provider,
-        description: provider.description,
-        apiKey: provider.key,
-        apiBase: provider.base,
-        apiSecret: provider.secret,
-        apiVersion: provider.version,
+      (legacyProvider: any) => ({
+        name: legacyProvider.provider,
+        description: legacyProvider.description,
+        apiKey: legacyProvider.key,
+        apiBase: legacyProvider.base,
+        apiSecret: legacyProvider.secret,
+        apiVersion: legacyProvider.version,
         models: [],
-        isDefault: provider.provider === legacyDefaultProvider,
+        isDefault: legacyProvider.provider === legacyDefaultProvider,
       }),
     );
     window.electron.store.set('providers', newProviders);
@@ -200,6 +201,7 @@ const mergeProviders = (
       schema: builtInProvider?.chat?.apiSchema || ['base'],
       apiBase: customProvider?.apiBase || builtInProvider?.apiBase,
       apiKey: customProvider?.apiKey || '',
+      apiVersion: customProvider?.apiVersion || builtInProvider?.apiVersion,
       temperature: (builtInProvider || defaultProvider).chat.temperature,
       topP: (builtInProvider || defaultProvider).chat.topP,
       presencePenalty: (builtInProvider || defaultProvider).chat
@@ -305,7 +307,7 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
     });
   },
   updateProvider: (name: string, provider: Partial<IChatProviderConfig>) => {
-    const customProviders = window.electron.store.get('providers');
+    const customProviders = window.electron.store.get('providers') || [];
     let found = false;
     const newProvider = omit(provider, ['isBuiltIn', 'isReady', 'isPremium']);
     const updatedProviders = customProviders.map(

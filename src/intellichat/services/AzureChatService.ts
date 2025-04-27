@@ -8,7 +8,7 @@ export default class AzureChatService
   extends OpenAIChatService
   implements INextChatService
 {
-  constructor(name:string,chatContext: IChatContext) {
+  constructor(name: string, chatContext: IChatContext) {
     super(name, chatContext);
     this.provider = Azure;
   }
@@ -17,12 +17,11 @@ export default class AzureChatService
     messages: IChatRequestMessage[],
     msgId?: string,
   ): Promise<Response> {
-    const defaultAPIVersion = '2024-12-01-preview';
     const provider = this.context.getProvider();
     const model = this.context.getModel();
     const deploymentId = model.extras?.deploymentId || model.name;
     const url = urlJoin(
-      `/openai/deployments/${deploymentId}/chat/completions?api-version=${provider.apiVersion || defaultAPIVersion}`,
+      `/openai/deployments/${deploymentId}/chat/completions?api-version=${provider.apiVersion}`,
       provider.apiBase.trim(),
     );
     const response = await fetch(url, {

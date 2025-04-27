@@ -264,6 +264,7 @@ const chatModels = [
 export default {
   name: 'Azure',
   apiBase: '',
+  apiVersion: '2024-12-01-preview',
   currency: 'USD',
   options: {
     apiBaseCustomizable: true,
