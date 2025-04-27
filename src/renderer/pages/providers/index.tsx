@@ -81,14 +81,12 @@ export default function Providers() {
     }
     (async () => {
       try {
-        const { data, error } = await supabase
+        const { data } = await supabase
           .from('settings')
           .select('updated_at')
           .eq('id', user.id)
           .maybeSingle();
-        if (error) {
-          notifyError(error.message);
-        } else if (data?.updated_at) {
+        if (data?.updated_at) {
           const dt = new Date(data.updated_at);
           setUpdatedAtCloud(dt.toLocaleString());
           setUpdated(false);
