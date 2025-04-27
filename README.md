@@ -53,6 +53,8 @@ For detailed installation instructions, please see our [Installation Guide](INST
 
 If you want to contribute code to 5ire or develop your own apps based on 5ire, start with the [Development Setup Guide](DEVELOPMENT.md).
 
+Visit [Wiki](https://deepwiki.com/nanbingxyz/5ire) for more details.
+
 <br />
 
 # Features
