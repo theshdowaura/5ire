@@ -56,6 +56,18 @@ export default function GlobalNav({ collapsed }: { collapsed: boolean }) {
     [config.servers],
   );
 
+  const activeToolsCount = useMemo(() => {
+    if (isMCPServersLoading) {
+      return <Spinner size={18} className="mx-2.5 -mb-1" />;
+    }
+    return collapsed ? null : (
+      <div className="flex justify-start items-center px-2.5 gap-1 flex-shrink-0">
+        <span className="text-xs text-green-500 dark:text-green-500">●</span>
+        <span>{!!numOfActiveServers && `${numOfActiveServers}`}</span>
+      </div>
+    );
+  }, [isMCPServersLoading, numOfActiveServers]);
+
   useEffect(() => {
     Mousetrap.bind('alt+1', () => navigate('/tool'));
     Mousetrap.bind('alt+2', () => navigate('/knowledge'));
@@ -104,7 +116,7 @@ export default function GlobalNav({ collapsed }: { collapsed: boolean }) {
           </Button>
         </div>
       )}
-      <div className="px-1">
+      <div className="px-1 flex justify-between items-center">
         <Button
           appearance="subtle"
           title="Alt+1"
@@ -112,17 +124,9 @@ export default function GlobalNav({ collapsed }: { collapsed: boolean }) {
           className="w-full justify-start"
           onClick={() => navigate('/tool')}
         >
-          {collapsed ? null : (
-            <>
-              {t('Common.Tools')}
-              {isMCPServersLoading ? (
-                <Spinner size={13} className="ml-1" />
-              ) : (
-                !!numOfActiveServers && `(${numOfActiveServers})`
-              )}
-            </>
-          )}
+          {collapsed ? null : t('Common.Tools')}
         </Button>
+        <div>{activeToolsCount}</div>
       </div>
       <div className="px-1">
         <Button
