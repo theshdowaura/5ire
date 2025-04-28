@@ -68,7 +68,7 @@ export default function ModelCtrl({
       setCurModel(undefined);
       setModels([]);
     };
-  }, [chat.id, chat.provider]);
+  }, [chat.id, chat.provider, chat.model]);
 
   useEffect(() => {
     if (curProvider) {

@@ -66,7 +66,7 @@ export default function GlobalNav({ collapsed }: { collapsed: boolean }) {
         <span>{!!numOfActiveServers && `${numOfActiveServers}`}</span>
       </div>
     );
-  }, [isMCPServersLoading, numOfActiveServers]);
+  }, [isMCPServersLoading, numOfActiveServers, collapsed]);
 
   useEffect(() => {
     Mousetrap.bind('alt+1', () => navigate('/tool'));
@@ -116,7 +116,9 @@ export default function GlobalNav({ collapsed }: { collapsed: boolean }) {
           </Button>
         </div>
       )}
-      <div className="px-1 flex justify-between items-center">
+      <div
+        className={`px-1 flex ${collapsed ? 'justify-center' : 'justify-between'} items-center`}
+      >
         <Button
           appearance="subtle"
           title="Alt+1"
