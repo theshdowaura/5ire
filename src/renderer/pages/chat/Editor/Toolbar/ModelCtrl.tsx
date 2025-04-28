@@ -53,15 +53,12 @@ export default function ModelCtrl({
         }
       }
       setCurModel(defaultModel);
-      await editStage(chat.id, {
-        provider: provider.name,
-        model: defaultModel.name,
-      });
     },
-    [chat.id],
+    [chat.id, chat.provider, chat.model],
   );
 
   useEffect(() => {
+    isChanged.current = false;
     const ctxProvider = ctx.getProvider();
     setCurProvider(ctxProvider);
     setCurModel(ctx.getModel());
@@ -70,7 +67,6 @@ export default function ModelCtrl({
       setCurProvider(undefined);
       setCurModel(undefined);
       setModels([]);
-      isChanged.current = false;
     };
   }, [chat.id, chat.provider]);
 
