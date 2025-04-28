@@ -32,6 +32,10 @@ export default class OpenAIChatService
     });
   }
 
+  protected getSystemRoleName() {
+    return 'developer';
+  }
+
   // eslint-disable-next-line class-methods-use-this
   protected getReaderType() {
     return OpenAIReader;
@@ -73,7 +77,7 @@ export default class OpenAIChatService
     const result = [];
     const model = this.context.getModel();
     const systemMessage = this.context.getSystemMessage();
-    let sysRole = 'developer';
+    let sysRole = this.getSystemRoleName();
     if (['o1', 'o3'].some((prefix) => model.name.startsWith(prefix))) {
       sysRole = 'user'; // right now, o1, o3 models are not compatible with the system message
     }

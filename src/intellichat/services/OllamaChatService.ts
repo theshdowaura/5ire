@@ -17,6 +17,10 @@ export default class OllamaChatService
     this.provider = Ollama;
   }
 
+  protected getSystemRoleName(): string {
+    return 'system';
+  }
+
   protected getReaderType() {
     return OllamaReader;
   }
