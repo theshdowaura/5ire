@@ -24,7 +24,6 @@ export default function Editor({
   onAbort: () => void;
 }) {
   const { t } = useTranslation();
-  const editorContainerRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<HTMLDivElement>(null);
   const chat = useChatStore((state) => state.chat);
   const states = useChatStore().getCurState();
@@ -176,10 +175,7 @@ export default function Editor({
   };
 
   return (
-    <div
-      className="relative flex flex-col cursor-text editor"
-      ref={editorContainerRef}
-    >
+    <div className="relative flex flex-col cursor-text editor">
       {states.loading ? (
         <div className="editor-loading-mask absolute flex flex-col justify-center items-center">
           <Button onClick={onAbortClick} className="flex items-center">
