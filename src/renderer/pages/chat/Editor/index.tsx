@@ -24,6 +24,7 @@ export default function Editor({
   onAbort: () => void;
 }) {
   const { t } = useTranslation();
+  const editorContainerRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<HTMLDivElement>(null);
   const chat = useChatStore((state) => state.chat);
   const states = useChatStore().getCurState();
@@ -177,7 +178,7 @@ export default function Editor({
   return (
     <div
       className="relative flex flex-col cursor-text editor"
-      onClick={() => editorRef.current?.focus()}
+      ref={editorContainerRef}
     >
       {states.loading ? (
         <div className="editor-loading-mask absolute flex flex-col justify-center items-center">
@@ -203,13 +204,14 @@ export default function Editor({
         id="editor"
         ref={editorRef}
         autoCorrect="on"
-        className="w-full bg-red-500 outline-0 px-2.5 pb-2.5 bg-brand-surface-1 overflow-y-auto overflow-x-hidden"
+        className="w-full outline-0 px-2.5 pb-2.5 bg-brand-surface-1 overflow-y-auto overflow-x-hidden"
         onKeyDown={onKeyDown}
         onFocus={restoreRange}
         onBlur={onBlur}
         onInput={onInput}
         style={{
           resize: 'none',
+          minHeight: '60%',
           whiteSpace: 'pre-wrap',
           opacity: isReady ? 1 : 0,
         }}
