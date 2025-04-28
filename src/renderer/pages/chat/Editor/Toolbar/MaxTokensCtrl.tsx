@@ -21,7 +21,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import useChatStore from 'stores/useChatStore';
 import { str2int } from 'utils/util';
-import { MAX_TOKENS } from 'consts';
+import { DEFAULT_MAX_TOKENS, MAX_TOKENS } from 'consts';
 
 // const debug = Debug('5ire:pages:chat:Editor:Toolbar:MaxTokensCtrl');
 
@@ -57,7 +57,7 @@ export default function MaxTokens({
     return chat.maxTokens || modelMaxTokens;
   }, [chat.id, chat.model]);
 
-  const [maxTokens, setMaxTokens] = useState<number>(1);
+  const [maxTokens, setMaxTokens] = useState<number>(DEFAULT_MAX_TOKENS);
 
   useEffect(() => {
     Mousetrap.bind('mod+shift+4', () => {
@@ -65,7 +65,7 @@ export default function MaxTokens({
         return !prevOpen;
       });
     });
-    setMaxTokens(curMaxTokens);
+    setMaxTokens(curMaxTokens || DEFAULT_MAX_TOKENS);
     return () => {
       Mousetrap.unbind('mod+shift+4');
     };
