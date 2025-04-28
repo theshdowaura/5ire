@@ -62,7 +62,7 @@ export default function GlobalNav({ collapsed }: { collapsed: boolean }) {
     }
     return collapsed ? null : (
       <div className="flex justify-start items-center px-2.5 gap-1 flex-shrink-0">
-        <span className="text-xs text-green-500 dark:text-green-500">●</span>
+        <span className="text-xs text-green-500 dark:text-green-600">●</span>
         <span>{!!numOfActiveServers && `${numOfActiveServers}`}</span>
       </div>
     );
