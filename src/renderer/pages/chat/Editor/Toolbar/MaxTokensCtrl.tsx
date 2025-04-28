@@ -51,11 +51,11 @@ export default function MaxTokens({
       return model.maxTokens;
     }
     return MAX_TOKENS;
-  }, [ctx]);
+  }, [chat.model]);
 
   const curMaxTokens = useMemo<number>(() => {
     return chat.maxTokens || modelMaxTokens;
-  }, [chat.model]);
+  }, [chat.id, chat.model]);
 
   const [maxTokens, setMaxTokens] = useState<number>(1);
 
