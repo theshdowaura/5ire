@@ -103,7 +103,7 @@ export default function UpgradeIndicator() {
         <DialogTrigger disableButtonEnhancement>
           <button
             type="button"
-            className="upgrade-indicator flex justify-center items-center rounded-full pl-1 pr-2 py-0.5 bg-[#dbe9da] dark:bg-[#2b5239] text-green-800 dark:text-[#cad4cd] text-xs"
+            className="upgrade-indicator flex justify-center items-center rounded-full pl-1 pr-2 py-0.5 bg-[#dbe9da] dark:bg-[#2b5239] text-green-800 dark:text-[#cad4cd] text-xs text-nowrap"
           >
             <CheckmarkCircle16Regular className="mr-1" />
             <span>
