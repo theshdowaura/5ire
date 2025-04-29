@@ -8,6 +8,7 @@ import mathjax3 from 'markdown-it-mathjax3';
 import markdownItMermaid from 'markdown-it-mermaid';
 import hljs from 'highlight.js/lib/common';
 import useAppearanceStore from 'stores/useAppearanceStore';
+// @ts-ignore
 import { full as markdownItEmoji } from 'markdown-it-emoji';
 import MarkdownItCodeCopy from '../libs/markdownit-plugins/CodeCopy';
 import useToast from './useToast';
