@@ -10,6 +10,53 @@ export function unix2date(unix: number) {
   return new Date(unix * 1000);
 }
 
+export function getRelativeTime(date: Date) {
+  const locales: {[key: string]: string} = {
+    prefix: '',
+    suffix:  'ago',
+    seconds: 'less than a minute',
+    minute:  'about a minute',
+    minutes: '%d minutes',
+    hour:    'about an hour',
+    hours:   'about %d hours',
+    day:     'a day',
+    days:    '%d days',
+    month:   'about a month',
+    months:  '%d months',
+    year:    'about a year',
+    years:   '%d years'
+  }
+  const now = new Date();
+  const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+  const separator = locales.separator || ' ';
+  let words = locales.prefix + separator;
+  let interval:number = 0;
+  const intervals:{[key:string]:number} = {
+    year:   seconds / 31536000,
+    month:  seconds / 2592000,
+    day:    seconds / 86400,
+    hour:   seconds / 3600,
+    minute: seconds / 60
+  };
+
+    var distance = locales.seconds;
+
+    for (var key in intervals) {
+      interval = Math.floor(intervals[key]);
+      if (interval > 1) {
+        distance = locales[key + 's'];
+        break;
+      } else if (interval === 1) {
+        distance = locales[key];
+        break;
+      }
+    }
+
+    distance = distance.replace(/%d/i, `${interval}`);
+    words += distance + separator + locales.suffix;
+    return words.trim();
+}
+
 export function isTagClosed(code: string, tag: string) {
   if (!code || code.trim() === '') return true;
   if (!tag || tag.trim() === '') return true;
