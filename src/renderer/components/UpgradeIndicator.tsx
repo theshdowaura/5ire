@@ -91,10 +91,12 @@ export default function UpgradeIndicator() {
   }
   if (version) {
     if (upgrading) {
-      <div className="upgrade-indicator flex justify-center items-center rounded-full pl-1 pr-2 py-0.5 bg-indigo-100 dark:bg-slate-600/50 text-indigo-800 dark:text-indigo-200 text-xs">
-        <Spinner size={14} className="mr-2" />
-        <span>v{version}</span>
-      </div>;
+      return (
+        <div className="upgrade-indicator flex justify-center items-center rounded-full pl-1 pr-2 py-0.5 bg-indigo-100 dark:bg-slate-600/50 text-indigo-800 dark:text-indigo-200 text-xs">
+          <Spinner size={14} className="mr-2" />
+          <span>v{version}</span>
+        </div>
+      );
     }
     return completed ? (
       <Dialog>
