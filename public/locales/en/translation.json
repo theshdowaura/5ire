@@ -312,5 +312,7 @@
   "Common.Total": "Total",
   "Common.Cost": "Cost",
   "Common.OutputUsage": "Output Usage",
-  "Common.InputUsage": "Input Usage"
+  "Common.InputUsage": "Input Usage",
+  "Common.StartDate": "Start Date",
+  "Common.EndDate": "End Date"
 }

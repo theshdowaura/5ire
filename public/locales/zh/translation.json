@@ -302,5 +302,7 @@
   "Common.Total": "合计",
   "Common.Cost": "成本",
   "Common.OutputUsage": "输出用量",
-  "Common.InputUsage": "输入用量"
+  "Common.InputUsage": "输入用量",
+  "Common.StartDate": "开始日期",
+  "Common.EndDate": "结束日期"
 }
