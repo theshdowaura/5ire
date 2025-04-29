@@ -131,7 +131,7 @@ const getMergedLocalModels = (provider: IChatProviderConfig) => {
         noStreaming: model.noStreaming || false,
         disabled: customModel?.disabled || false,
         capabilities: customModel?.capabilities || model.capabilities || {},
-        extras: customModel?.extras || {},
+        extras: { ...model.extras, ...customModel?.extras },
       } as IChatModelConfig;
       mergedModel.isReady = isModelReady(
         provider.modelExtras as string[],
