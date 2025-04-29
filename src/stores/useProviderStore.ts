@@ -1,4 +1,4 @@
-import { find, isNil, keyBy, omit, unionBy } from 'lodash';
+import { find, isNil, keyBy, omit, pickBy, unionBy } from 'lodash';
 import { getBuiltInProviders } from 'providers';
 import {
   IChatModel,
@@ -462,16 +462,18 @@ const useProviderStore = create<IProviderStore>((set, get) => ({
     await Promise.all(
       providers.map(async (provider) => {
         const models = await getModels(provider);
-        result[provider.name] = models.map((model) => ({
-          label: model.label || model.name,
-          name: model.name,
-          isReady: model.isReady,
-          isDefault: model.isDefault || false,
-        }));
+        result[provider.name] = models
+          .map((model) => ({
+            label: model.label || model.name,
+            name: model.name,
+            isReady: model.isReady,
+            isDefault: model.isDefault || false,
+          }))
+          .filter((model: ModelOption) => model.name !== ERROR_MODEL);
         return provider;
       }),
     );
-    return result;
+    return pickBy(result, (val: ModelOption[]) => val.length > 0);
   },
   createModel: (model: IChatModelConfig) => {
     const { provider, updateProvider } = get();
