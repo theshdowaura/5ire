@@ -165,22 +165,24 @@ export default function ModelList({ height = 400 }: { height?: number }) {
                         >
                           {model.label || model.name}
                         </span>
-
-                        {model.description && (
-                          <div className="-mt-0.5">
-                            <TooltipIcon
-                              positioning="after"
-                              tip={
-                                <div>
-                                  <p className="font-bold mb-1 text-base">
-                                    {model.name}
+                        <div className="-mt-0.5">
+                          <TooltipIcon
+                            positioning="after"
+                            tip={
+                              <div>
+                                <p className="font-bold mb-1 text-base">
+                                  {model.name}
+                                </p>
+                                {model.extras?.modelId && (
+                                  <p className="text-sm text-gray-500 mb-1">
+                                    {model.extras.modelId}
                                   </p>
-                                  <p>{model.description}</p>
-                                </div>
-                              }
-                            />
-                          </div>
-                        )}
+                                )}
+                                <p>{model.description}</p>
+                              </div>
+                            }
+                          />
+                        </div>
                       </div>
                       <div className="flex justify-end gap-1">
                         <CapabilityTag model={model} capability="vision" />

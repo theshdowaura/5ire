@@ -200,7 +200,7 @@ export default function Providers() {
           </Menu>
         </div>
         {updatedAtCloud && (
-          <div className="flex animate-in justify-between items-center text-xs py-1 px-5 bg-green-100 dark:bg-green-500/10 border-t border-green-900/10 dark:border-green-900 -mx-5">
+          <div className="flex animate-in justify-between items-center text-xs py-1 px-5 bg-[#dbe9da] text-[#618d69] dark:bg-[#2b5239] dark:text-[#b3c1b8] border-t border-[#618d69]/10 dark:border-green-900 -mx-5">
             <span className="latin">
               {t('Settings.Info.UpdatedAtCloud')}&nbsp;{updatedAtCloud}
             </span>
