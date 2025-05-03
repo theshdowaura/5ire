@@ -44,9 +44,9 @@ export default function CapabilityTag(
   const dotColorCls = useMemo<string>(() => {
     return (
       {
-        json: 'text-teal-400 dark:text-teal-600',
-        tools: 'text-[#546576] dark:text-[#46799f]',
-        vision: 'text-[#9e7ebd] dark:text-[#8d60c3]',
+        json: 'bg-teal-400 bg:text-teal-600',
+        tools: 'bg-[#546576] bg:text-[#46799f]',
+        vision: 'bg-[#9e7ebd] bg:text-[#8d60c3]',
       } as { [key: string]: string }
     )[capabilityName];
   }, [capabilityName]);
@@ -56,14 +56,14 @@ export default function CapabilityTag(
       style={{ fontSize: '10px' }}
       className={`flex text-center justify-start gap-1 items-center rounded-full text-xs px-1.5 py-[1px] ${actualSupport ? tagColorCls : 'bg-gray-100 dark:bg-zinc-700 text-gray-400 dark:text-gray-500'}`}
     >
-      <span
+      <div
         style={{ fontSize: '8px' }}
-        className={`flex-shrink-0 ${
-          actualSupport ? dotColorCls : 'text-gray-400 dark:text-gray-500'
+        className={`flex-shrink-0 w-2 h-2 rounded-full ${
+          actualSupport
+            ? dotColorCls
+            : 'border border-gray-400 bg:border-gray-500'
         }`}
-      >
-        {actualSupport ? '●' : '○'}
-      </span>
+      />
       <span className="-mt-0.5">{t(`Tags.${capitalize(capabilityName)}`)}</span>
     </div>
   ) : null;
