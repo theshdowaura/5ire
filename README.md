@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/nanbingxyz-5ire-badge.png)](https://mseep.ai/app/nanbingxyz-5ire)
+
 <div align="center">
   <a href="https://github.com/nanbingxyz/5ire">
     <img src="https://5ire.app/logo.png" alt="Logo" width="120">
