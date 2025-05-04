@@ -1,5 +1,3 @@
-[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/nanbingxyz-5ire-badge.png)](https://mseep.ai/app/nanbingxyz-5ire)
-
 <div align="center">
   <a href="https://github.com/nanbingxyz/5ire">
     <img src="https://5ire.app/logo.png" alt="Logo" width="120">
@@ -11,6 +9,7 @@
     <img src="https://badge.mcpx.dev/?type=client&features=tools" />
      <img src="https://img.shields.io/badge/license-Apache%202.0-brightgreen?style=flat"/>
      <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg"/>
+     <a href="https://mseep.ai/app/92bbc79d-4b4d-4707-8d43-2d3d8ebb4fa8"><img src="https://mseep.ai/badge.svg" alt="Verified on MseeP"/></a>
   </div>
    <br />
   <img src="https://github.com/user-attachments/assets/e622e1da-09b9-4212-b71c-ad9d39bf3cd5" width="100%"/>
