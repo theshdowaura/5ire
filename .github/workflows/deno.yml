@@ -71,8 +71,13 @@ jobs:
 
       - name: Build application
         # Pass macOS signing/notarization secrets as environment variables
-        # electron-builder should pick these up automatically
-        run: npm run package
+        # WORKAROUND: Disable ASAR for macOS if EEXIST errors persist
+        run: |
+          if [ "${{ runner.os }}" == "macOS" ]; then
+            npm run package -- --config.asar=false
+          else
+            npm run package
+          fi
         env:
           # Only set these for macOS builds
           APPLE_ID: ${{ matrix.os == 'macos-latest' && secrets.APPLE_ID || '' }}
