@@ -1,121 +1,83 @@
-name: Build and Release
+name: Build and Release Workflow
 
 on:
   push:
-    branches:
-      - main # Build on pushes to main
     tags:
-      - 'v*' # Release on tags like v1.0.0, v0.10.1, etc.
-  workflow_dispatch: # Allows manual triggering
+      - '*'  # 仅在推送标签时触发
 
 jobs:
-  release:
-    name: Build on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        # REMOVED macos-latest from the matrix
-        os: [ubuntu-latest, windows-latest]
-        # node-version: [20.x] # Add if specific version needed beyond package.json
-
+  # 删除 macOS 相关逻辑，仅保留 Linux 和 Windows
+  build-linux:
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
     steps:
-      - name: Check out Git repository
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: 'package.json' # Reads Volta config or engines field
-          cache: 'npm'
-
+      - uses: actions/checkout@v4  # 更新 checkout 至 v4
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v5  # 更新 setup-python 至 v5
         with:
-          python-version: '3.11' # Use Python 3.11 to ensure distutils is available
-
-      - name: Install/Upgrade Python build tools # Optional but recommended
-        run: python -m pip install --upgrade setuptools wheel # Avoid upgrading pip itself
-
-      - name: Install uv (Linux)
-        if: runner.os == 'Linux'
-        run: curl -LsSf https://astral.sh/uv/install.sh | sh
-      - name: Add uv to PATH (Linux) # Add uv to PATH for subsequent steps
-        if: runner.os == 'Linux'
-        run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
-
-      - name: Install uv (Windows)
-        if: runner.os == 'Windows'
-        run: powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
-      - name: Add uv to PATH (Windows) # Add uv to PATH for subsequent steps
-        if: runner.os == 'Windows'
-        run: echo "$env:APPDATA\uv" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-
-      - name: Clean node_modules (Linux)
-        if: runner.os == 'Linux'
-        run: rm -rf node_modules release/app/node_modules
-
-      - name: Clean node_modules (Windows)
-        if: runner.os == 'Windows'
-        run: Remove-Item -Recurse -Force node_modules, release/app/node_modules -ErrorAction SilentlyContinue
-
+          python-version: '3.10'
+      - name: Set up Node
+        uses: actions/setup-node@v4  # 更新 setup-node 至 v4
+        with:
+          node-version: '16'
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6  # 使用官方 setup-uv 安装 uv
+      - name: Clean dist (Linux)
+        run: rm -rf dist  # Linux 下删除 dist 目录
       - name: Install dependencies
-        run: npm install
-        # This should trigger the postinstall script which runs electron-builder install-app-deps
-
-      - name: Clean previous build output (Linux)
-        if: runner.os == 'Linux'
-        run: rm -rf release/build
-
-      - name: Clean previous build output (Windows)
-        if: runner.os == 'Windows'
-        run: Remove-Item -Recurse -Force release/build -ErrorAction SilentlyContinue
-
-      - name: Build application
-        # WORKAROUND: Disable ASAR for Linux if EEXIST errors persist
-        run: |
-          if [ "${{ runner.os }}" == "Linux" ]; then
-            npm run package -- --config.asar=false
-          else
-            npm run package
-          fi
-        # Removed env block for APPLE secrets
-
-      - name: Get Package Version
-        id: get_version
-        run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
-
-      - name: Determine Artifact Paths
-        id: artifact_paths
-        shell: bash
-        run: |
-          VERSION=${{ steps.get_version.outputs.version }}
-          if [ "${{ runner.os }}" == "Linux" ]; then
-            echo "paths=release/build/*.AppImage" >> $GITHUB_OUTPUT
-            echo "name=5ire-${VERSION}-linux-${{ runner.arch }}.AppImage" >> $GITHUB_OUTPUT
-          elif [ "${{ runner.os }}" == "Windows" ]; then
-            # Ensure paths use forward slashes for consistency in GH Actions artifacts patterns
-            echo "paths=release/build/*.exe" >> $GITHUB_OUTPUT
-            echo "name=5ire-${VERSION}-windows-setup-${{ runner.arch }}.exe" >> $GITHUB_OUTPUT
-          # Removed macOS case
-          fi
-          echo "release_tag=v${VERSION}" >> $GITHUB_OUTPUT
-
-      - name: List Build Artifacts # Optional: for debugging
-        run: ls -R release/build
-
-      # This step uploads the artifact for the current OS to the release.
-      # It will create the release if it doesn't exist (on the first job that runs this)
-      # or update it (on subsequent jobs). It requires a tag push to trigger.
-      - name: Upload Release Asset
-        if: startsWith(github.ref, 'refs/tags/') # Only run for tag pushes
-        uses: ncipollo/release-action@v1
+        run: uv sync --locked
+      - name: Build package
+        run: uv build
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1  # 创建 GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          artifacts: ${{ steps.artifact_paths.outputs.paths }}
-          # assetName: ${{ steps.artifact_paths.outputs.name }} # ncipollo action uses artifact filename by default
-          tag: ${{ steps.artifact_paths.outputs.release_tag }} # Use the extracted version for the tag
-          name: Release ${{ steps.get_version.outputs.version }} # Use the extracted version for the release name
-          # body: "Automated release for version ${{ steps.get_version.outputs.version }}" # Optional: Customize release body
-          token: ${{ secrets.GITHUB_TOKEN }}
-          allowUpdates: true # IMPORTANT: Allows subsequent jobs in the matrix to add their artifacts
-          # draft: false # Set to true if you want to manually publish later
-          # prerelease: false # Set to true if this is a pre-release
+          tag_name: ${{ github.ref_name }}  # 使用推送的标签名
+          release_name: Release ${{ github.ref_name }}
+          body: Automated release for ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+      - name: Upload Linux artifact
+        uses: actions/upload-release-asset@v1  # 上传 Linux 构建产物
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: dist/
+          asset_name: mypkg-${{ github.ref_name }}-linux.whl  # Linux 二进制包
+          asset_content_type: application/octet-stream
+
+  build-windows:
+    needs: build-linux  # Windows 任务依赖 Linux 任务以获取 Release 上传地址
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4  # 更新 checkout 至 v4
+      - name: Set up Python
+        uses: actions/setup-python@v5  # 更新 setup-python 至 v5
+        with:
+          python-version: '3.10'
+      - name: Set up Node
+        uses: actions/setup-node@v4  # 更新 setup-node 至 v4
+        with:
+          node-version: '16'
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6  # 安装 uv
+      - name: Clean dist (Windows)
+        run: Remove-Item -Recurse -Force dist  # Windows 下删除 dist 目录
+        shell: powershell
+      - name: Install dependencies
+        run: uv sync --locked
+      - name: Build package
+        run: uv build
+      - name: Upload Windows artifact
+        uses: actions/upload-release-asset@v1  # 上传 Windows 构建产物
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.build-linux.outputs.upload_url }}  # 使用 Linux 任务的 Release 上传 URL
+          asset_path: dist/
+          asset_name: mypkg-${{ github.ref_name }}-windows.whl  # Windows 二进制包
+          asset_content_type: application/octet-stream
