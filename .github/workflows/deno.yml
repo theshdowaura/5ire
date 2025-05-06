@@ -30,11 +30,10 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11' # FIX: Use Python 3.11 to ensure distutils is available
+          python-version: '3.11' # Use Python 3.11 to ensure distutils is available
 
       - name: Install/Upgrade Python build tools # Optional but recommended
-        # FIX: Avoid upgrading pip itself, just upgrade setuptools and wheel
-        run: python -m pip install --upgrade setuptools wheel
+        run: python -m pip install --upgrade setuptools wheel # Avoid upgrading pip itself
 
       - name: Install uv (macOS/Linux)
         if: runner.os != 'Windows'
@@ -55,6 +54,9 @@ jobs:
       - name: Install dependencies
         run: npm install
         # This should trigger the postinstall script which runs electron-builder install-app-deps
+
+      - name: Clean previous build output # FIX: Add cleanup step
+        run: rm -rf release/build
 
       - name: Build application
         # Pass macOS signing/notarization secrets as environment variables
