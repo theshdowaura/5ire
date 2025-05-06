@@ -256,11 +256,6 @@ const chatModels = [
     extras: {
       modelId: 'doubao-lite-4k-character-240828',
     },
-    capabilities: {
-      tools: {
-        enabled: true,
-      },
-    },
   },
 ];
 
