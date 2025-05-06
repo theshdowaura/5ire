@@ -314,5 +314,6 @@
   "Common.OutputUsage": "Output Usage",
   "Common.InputUsage": "Input Usage",
   "Common.StartDate": "Start Date",
-  "Common.EndDate": "End Date"
+  "Common.EndDate": "End Date",
+  "Common.ExtraLarge": "Extral Large"
 }

@@ -398,3 +398,44 @@ mark {
     stroke: #171717;
   }
 }
+
+.font-lg {
+  font-size: 16px;
+  * {
+    font-size: 16px;
+  }
+  p,ul,li{
+    line-height: 1.8;
+  }
+  button,span,div{
+    font-size: 16px!important;
+  }
+  code,pre {
+    font-size: 14px!important;
+    * {
+      font-size: 14px!important;
+    }
+  }
+}
+
+.font-xl {
+  font-size: 18px;
+  * {
+    font-size: 18px;
+    line-height: 1.4;
+  }
+  button,span,.fui-MenuItem__content{
+    font-size: 18px;
+  }
+  p,ul,li{
+    line-height: 2;
+  }
+  code,
+  pre {
+    font-size: 16px!important;
+
+    * {
+      font-size: 16px!important;
+    }
+  }
+}
