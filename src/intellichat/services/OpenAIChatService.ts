@@ -239,7 +239,12 @@ export default class OpenAIChatService
     }
     const maxTokens = this.context.getMaxTokens();
     if (maxTokens) {
-      payload.max_completion_tokens = maxTokens;
+      // OpenAI's new API use max_completion_tokens, while others still use max_tokens
+      if(this.name.toLocaleLowerCase() === 'openai'){
+        payload.max_completion_tokens = maxTokens;
+      }else{
+        payload.max_tokens = maxTokens;
+      }
     }
 
     if (model.name.startsWith('o1') || model.name.startsWith('o3')) {
