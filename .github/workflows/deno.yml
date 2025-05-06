@@ -38,24 +38,25 @@ jobs:
       - name: Install uv (macOS/Linux)
         if: runner.os != 'Windows'
         run: curl -LsSf https://astral.sh/uv/install.sh | sh
-        # Add uv to PATH for subsequent steps (needed on some runners)
-      - name: Add uv to PATH (macOS/Linux)
+      - name: Add uv to PATH (macOS/Linux) # Add uv to PATH for subsequent steps
         if: runner.os != 'Windows'
         run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
 
       - name: Install uv (Windows)
         if: runner.os == 'Windows'
         run: powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
-        # Add uv to PATH for subsequent steps (needed on Windows runner)
-      - name: Add uv to PATH (Windows)
+      - name: Add uv to PATH (Windows) # Add uv to PATH for subsequent steps
         if: runner.os == 'Windows'
         run: echo "$env:APPDATA\uv" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+      - name: Clean node_modules # FIX: Add step to clean node_modules before install
+        run: rm -rf node_modules release/app/node_modules
 
       - name: Install dependencies
         run: npm install
         # This should trigger the postinstall script which runs electron-builder install-app-deps
 
-      - name: Clean previous build output # FIX: Add cleanup step
+      - name: Clean previous build output
         run: rm -rf release/build
 
       - name: Build application
