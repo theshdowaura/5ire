@@ -1,0 +1,110 @@
+name: Build and Release
+
+on:
+  push:
+    branches:
+      - main # Build on pushes to main
+    tags:
+      - 'v*' # Release on tags like v1.0.0, v0.10.1, etc.
+  workflow_dispatch: # Allows manual triggering
+
+jobs:
+  release:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+        # Add node version if needed, otherwise uses the one from setup-node
+        # node-version: [20.x]
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: 'package.json' # Reads Volta config or engines field
+          cache: 'npm'
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12' # Ensure compatibility, especially for potential tools like AppleNotes
+
+      - name: Install uv (macOS/Linux)
+        if: runner.os != 'Windows'
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
+        # Add uv to PATH for subsequent steps (needed on some runners)
+      - name: Add uv to PATH (macOS/Linux)
+        if: runner.os != 'Windows'
+        run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
+      - name: Install uv (Windows)
+        if: runner.os == 'Windows'
+        run: powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+        # Add uv to PATH for subsequent steps (needed on Windows runner)
+      - name: Add uv to PATH (Windows)
+        if: runner.os == 'Windows'
+        run: echo "$env:APPDATA\uv" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+      - name: Install dependencies
+        run: npm install
+        # This should trigger the postinstall script which runs electron-builder install-app-deps
+
+      - name: Build application
+        # Pass macOS signing/notarization secrets as environment variables
+        # electron-builder should pick these up automatically
+        run: npm run package
+        env:
+          # Only set these for macOS builds
+          APPLE_ID: ${{ matrix.os == 'macos-latest' && secrets.APPLE_ID || '' }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ matrix.os == 'macos-latest' && secrets.APPLE_APP_SPECIFIC_PASSWORD || '' }}
+          APPLE_TEAM_ID: ${{ matrix.os == 'macos-latest' && secrets.APPLE_TEAM_ID || '' }}
+          # GITHUB_TOKEN is implicitly available, but might be needed by electron-builder for releases (though we handle release separately)
+          # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
+      - name: Get Package Version
+        id: get_version
+        run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+
+      - name: Determine Artifact Paths
+        id: artifact_paths
+        shell: bash
+        run: |
+          VERSION=${{ steps.get_version.outputs.version }}
+          if [ "${{ runner.os }}" == "Linux" ]; then
+            echo "paths=release/build/*.AppImage" >> $GITHUB_OUTPUT
+            echo "name=5ire-${VERSION}-linux-${{ runner.arch }}.AppImage" >> $GITHUB_OUTPUT
+          elif [ "${{ runner.os }}" == "Windows" ]; then
+            echo "paths=release/build/*.exe" >> $GITHUB_OUTPUT
+            echo "name=5ire-${VERSION}-windows-setup-${{ runner.arch }}.exe" >> $GITHUB_OUTPUT
+          elif [ "${{ runner.os }}" == "macOS" ]; then
+            echo "paths=release/build/*.dmg" >> $GITHUB_OUTPUT
+            echo "name=5ire-${VERSION}-mac-${{ runner.arch }}.dmg" >> $GITHUB_OUTPUT
+            # Add zip if needed for universal builds, adjust name accordingly
+            # echo "paths=release/build/*.dmg release/build/*.zip" >> $GITHUB_OUTPUT
+          fi
+          echo "release_tag=v${VERSION}" >> $GITHUB_OUTPUT
+
+      - name: List Build Artifacts # Optional: for debugging
+        run: ls -R release/build
+
+      # This step uploads the artifact for the current OS to the release.
+      # It will create the release if it doesn't exist (on the first job that runs this)
+      # or update it (on subsequent jobs). It requires a tag push to trigger.
+      - name: Upload Release Asset
+        if: startsWith(github.ref, 'refs/tags/') # Only run for tag pushes
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: ${{ steps.artifact_paths.outputs.paths }}
+          # assetName: ${{ steps.artifact_paths.outputs.name }} # ncipollo action uses artifact filename by default
+          tag: ${{ steps.artifact_paths.outputs.release_tag }} # Use the extracted version for the tag
+          name: Release ${{ steps.artifact_paths.outputs.version }} # Use the extracted version for the release name
+          # body: "Automated release for version ${{ steps.get_version.outputs.version }}" # Optional: Customize release body
+          token: ${{ secrets.GITHUB_TOKEN }}
+          allowUpdates: true # IMPORTANT: Allows subsequent jobs in the matrix to add their artifacts
+          # draft: false # Set to true if you want to manually publish later
+          # prerelease: false # Set to true if this is a pre-release
