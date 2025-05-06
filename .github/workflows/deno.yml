@@ -4,7 +4,8 @@ on:
   push:
     tags:
       - '*'  # 仅在推送标签时触发
-
+  workflow_dispatch:
+  
 jobs:
   # 删除 macOS 相关逻辑，仅保留 Linux 和 Windows
   build-linux:
