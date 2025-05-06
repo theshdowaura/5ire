@@ -71,8 +71,13 @@ jobs:
         run: Remove-Item -Recurse -Force release/build -ErrorAction SilentlyContinue
 
       - name: Build application
-        # No need for macOS specific logic or env vars anymore
-        run: npm run package
+        # WORKAROUND: Disable ASAR for Linux if EEXIST errors persist
+        run: |
+          if [ "${{ runner.os }}" == "Linux" ]; then
+            npm run package -- --config.asar=false
+          else
+            npm run package
+          fi
         # Removed env block for APPLE secrets
 
       - name: Get Package Version
