@@ -1,84 +1,102 @@
-name: Build and Release Workflow
+name: Build and Release
 
 on:
   push:
     tags:
-      - '*'  # 仅在推送标签时触发
-  workflow_dispatch:
-  
-jobs:
-  # 删除 macOS 相关逻辑，仅保留 Linux 和 Windows
-  build-linux:
-    runs-on: ubuntu-latest
-    outputs:
-      upload_url: ${{ steps.create_release.outputs.upload_url }}
-    steps:
-      - uses: actions/checkout@v4  # 更新 checkout 至 v4
-      - name: Set up Python
-        uses: actions/setup-python@v5  # 更新 setup-python 至 v5
-        with:
-          python-version: '3.10'
-      - name: Set up Node
-        uses: actions/setup-node@v4  # 更新 setup-node 至 v4
-        with:
-          node-version: '16'
-      - name: Install uv
-        uses: astral-sh/setup-uv@v6  # 使用官方 setup-uv 安装 uv
-      - name: Clean dist (Linux)
-        run: rm -rf dist  # Linux 下删除 dist 目录
-      - name: Install dependencies
-        run: uv sync --locked
-      - name: Build package
-        run: uv build
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1  # 创建 GitHub Release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref_name }}  # 使用推送的标签名
-          release_name: Release ${{ github.ref_name }}
-          body: Automated release for ${{ github.ref_name }}
-          draft: false
-          prerelease: false
-      - name: Upload Linux artifact
-        uses: actions/upload-release-asset@v1  # 上传 Linux 构建产物
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: dist/
-          asset_name: mypkg-${{ github.ref_name }}-linux.whl  # Linux 二进制包
-          asset_content_type: application/octet-stream
+      - 'v*'            # 仅当标签以 v 开头（如 v1.0.0）时触发
+  workflow_dispatch:     # 支持手动触发
 
-  build-windows:
-    needs: build-linux  # Windows 任务依赖 Linux 任务以获取 Release 上传地址
-    runs-on: windows-latest
+jobs:
+  build-and-release:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        node-version: [20.x]     # 如果需要，可以在此指定 Node.js 版本
+    outputs:
+      release_upload_url: ${{ steps.create_release.outputs.upload_url }}
+
     steps:
-      - uses: actions/checkout@v4  # 更新 checkout 至 v4
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix['node-version'] }}
+          cache: 'npm'
+
       - name: Set up Python
-        uses: actions/setup-python@v5  # 更新 setup-python 至 v5
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
-      - name: Set up Node
-        uses: actions/setup-node@v4  # 更新 setup-node 至 v4
-        with:
-          node-version: '16'
-      - name: Install uv
-        uses: astral-sh/setup-uv@v6  # 安装 uv
-      - name: Clean dist (Windows)
-        run: Remove-Item -Recurse -Force dist  # Windows 下删除 dist 目录
+          python-version: '3.11'
+
+      - name: Install/Upgrade Python build tools
+        run: python -m pip install --upgrade setuptools wheel
+
+      - name: Clean node_modules
+        if: runner.os == 'Linux'
+        run: rm -rf node_modules release/app/node_modules
+      - name: Clean node_modules
+        if: runner.os == 'Windows'
+        run: Remove-Item -Recurse -Force node_modules, release/app/node_modules -ErrorAction SilentlyContinue
         shell: powershell
+
       - name: Install dependencies
-        run: uv sync --locked
-      - name: Build package
-        run: uv build
-      - name: Upload Windows artifact
-        uses: actions/upload-release-asset@v1  # 上传 Windows 构建产物
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm install
+
+      - name: Clean previous build output
+        if: runner.os == 'Linux'
+        run: rm -rf release/build
+      - name: Clean previous build output
+        if: runner.os == 'Windows'
+        run: Remove-Item -Recurse -Force release/build -ErrorAction SilentlyContinue
+        shell: powershell
+
+      - name: Build application
+        run: |
+          if [ "${{ runner.os }}" = "Linux" ]; then
+            npm run package -- --config.asar=false
+          else
+            npm run package
+          fi
+        shell: bash
+
+      - name: Get version from package.json
+        id: get_version
+        run: echo "version=$(node -p \"require('./package.json').version\")" >> $GITHUB_OUTPUT
+
+      - name: Determine artifact info
+        id: artifact
+        shell: bash
+        run: |
+          VERSION=${{ steps.get_version.outputs.version }}
+          if [ "${{ runner.os }}" = "Linux" ]; then
+            echo "paths=release/build/*.AppImage"  >> $GITHUB_OUTPUT
+            echo "name=app-${VERSION}-linux-${{ runner.arch }}.AppImage" >> $GITHUB_OUTPUT
+          else
+            echo "paths=release/build/*.exe"      >> $GITHUB_OUTPUT
+            echo "name=app-${VERSION}-windows-${{ runner.arch }}.exe" >> $GITHUB_OUTPUT
+          fi
+          echo "tag=v${VERSION}"                  >> $GITHUB_OUTPUT
+          echo "release_name=${VERSION}"          >> $GITHUB_OUTPUT
+
+      - name: Create or update GitHub Release
+        id: create_release
+        uses: ncipollo/release-action@v1
+        if: startsWith(github.ref, 'refs/tags/')
         with:
-          upload_url: ${{ needs.build-linux.outputs.upload_url }}  # 使用 Linux 任务的 Release 上传 URL
-          asset_path: dist/
-          asset_name: mypkg-${{ github.ref_name }}-windows.whl  # Windows 二进制包
-          asset_content_type: application/octet-stream
+          tag: ${{ steps.artifact.outputs.tag }}
+          name: Release ${{ steps.artifact.outputs.release_name }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          allowUpdates: true
+
+      - name: Upload release asset
+        uses: ncipollo/release-action@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          artifacts: ${{ steps.artifact.outputs.paths }}
+          tag: ${{ steps.artifact.outputs.tag }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          assetName: ${{ steps.artifact.outputs.name }}
