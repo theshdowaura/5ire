@@ -49,15 +49,25 @@ jobs:
         if: runner.os == 'Windows'
         run: echo "$env:APPDATA\uv" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
-      - name: Clean node_modules # FIX: Add step to clean node_modules before install
+      - name: Clean node_modules (macOS/Linux)
+        if: runner.os != 'Windows'
         run: rm -rf node_modules release/app/node_modules
+
+      - name: Clean node_modules (Windows)
+        if: runner.os == 'Windows'
+        run: Remove-Item -Recurse -Force node_modules, release/app/node_modules -ErrorAction SilentlyContinue
 
       - name: Install dependencies
         run: npm install
         # This should trigger the postinstall script which runs electron-builder install-app-deps
 
-      - name: Clean previous build output
+      - name: Clean previous build output (macOS/Linux)
+        if: runner.os != 'Windows'
         run: rm -rf release/build
+
+      - name: Clean previous build output (Windows)
+        if: runner.os == 'Windows'
+        run: Remove-Item -Recurse -Force release/build -ErrorAction SilentlyContinue
 
       - name: Build application
         # Pass macOS signing/notarization secrets as environment variables
