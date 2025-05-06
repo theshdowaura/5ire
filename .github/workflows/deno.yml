@@ -14,7 +14,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        # REMOVED macos-latest from the matrix
+        os: [ubuntu-latest, windows-latest]
         # node-version: [20.x] # Add if specific version needed beyond package.json
 
     steps:
@@ -35,11 +36,11 @@ jobs:
       - name: Install/Upgrade Python build tools # Optional but recommended
         run: python -m pip install --upgrade setuptools wheel # Avoid upgrading pip itself
 
-      - name: Install uv (macOS/Linux)
-        if: runner.os != 'Windows'
+      - name: Install uv (Linux)
+        if: runner.os == 'Linux'
         run: curl -LsSf https://astral.sh/uv/install.sh | sh
-      - name: Add uv to PATH (macOS/Linux) # Add uv to PATH for subsequent steps
-        if: runner.os != 'Windows'
+      - name: Add uv to PATH (Linux) # Add uv to PATH for subsequent steps
+        if: runner.os == 'Linux'
         run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
 
       - name: Install uv (Windows)
@@ -49,8 +50,8 @@ jobs:
         if: runner.os == 'Windows'
         run: echo "$env:APPDATA\uv" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
-      - name: Clean node_modules (macOS/Linux)
-        if: runner.os != 'Windows'
+      - name: Clean node_modules (Linux)
+        if: runner.os == 'Linux'
         run: rm -rf node_modules release/app/node_modules
 
       - name: Clean node_modules (Windows)
@@ -61,8 +62,8 @@ jobs:
         run: npm install
         # This should trigger the postinstall script which runs electron-builder install-app-deps
 
-      - name: Clean previous build output (macOS/Linux)
-        if: runner.os != 'Windows'
+      - name: Clean previous build output (Linux)
+        if: runner.os == 'Linux'
         run: rm -rf release/build
 
       - name: Clean previous build output (Windows)
@@ -70,20 +71,9 @@ jobs:
         run: Remove-Item -Recurse -Force release/build -ErrorAction SilentlyContinue
 
       - name: Build application
-        # Pass macOS signing/notarization secrets as environment variables
-        # WORKAROUND: Disable ASAR for macOS if EEXIST errors persist
-        run: |
-          if [ "${{ runner.os }}" == "macOS" ]; then
-            npm run package -- --config.asar=false
-          else
-            npm run package
-          fi
-        env:
-          # Only set these for macOS builds
-          APPLE_ID: ${{ matrix.os == 'macos-latest' && secrets.APPLE_ID || '' }}
-          APPLE_APP_SPECIFIC_PASSWORD: ${{ matrix.os == 'macos-latest' && secrets.APPLE_APP_SPECIFIC_PASSWORD || '' }}
-          APPLE_TEAM_ID: ${{ matrix.os == 'macos-latest' && secrets.APPLE_TEAM_ID || '' }}
-          # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Implicitly available
+        # No need for macOS specific logic or env vars anymore
+        run: npm run package
+        # Removed env block for APPLE secrets
 
       - name: Get Package Version
         id: get_version
@@ -101,11 +91,7 @@ jobs:
             # Ensure paths use forward slashes for consistency in GH Actions artifacts patterns
             echo "paths=release/build/*.exe" >> $GITHUB_OUTPUT
             echo "name=5ire-${VERSION}-windows-setup-${{ runner.arch }}.exe" >> $GITHUB_OUTPUT
-          elif [ "${{ runner.os }}" == "macOS" ]; then
-            echo "paths=release/build/*.dmg" >> $GITHUB_OUTPUT
-            echo "name=5ire-${VERSION}-mac-${{ runner.arch }}.dmg" >> $GITHUB_OUTPUT
-            # Add zip if needed for universal builds, adjust name accordingly
-            # echo "paths=release/build/*.dmg release/build/*.zip" >> $GITHUB_OUTPUT
+          # Removed macOS case
           fi
           echo "release_tag=v${VERSION}" >> $GITHUB_OUTPUT
 
