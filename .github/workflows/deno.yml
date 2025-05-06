@@ -15,8 +15,7 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
-        # Add node version if needed, otherwise uses the one from setup-node
-        # node-version: [20.x]
+        # node-version: [20.x] # Add if specific version needed beyond package.json
 
     steps:
       - name: Check out Git repository
@@ -31,7 +30,10 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12' # Ensure compatibility, especially for potential tools like AppleNotes
+          python-version: '3.11' # FIX: Use Python 3.11 to ensure distutils is available
+
+      - name: Install/Upgrade Python build tools # Optional but recommended
+        run: pip install --upgrade pip setuptools wheel
 
       - name: Install uv (macOS/Linux)
         if: runner.os != 'Windows'
@@ -62,9 +64,7 @@ jobs:
           APPLE_ID: ${{ matrix.os == 'macos-latest' && secrets.APPLE_ID || '' }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ matrix.os == 'macos-latest' && secrets.APPLE_APP_SPECIFIC_PASSWORD || '' }}
           APPLE_TEAM_ID: ${{ matrix.os == 'macos-latest' && secrets.APPLE_TEAM_ID || '' }}
-          # GITHUB_TOKEN is implicitly available, but might be needed by electron-builder for releases (though we handle release separately)
-          # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+          # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Implicitly available
 
       - name: Get Package Version
         id: get_version
@@ -79,6 +79,7 @@ jobs:
             echo "paths=release/build/*.AppImage" >> $GITHUB_OUTPUT
             echo "name=5ire-${VERSION}-linux-${{ runner.arch }}.AppImage" >> $GITHUB_OUTPUT
           elif [ "${{ runner.os }}" == "Windows" ]; then
+            # Ensure paths use forward slashes for consistency in GH Actions artifacts patterns
             echo "paths=release/build/*.exe" >> $GITHUB_OUTPUT
             echo "name=5ire-${VERSION}-windows-setup-${{ runner.arch }}.exe" >> $GITHUB_OUTPUT
           elif [ "${{ runner.os }}" == "macOS" ]; then
@@ -102,7 +103,7 @@ jobs:
           artifacts: ${{ steps.artifact_paths.outputs.paths }}
           # assetName: ${{ steps.artifact_paths.outputs.name }} # ncipollo action uses artifact filename by default
           tag: ${{ steps.artifact_paths.outputs.release_tag }} # Use the extracted version for the tag
-          name: Release ${{ steps.artifact_paths.outputs.version }} # Use the extracted version for the release name
+          name: Release ${{ steps.get_version.outputs.version }} # Use the extracted version for the release name
           # body: "Automated release for version ${{ steps.get_version.outputs.version }}" # Optional: Customize release body
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true # IMPORTANT: Allows subsequent jobs in the matrix to add their artifacts
