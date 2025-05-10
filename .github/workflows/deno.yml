@@ -1,102 +1,65 @@
-name: Build and Release
-
-on:
-  push:
-    tags:
-      - 'v*'            # 仅当标签以 v 开头（如 v1.0.0）时触发
-  workflow_dispatch:     # 支持手动触发
-
-jobs:
-  build-and-release:
-    name: Build on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-        node-version: [20.x]     # 如果需要，可以在此指定 Node.js 版本
-    outputs:
-      release_upload_url: ${{ steps.create_release.outputs.upload_url }}
-
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix['node-version'] }}
-          cache: 'npm'
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install/Upgrade Python build tools
-        run: python -m pip install --upgrade setuptools wheel
-
-      - name: Clean node_modules
-        if: runner.os == 'Linux'
-        run: rm -rf node_modules release/app/node_modules
-      - name: Clean node_modules
-        if: runner.os == 'Windows'
-        run: Remove-Item -Recurse -Force node_modules, release/app/node_modules -ErrorAction SilentlyContinue
-        shell: powershell
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Clean previous build output
-        if: runner.os == 'Linux'
-        run: rm -rf release/build
-      - name: Clean previous build output
-        if: runner.os == 'Windows'
-        run: Remove-Item -Recurse -Force release/build -ErrorAction SilentlyContinue
-        shell: powershell
-
-      - name: Build application
-        run: |
-          if [ "${{ runner.os }}" = "Linux" ]; then
-            npm run package -- --config.asar=false
-          else
-            npm run package
-          fi
-        shell: bash
-
-      - name: Get version from package.json
-        id: get_version
-        run: echo "version=$(node -p \"require('./package.json').version\")" >> $GITHUB_OUTPUT
-
-      - name: Determine artifact info
-        id: artifact
-        shell: bash
-        run: |
-          VERSION=${{ steps.get_version.outputs.version }}
-          if [ "${{ runner.os }}" = "Linux" ]; then
-            echo "paths=release/build/*.AppImage"  >> $GITHUB_OUTPUT
-            echo "name=app-${VERSION}-linux-${{ runner.arch }}.AppImage" >> $GITHUB_OUTPUT
-          else
-            echo "paths=release/build/*.exe"      >> $GITHUB_OUTPUT
-            echo "name=app-${VERSION}-windows-${{ runner.arch }}.exe" >> $GITHUB_OUTPUT
-          fi
-          echo "tag=v${VERSION}"                  >> $GITHUB_OUTPUT
-          echo "release_name=${VERSION}"          >> $GITHUB_OUTPUT
-
-      - name: Create or update GitHub Release
-        id: create_release
-        uses: ncipollo/release-action@v1
-        if: startsWith(github.ref, 'refs/tags/')
-        with:
-          tag: ${{ steps.artifact.outputs.tag }}
-          name: Release ${{ steps.artifact.outputs.release_name }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          allowUpdates: true
-
-      - name: Upload release asset
-        uses: ncipollo/release-action@v1
-        if: startsWith(github.ref, 'refs/tags/')
-        with:
-          artifacts: ${{ steps.artifact.outputs.paths }}
-          tag: ${{ steps.artifact.outputs.tag }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          assetName: ${{ steps.artifact.outputs.name }}
+name: Build and Release  
+  
+on:  
+  push:  
+    tags:  
+      - 'v*'  # 当推送以v开头的标签时触发，例如v0.9.9  
+  workflow_dispatch:
+jobs:  
+  build:  
+    runs-on: ${{ matrix.os }}  
+    strategy:  
+      matrix:  
+        os: [ windows-latest, ubuntu-latest]  
+  
+    steps:  
+      - name: Checkout code  
+        uses: actions/checkout@v3  
+  
+      - name: Setup Node.js  
+        uses: actions/setup-node@v3  
+        with:  
+          node-version: '20.10.0'  
+          cache: 'npm'  
+  
+      - name: Install dependencies  
+        run: npm install  
+  
+      - name: Build and package app  
+        run: npm run package  
+        env:  
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
+          SUPA_PROJECT_ID: ${{ secrets.SUPA_PROJECT_ID }}  
+          SUPA_KEY: ${{ secrets.SUPA_KEY }}  
+          AXIOM_TOKEN: ${{ secrets.AXIOM_TOKEN }}  
+          AXIOM_ORG_ID: ${{ secrets.AXIOM_ORG_ID }}  
+          # macOS签名和公证所需的环境变量（仅在macOS上）  
+          APPLE_ID: ${{ secrets.APPLE_ID }}  
+          APPLE_ID_PASS: ${{ secrets.APPLE_ID_PASS }}  
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}  
+          # Linux签名所需的环境变量（仅在Linux上）  
+          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}  
+  
+      - name: Upload artifacts  
+        uses: actions/upload-artifact@v3  
+        with:  
+          name: ${{ matrix.os }}-artifacts  
+          path: release/build/*  
+  
+  release:  
+    needs: build  
+    runs-on: ubuntu-latest  
+    steps:  
+      - name: Download all artifacts  
+        uses: actions/download-artifact@v3  
+        with:  
+          path: artifacts  
+  
+      - name: Create Release  
+        uses: softprops/action-gh-release@v1  
+        with:  
+          files: artifacts/**/*  
+          draft: false  
+          prerelease: false  
+        env:  
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
