@@ -1,65 +1,81 @@
-name: Build and Release  
-  
-on:  
-  push:  
-    tags:  
-      - 'v*'  # 当推送以v开头的标签时触发，例如v0.9.9  
+name: Build and Release
+
+# 触发条件：推送以 v 开头的 tag，或手动触发
+on:
+  push:
+    tags:
+      - 'v*'
   workflow_dispatch:
-jobs:  
-  build:  
-    runs-on: ${{ matrix.os }}  
-    strategy:  
-      matrix:  
-        os: [ windows-latest, ubuntu-latest]  
-  
-    steps:  
-      - name: Checkout code  
-        uses: actions/checkout@v3  
-  
-      - name: Setup Node.js  
-        uses: actions/setup-node@v3  
-        with:  
-          node-version: '20.10.0'  
-          cache: 'npm'  
-  
-      - name: Install dependencies  
-        run: npm install  
-  
-      - name: Build and package app  
-        run: npm run package  
-        env:  
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
-          SUPA_PROJECT_ID: ${{ secrets.SUPA_PROJECT_ID }}  
-          SUPA_KEY: ${{ secrets.SUPA_KEY }}  
-          AXIOM_TOKEN: ${{ secrets.AXIOM_TOKEN }}  
-          AXIOM_ORG_ID: ${{ secrets.AXIOM_ORG_ID }}  
-          # macOS签名和公证所需的环境变量（仅在macOS上）  
-          APPLE_ID: ${{ secrets.APPLE_ID }}  
-          APPLE_ID_PASS: ${{ secrets.APPLE_ID_PASS }}  
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}  
-          # Linux签名所需的环境变量（仅在Linux上）  
-          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}  
-  
-      - name: Upload artifacts  
-        uses: actions/upload-artifact@v3  
-        with:  
-          name: ${{ matrix.os }}-artifacts  
-          path: release/build/*  
-  
-  release:  
-    needs: build  
-    runs-on: ubuntu-latest  
-    steps:  
-      - name: Download all artifacts  
-        uses: actions/download-artifact@v3  
-        with:  
-          path: artifacts  
-  
-      - name: Create Release  
-        uses: softprops/action-gh-release@v1  
-        with:  
-          files: artifacts/**/*  
-          draft: false  
-          prerelease: false  
-        env:  
+
+# 给 GITHUB_TOKEN 授予写权限
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  build:
+    # 根据操作系统矩阵跑不同 runner
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+
+    # 超时时间（可根据实际包大小调整）
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          # 拉取所有历史和 tags，避免浅克隆无法获取到 tag
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.10.0'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build and package app
+        # 你的打包脚本
+        run: npm run package
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SUPA_PROJECT_ID: ${{ secrets.SUPA_PROJECT_ID }}
+          SUPA_KEY: ${{ secrets.SUPA_KEY }}
+          AXIOM_TOKEN: ${{ secrets.AXIOM_TOKEN }}
+          AXIOM_ORG_ID: ${{ secrets.AXIOM_ORG_ID }}
+          # macOS 签名
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_ID_PASS: ${{ secrets.APPLE_ID_PASS }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          # Linux 签名
+          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.os }}-artifacts
+          path: release/build/*
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: artifacts
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: artifacts/**/*
+          draft: false
+          prerelease: false
+        env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
